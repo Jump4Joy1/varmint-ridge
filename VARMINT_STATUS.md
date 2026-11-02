@@ -1,3 +1,7 @@
+## Phone pass (2026-11-02)
+
+Wave 1 shows three tap hints: place a scarecrow, start the wave, keep one bed alive. They stop after wave 1, and they stay off for Today's Ridge. Small phones get taller buttons, a larger Start pill, and a wider thumb reach. Settings has Color-blind safe (blue, orange, and a circle, square, or triangle). Older short phone screens drop the pixel ratio to 1.25 and skip blur, the extra banjo voice, and some particles. Real purchases stay off.
+
 ## Polish pass (2026-11-02)
 
 The campaign is 12 waves. Fox Trot and Moonlit Run sit in front of the Bandit King. Foxes hop the fence once, then nip the beds. Phone placement is slide-then-lift, with a bigger thumb target. A mouse still places on the click. The banjo has a quieter lower voice, plus a soft wind bed, a fox yip, and a rare crow call. Mist drifts in the yard and healthy crops show dew. Real purchases stay off. The Coin Pack test purchase is still behind the grown-up math screen. Widgets use the same Bandit King line, now wave 12, and the large widget shows waves opened of 12. The daily seed did not change. Music and effects now have separate sliders on the title and on Pause, saved on the device. Ground varmints keep one sideways offset instead of shaking off the bed every frame. Hit flashes are drawn on the critter, not with ctx.filter. The theme chip hides during play so it does not cover Pause.

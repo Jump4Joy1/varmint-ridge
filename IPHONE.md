@@ -8,8 +8,8 @@ Host this folder on HTTPS. Opening the files from a computer over USB, or from a
 2. Tap Share, then Add to Home Screen. The name should be Varmint Ridge and the icon should be the pine raccoon.
 3. Open it from the home screen. It should be full screen, with no Safari toolbar, and the garden should sit below the notch and above the home indicator.
 4. Turn on airplane mode and open the icon again. The title screen should still load. Scores stay on the phone.
-5. Tap the moon/sun chip to move between Auto, Light, and Dark.
-6. Play a wave with a thumb. Slide on the yard, then lift, to place a defense. A mouse still places on the click. The five buttons under the garden should be easy to hit, and tapping a defense you already placed should open Upgrade / Sell. The campaign is 12 waves. Foxes show up later and hop the fence once.
+5. Tap the moon/sun chip to move between Auto, Light, and Dark. Settings, on the title screen and while paused, turns on Color-blind safe. Health bars use blue and orange, plus a circle, square, or triangle.
+6. Play wave 1 with a thumb. The yard says where to tap: place a scarecrow, then tap Start Wave, then keep one bed alive. Those tips are gone on wave 2. On a small phone the buttons under the garden are taller, and a tap still places when you lift. A mouse still places on the click. The campaign is 12 waves. Foxes show up later and hop the fence once.
 7. Tap Supporter Store. A multiplication question appears on its own screen. Wrong answers do not open the store. After a right answer, Coin Pack can be confirmed in test mode. That adds 500 coins to the next game and does not charge a card. There are no ads.
 
 Today's Ridge (on the title screen) is the same challenge the widgets describe.
