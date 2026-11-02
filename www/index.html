@@ -57,7 +57,7 @@ ol{text-align:left;margin:4px 0 8px;padding-left:22px}
 .lv{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:8px 0}
 .lv button{min-height:44px;padding:9px 0;border-radius:8px;border:2px solid var(--gold);background:#305032;color:var(--cream);font:700 15px Georgia;cursor:pointer}
 .lv button:disabled{opacity:.35;cursor:default}
-input{font:700 18px Georgia;text-align:center;text-transform:uppercase;width:90px;padding:6px;border-radius:8px;border:2px solid var(--gold);background:#111;color:#ffe2a0}
+input:not([type=range]){font:700 18px Georgia;text-align:center;text-transform:uppercase;width:90px;padding:6px;border-radius:8px;border:2px solid var(--gold);background:#111;color:#ffe2a0}input,textarea{user-select:text;-webkit-user-select:text}
 #towerMenu{position:absolute;z-index:4;display:none;transform:translate(-50%,-100%);background:rgba(20,30,20,.95);border:2px solid var(--gold);border-radius:10px;padding:6px;white-space:nowrap;box-shadow:0 6px 20px rgba(0,0,0,.6)}
 #towerMenu .btn{min-width:0;padding:6px 10px;font-size:12px;margin:2px}
 #towerMenu div{font-size:12px;color:#ffe2a0;text-align:center}
@@ -71,7 +71,7 @@ html[data-theme=light] h2{color:#305032;text-shadow:none}
 html[data-theme=light] .sub{color:#6d5322}html[data-theme=light] .small{color:#4f4227}
 html[data-theme=light] .row{background:rgba(48,80,50,.09)}html[data-theme=light] .row b{color:#305032}
 html[data-theme=light] .stars{color:#a87a12;text-shadow:none}html[data-theme=light] .stars i{color:#bcb293}
-html[data-theme=light] .panel input{background:#fff;color:#1A1A1A}
+html[data-theme=light] .panel input:not([type=range]){background:#fff;color:#1A1A1A}
 html[data-theme=light] .panel [style*="#ffd877"]{color:#7a5a14!important}
 html[data-theme=light] .panel [style*="#9be27a"]{color:#2d6a2f!important}
 html[data-theme=light] .panel [style*="#ffb0a0"]{color:#9b2c2c!important}
@@ -85,6 +85,19 @@ html,body{overscroll-behavior:none}
 .btn{min-height:44px}
 a.quiet{color:var(--gold);text-decoration:none}
 html[data-theme=light] a.quiet{color:#305032}
+.vols{display:flex;flex-direction:column;gap:0;width:min(100%,280px);margin:0 auto}
+.vols label{display:flex;align-items:center;gap:8px;min-height:44px;font:600 13px Georgia,serif;color:#ffe2a0}
+.vols input[type=range]{flex:1;width:auto;min-width:0;height:44px;margin:0;padding:0;border:0;border-radius:0;background:transparent;accent-color:#C19A50;touch-action:manipulation}
+html[data-theme=light] .vols label{color:#305032}
+#sPause .btn{display:block;width:min(100%,260px);margin:4px auto}
+#sTitle{justify-content:flex-start;padding:6px 10px 4px}
+#sTitle h1{font-size:32px;line-height:1}
+#sTitle .sub{margin:0 0 4px}
+#sTitle .btn{display:block;width:min(100%,240px);margin:2px auto;padding:8px 14px}
+#sTitle .menu2{display:grid;grid-template-columns:1fr 1fr;gap:4px;width:min(100%,280px);margin:2px auto}
+#sTitle .menu2 .btn{width:100%;min-width:0;margin:0;padding:8px 4px;font-size:14px}
+#sTitle .vols{margin:0 auto}
+#sTitle p.small{margin:2px 8px}
 @media (pointer:coarse){.card{min-height:72px;padding:10px 4px 8px}#towerMenu .btn{min-height:48px;padding:12px 14px}}
 @media (max-width:360px){.card .nm{font-size:10px}h1{font-size:36px}}
 </style>
@@ -101,12 +114,18 @@ html[data-theme=light] a.quiet{color:#305032}
    <button class="btn alt" id="bDaily">Today's Ridge</button>
    <p class="small" id="dailyBlurb" style="margin:2px 16px 8px"></p>
    <button class="btn" id="bCont" style="display:none">Continue</button>
-   <button class="btn alt" id="bLevels">Choose Wave</button>
-   <button class="btn alt" id="bHow">How to Play</button>
-   <button class="btn alt" id="bScores">High Scores</button>
-   <button class="btn alt" id="bStore">Supporter Store</button>
-   <div style="margin-top:8px"><button class="btn alt sm" id="bMuteT">Sound: On</button></div>
-   <p class="small" style="margin-top:14px">Best: <span id="tBest">0</span> &middot; East Texas, JW Manor Homestead</p>
+   <div class="menu2">
+    <button class="btn alt" id="bLevels">Choose Wave</button>
+    <button class="btn alt" id="bHow">How to Play</button>
+    <button class="btn alt" id="bScores">High Scores</button>
+    <button class="btn alt" id="bStore">Supporter Store</button>
+   </div>
+   <div style="margin-top:4px"><button class="btn alt sm" id="bMuteT">Sound: On</button></div>
+   <div class="vols" id="volsT">
+    <label>Music <input id="musicT" type="range" min="0" max="100" value="40" aria-label="Music volume"></label>
+    <label>Effects <input id="sfxT" type="range" min="0" max="100" value="80" aria-label="Effects volume"></label>
+   </div>
+   <p class="small" style="margin-top:4px">Best: <span id="tBest">0</span> &middot; East Texas, JW Manor Homestead</p>
    <p class="small">All ages &middot; No ads &middot; <a class="quiet" href="privacy.html">Privacy</a></p>
   </div>
   <div class="ov" id="sHow"><div class="panel how"><h2>How to Play</h2>
@@ -115,12 +134,19 @@ html[data-theme=light] a.quiet{color:#305032}
    <p><b>Scarecrow</b> sends out a pulse that slows everything close by and scares crows off. <b>Lantern</b> fires light bolts and hits fliers hard. <b>Snap Trap</b> bites ground critters, even armadillos while they're digging.</p>
    <p><b>Critters:</b> raccoons grab a crop and run (catch them before they get away!). Foxes are quick and hop the fence. Crows fly right over it. Armadillos dig under it. Possums play dead once. Wave 12 brings the <b>Bandit King</b>.</p>
    <p><b>Between waves</b> you can spend coins on the Fence, Zeus the farm dog, and Crop Care.</p>
-   <p class="small">Keys: 1/2/3 pick a defense &middot; Space starts the wave &middot; F fast-forward &middot; P/Esc pause &middot; M mute</p>
+   <p class="small">Keys: 1/2/3 pick a defense &middot; Space starts the wave &middot; F fast-forward &middot; P/Esc pause &middot; M mute. Music and effects have their own sliders.</p>
    <button class="btn" data-close>Got it</button></div></div>
   <div class="ov" id="sScores"><div class="panel"><h2>Top 5 Ranchers</h2><ol id="scoreList"></ol><button class="btn" data-close>Back</button></div></div>
   <div class="ov" id="sLevels"><div class="panel"><h2>Choose a Wave</h2><p class="small">Waves you've reached open up here. The Ridge Pass opens all twelve.</p><div class="lv" id="lvGrid"></div><button class="btn alt" data-close>Back</button></div></div>
   <div class="ov" id="sPause"><div class="panel"><h2>Paused</h2>
-   <button class="btn" id="bResume">Resume</button><button class="btn alt" id="bMuteP">Sound: On</button><button class="btn alt" id="bRestart">Restart Wave 1</button><button class="btn alt" id="bQuit">Save &amp; Quit</button></div></div>
+   <button class="btn" id="bResume">Resume</button>
+   <button class="btn alt" id="bMuteP">Sound: On</button>
+   <div class="vols">
+    <label>Music <input id="musicP" type="range" min="0" max="100" value="40" aria-label="Music volume"></label>
+    <label>Effects <input id="sfxP" type="range" min="0" max="100" value="80" aria-label="Effects volume"></label>
+   </div>
+   <button class="btn alt" id="bRestart">Restart Wave 1</button>
+   <button class="btn alt" id="bQuit">Save & Quit</button></div></div>
   <div class="ov" id="sShop"><div class="panel"><h2 id="shopTitle">Wave Cleared!</h2><div class="small" id="shopInfo"></div>
    <div class="row"><span><b>Fence</b> <span id="lvFence"></span><br><span class="small">Slows ground varmints at the rail. A fox still hops it once.</span></span><button class="btn sm" id="buyFence"></button></div>
    <div class="row"><span><b>Zeus the Dog</b> <span id="lvZeus"></span><br><span class="small">Chases down whatever's closest to the crops</span></span><button class="btn sm" id="buyZeus"></button></div>
@@ -234,7 +260,7 @@ const CROP_X=[48,124,200,276,352],CROP_Y=530,FENCE_Y=420;
 const UPS={fence:[40,65,95],zeus:[60,90,130]},CARE=35;
 
 /* ---------- state ---------- */
-let S=null,muted=LS.get('mute',false),speed=1,sel='scarecrow',selTower=null,hover=null;
+let S=null,muted=LS.get('mute',false),sfxVol=LS.get('sfx',80),musicVol=LS.get('music',40),speed=1,sel='scarecrow',selTower=null,hover=null;
 const fx=[],floats=[],bolts=[],rings=[];
 function newState(startWave,carry){
  const bank=LS.get('bank',0),zb=LS.get('zeusBonus',0);LS.set('bank',0);LS.set('zeusBonus',0);
@@ -244,11 +270,12 @@ function newState(startWave,carry){
  if(carry)Object.assign(S,carry);
 }
 /* ---------- audio ---------- */
-let AC=null,master=null,musicGain=null;
-function audio(){if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)();master=AC.createGain();master.gain.value=muted?0:.8;master.connect(AC.destination);musicGain=AC.createGain();musicGain.gain.value=.35;musicGain.connect(master);windBed()}catch(e){}}if(AC&&AC.state==='suspended')AC.resume();return AC}
+let AC=null,master=null,musicGain=null,sfxGain=null;
+function applyVol(){if(sfxGain)sfxGain.gain.value=clamp(sfxVol,0,100)/100;if(musicGain)musicGain.gain.value=clamp(musicVol,0,100)/100;['musicT','musicP'].forEach(id=>{const el=$(id);if(el&&document.activeElement!==el)el.value=String(musicVol)});['sfxT','sfxP'].forEach(id=>{const el=$(id);if(el&&document.activeElement!==el)el.value=String(sfxVol)})}
+function audio(){if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)();master=AC.createGain();master.gain.value=muted?0:.8;master.connect(AC.destination);sfxGain=AC.createGain();sfxGain.connect(master);musicGain=AC.createGain();musicGain.connect(master);applyVol();windBed()}catch(e){}}if(AC&&AC.state==='suspended')AC.resume();return AC}
 function windBed(){if(!AC||windBed.on)return;windBed.on=1;const n=AC.sampleRate*2,b=AC.createBuffer(1,n,AC.sampleRate),a=b.getChannelData(0);let s=0;for(let i=0;i<n;i++){s=(s*3+Math.random()*2-1)*.25;a[i]=s}const src=AC.createBufferSource();src.buffer=b;src.loop=true;const fl=AC.createBiquadFilter();fl.type='lowpass';fl.frequency.value=380;const g=AC.createGain();g.gain.value=.04;src.connect(fl);fl.connect(g);g.connect(musicGain);src.start()}
-function tone(f,d,type,vol,slide,dest){if(!AC||muted)return;const t=AC.currentTime,o=AC.createOscillator(),g=AC.createGain();o.type=type||'square';o.frequency.setValueAtTime(f,t);if(slide)o.frequency.exponentialRampToValueAtTime(Math.max(30,slide),t+d);g.gain.setValueAtTime(vol||.08,t);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(dest||master);o.start(t);o.stop(t+d+.02)}
-function noise(d,f,vol){if(!AC||muted)return;const n=Math.floor(AC.sampleRate*d),b=AC.createBuffer(1,n,AC.sampleRate),a=b.getChannelData(0);for(let i=0;i<n;i++)a[i]=(Math.random()*2-1)*(1-i/n);const s=AC.createBufferSource(),fl=AC.createBiquadFilter(),g=AC.createGain();s.buffer=b;fl.type='lowpass';fl.frequency.value=f||800;g.gain.value=vol||.12;s.connect(fl);fl.connect(g);g.connect(master);s.start()}
+function tone(f,d,type,vol,slide,dest){if(!AC||muted||sfxVol<=0)return;const t=AC.currentTime,o=AC.createOscillator(),g=AC.createGain();o.type=type||'square';o.frequency.setValueAtTime(f,t);if(slide)o.frequency.exponentialRampToValueAtTime(Math.max(30,slide),t+d);g.gain.setValueAtTime(vol||.08,t);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(dest||sfxGain||master);o.start(t);o.stop(t+d+.02)}
+function noise(d,f,vol){if(!AC||muted||sfxVol<=0)return;const n=Math.floor(AC.sampleRate*d),b=AC.createBuffer(1,n,AC.sampleRate),a=b.getChannelData(0);for(let i=0;i<n;i++)a[i]=(Math.random()*2-1)*(1-i/n);const s=AC.createBufferSource(),fl=AC.createBiquadFilter(),g=AC.createGain();s.buffer=b;fl.type='lowpass';fl.frequency.value=f||800;g.gain.value=vol||.12;s.connect(fl);fl.connect(g);g.connect(sfxGain||master);s.start()}
 const SFX={
  place(){tone(330,.08,'triangle',.12,660);noise(.06,1500,.06)},
  lantern(){tone(880,.07,'sine',.05,1400)},
@@ -269,9 +296,12 @@ const SFX={
 };
 const BANJO=[[196,1],[147,1],[294,.5],[247,.5],[220,1],[196,.5],[147,.5],[98,1],[165,1],[220,1],[330,.5],[247,.5],[196,1],[165,.5],[147,.5],[110,1],[247,1],[196,.5],[294,.5],[220,1],[147,1],[175,.5],[196,.5],[98,1],[220,.5],[262,.5],[294,1],[196,1],[165,.5],[147,.5],[131,1],[98,1]];
 let bNext=0,bStep=0;
-function music(){if(!AC||muted||!S||S.phase==='paused'||document.hidden){bNext=0;return}const t=AC.currentTime;if(!bNext||bNext<t)bNext=t+.05;const tempo=S.phase==='wave'?.24:.3;while(bNext<t+.3){const n=BANJO[bStep++%BANJO.length];pluck(n[0],bNext,.18+n[1]*.08);if(bStep%8===1)pluck(98,bNext,.5,.05);bNext+=tempo*n[1]}}
+function music(){if(!AC||muted||musicVol<=0||!S||S.phase==='paused'||document.hidden){bNext=0;return}const t=AC.currentTime;if(!bNext||bNext<t)bNext=t+.05;const tempo=S.phase==='wave'?.24:.3;while(bNext<t+.3){const n=BANJO[bStep++%BANJO.length];pluck(n[0],bNext,.18+n[1]*.08);if(bStep%8===1)pluck(98,bNext,.5,.05);bNext+=tempo*n[1]}}
 function pluck(f,t,d,v){const o=AC.createOscillator(),g=AC.createGain();o.type='triangle';o.frequency.setValueAtTime(f,t);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(v||.07,t+.01);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(musicGain);o.start(t);o.stop(t+d+.05);const o2=AC.createOscillator(),g2=AC.createGain();o2.type='sine';o2.frequency.setValueAtTime(f/2,t);g2.gain.setValueAtTime(.0001,t);g2.gain.exponentialRampToValueAtTime((v||.07)*.4,t+.02);g2.gain.exponentialRampToValueAtTime(.0001,t+d*1.25);o2.connect(g2);g2.connect(musicGain);o2.start(t);o2.stop(t+d*1.25+.05)}
 function setMute(m){muted=m;LS.set('mute',m);if(master)master.gain.value=m?0:.8;['bMuteT','bMuteP'].forEach(i=>$(i).textContent='Sound: '+(m?'Off':'On'))}
+function setMusic(v){musicVol=clamp(+v||0,0,100);LS.set('music',musicVol);applyVol()}
+function setSfx(v){sfxVol=clamp(+v||0,0,100);LS.set('sfx',sfxVol);applyVol()}
+function themeChip(on){const b=$('themeBtn');if(b)b.style.visibility=on?'visible':'hidden'}
 
 /* ---------- layout ---------- */
 let scale=1,dpr=1;
@@ -348,7 +378,7 @@ function drawFoe(f,t){ctx.save();const bob=f.fly?Math.sin(f.age*9)*3:Math.abs(Ma
  if(f.burrow){ctx.translate(f.x,f.y);ell(0,6,16,6,'#5a3d22');ell(0,4,9,3,'#3a2814');for(let j=0;j<3;j++){ctx.fillStyle='#6b4a2a';ctx.fillRect(Math.sin(f.age*20+j)*12,2-Math.abs(Math.sin(f.age*15+j*2))*6,3,3)}ctx.restore();return}
  if(!f.fly)shadow(f.x,f.y+12*f.sc,f.r*f.sc,4*f.sc);else shadow(f.x,f.y+28,8,3);
  ctx.translate(f.x,f.y+bob+hop);ctx.scale(f.face*f.sc,f.sc);if(f.dead){ctx.rotate(Math.PI);ctx.translate(0,-6)}
- if(f.hitT>0&&ctx.filter!==undefined)ctx.filter='brightness(2.6)';
+ 
  const leg=Math.sin(f.age*14)*3;
  if(f.type==='raccoon'||f.type==='boss'){
   // tail
@@ -376,7 +406,7 @@ function drawFoe(f,t){ctx.save();const bob=f.fly?Math.sin(f.age*9)*3:Math.abs(Ma
   ctx.fillStyle='#2e3440';ctx.beginPath();ctx.moveTo(-4,-2);ctx.quadraticCurveTo(-6,-14*fl-4,-16,-16*fl);ctx.lineTo(4,-2);ctx.fill();
   ell(11,-3,6,5.5,'#1f2228');ctx.fillStyle='#e0a83a';ctx.beginPath();ctx.moveTo(15,-4);ctx.lineTo(23,-2);ctx.lineTo(15,0);ctx.fill();ell(12,-4,1.6,1.6,'#ffd84a');
   if(f.fear>0){ctx.fillStyle='#fff';ctx.font='bold 10px Georgia';ctx.fillText('!',4,-12)}}
- ctx.filter='none';ctx.restore();
+ ctx.restore();if(f.hitT>0){ctx.save();ctx.globalAlpha=Math.min(1,f.hitT/.08)*.55;ell(f.x,f.y,f.r*(f.sc||1)+6,f.r*(f.sc||1)+4,'#fff');ctx.restore()}
  if(!f.dead&&f.hp<f.max){const w=f.type==='boss'?0:26;if(w){ctx.fillStyle='rgba(0,0,0,.55)';ctx.fillRect(f.x-13,f.y-f.r*f.sc-12,26,4);ctx.fillStyle='#e0553a';ctx.fillRect(f.x-12,f.y-f.r*f.sc-11,24*f.hp/f.max,2)}}
  if(f.slow>0&&!f.fly){ctx.strokeStyle='rgba(180,140,255,.6)';ctx.lineWidth=1.5;ctx.beginPath();ctx.ellipse(f.x,f.y+10,f.r,4,0,0,7);ctx.stroke()}}
 function drawDog(t){const d=S.dog,lv=S.zeus;ctx.save();shadow(d.x,d.y+10,14,4);ctx.translate(d.x,d.y);ctx.scale(d.face*(1+lv*.06),1+lv*.06);const run=d.run>0,leg=run?Math.sin(t*22)*4:0;
@@ -394,7 +424,7 @@ function startWave(){if(!S||S.phase!=='build')return;audio();S.phase='wave';S.qu
  w.g.forEach(([type,n,gap,delay])=>{for(let i=0;i<n;i++)S.queue.push({t:(delay||0)+i*gap,type,hpm})});S.queue.sort((a,b)=>a.t-b.t);S.clock=0;
  S.banner={txt:'Wave '+S.wave+' - '+w.name,t:2.4};SFX.wave();if(w.g.some(g=>g[0]==='boss'))setTimeout(()=>SFX.boss(),6000);ui()}
 function spawn(type,hpm,x,y){const F=FOES[type],alive=S.crops.filter(c=>c.hp>0);const tgt=alive.length?alive[Math.floor(Math.random()*alive.length)]:S.crops[2];
- const f={type,x:x!=null?x:rnd(30,W-30),y:y!=null?y:(F.fly?rnd(60,120):250),hp:F.hp*hpm,max:F.hp*hpm,spd:F.spd*rnd(.9,1.1),r:F.r,fly:!!F.fly,tgt,age:rnd(0,3),face:1,sc:type==='boss'?1.9:1,slow:0,fear:0,hitT:0,state:'go',eat:0,played:false,leap:0,leapt:0};
+ const f={type,x:x!=null?x:rnd(30,W-30),y:y!=null?y:(F.fly?rnd(60,120):250),hp:F.hp*hpm,max:F.hp*hpm,spd:F.spd*rnd(.9,1.1),r:F.r,fly:!!F.fly,tgt,ox:F.fly?0:rnd(-8,8),age:rnd(0,3),face:1,sc:type==='boss'?1.9:1,slow:0,fear:0,hitT:0,state:'go',eat:0,played:false,leap:0,leapt:0};
  if(type==='boss'){f.x=200;f.summon=2;S.banner={txt:'The Bandit King!',t:2.6};S.shake=10}
  if(type==='fox')SFX.yip();else if(type==='crow'&&Math.random()<.22)SFX.caw();
  S.foes.push(f);return f}
@@ -427,7 +457,7 @@ function step(dt){if(!S)return;S.t+=dt;
   if(inBand&&!f.fly&&f.type!=='armadillo')sp*=f.type==='boss'?Math.max(.6,fenceSlow+.2):fenceSlow;
   if(f.type==='fox'&&inBand&&!f.leapt){f.leapt=1;f.leap=.42;rings.push({x:f.x,y:FENCE_Y,r:22,t:0,d:.4,c:'193,154,80'})}
   if(f.leap>0){f.leap-=dt;sp=f.spd*1.85}
-  const tx=f.tgt.x+(f.fly?0:rnd(-2,2)),ty=f.tgt.y-(f.fly?22:4),dx=tx-f.x,dy=ty-f.y,dd=Math.hypot(dx,dy)||1;
+  const tx=f.tgt.x+(f.ox||0),ty=f.tgt.y-(f.fly?22:4),dx=tx-f.x,dy=ty-f.y,dd=Math.hypot(dx,dy)||1;
   if(Math.abs(dx)>2)f.face=dx>0?1:-1;
   if(dd>14){f.x+=dx/dd*sp*dt;f.y+=dy/dd*sp*dt}
   else{f.eat+=dt;const rate={raccoon:0,crow:9,armadillo:11,possum:8,fox:12,boss:26}[f.type];if(rate){f.tgt.hp-=rate*dt;f.tgt.shake=.15}
@@ -491,7 +521,7 @@ $('tmUp').onclick=()=>{const t=selTower;if(!t||t.lv>=3)return;const c=TOWERS[t.t
 $('tmSell').onclick=()=>{const t=selTower;if(!t)return;S.coins+=Math.floor(t.spent*.6);S.towers=S.towers.filter(x=>x!==t);burst(t.x,t.y,12,['#8a6a3a','#ffd66e'],80);SFX.coin();selTower=null;placeMenu();ui()};
 function toggleFast(){speed=speed===1?2:1}
 function pause(){if(!S||(S.phase!=='wave'&&S.phase!=='build'))return;S.prev=S.phase;S.phase='paused';show('sPause')}
-function resume(){if(S&&S.phase==='paused'){S.phase=S.prev;hideAll()}}
+function resume(){if(S&&S.phase==='paused'){S.phase=S.prev;hideAll();themeChip(false)}}
 addEventListener('keydown',e=>{if(e.target.tagName==='INPUT')return;const k=e.key.toLowerCase();if(k==='m')setMute(!muted);
  if(!S)return;if(k==='1')pick('scarecrow');if(k==='2')pick('lantern');if(k==='3')pick('trap');if(k===' '){e.preventDefault();startWave()}if(k==='f')toggleFast();
  if(k==='p'||k==='escape'){if(S.phase==='paused')resume();else if(!document.querySelector('.ov.show'))pause()}});
@@ -529,9 +559,9 @@ function render(){const t=S?S.t:performance.now()/1000;ctx.setTransform(1,0,0,1,
  hud(t)}
 function pill(x,y,w,h){ctx.beginPath();ctx.roundRect?ctx.roundRect(x,y,w,h,h/2):ctx.rect(x,y,w,h);ctx.fill();ctx.stroke()}
 function hud(t){ctx.setTransform(cv.width/W,0,0,cv.height/H,0,0);const g=ctx.createLinearGradient(0,0,0,46);g.addColorStop(0,'rgba(10,14,10,.8)');g.addColorStop(1,'rgba(10,14,10,0)');ctx.fillStyle=g;ctx.fillRect(0,0,W,52);
- ctx.strokeStyle='rgba(193,154,80,.7)';ctx.lineWidth=1.5;ctx.fillStyle='rgba(20,30,20,.85)';pill(8,8,82,24);pill(W-92,8,38,24);pill(W-46,8,38,24);
+ ctx.strokeStyle='rgba(193,154,80,.7)';ctx.lineWidth=1.5;ctx.fillStyle='rgba(20,30,20,.85)';pill(8,8,82,24);pill(W-112,6,52,36);pill(W-52,6,44,36);
  ell(22,20,7,7,'#ffd24a');ell(20,18,2.5,2.5,'#fff8c0');ctx.fillStyle='#ffe2a0';ctx.font='bold 14px Georgia';ctx.fillText(S.coins,34,25);
- ctx.font='bold 13px Georgia';ctx.textAlign='center';ctx.fillText(speed>1?'»2':'»1',W-73,25);ctx.fillText('II',W-27,25);
+ ctx.font='bold 13px Georgia';ctx.textAlign='center';ctx.fillText(speed>1?'x2':'x1',W-86,30);ctx.fillText('II',W-30,30);
  if(S.phase==='build'){const p=.5+.5*Math.sin(t*4);ctx.fillStyle='rgba(193,154,80,'+(.75+p*.25)+')';ctx.strokeStyle='#ffe2a0';pill(130,8,140,26);ctx.fillStyle=INK;ctx.fillText('▶ Start Wave '+S.wave,200,26)}
  else{ctx.fillStyle='#ffe2a0';ctx.fillText('Wave '+S.wave+'/'+WAVES.length,200,20);ctx.font='italic 11px Georgia';ctx.fillStyle='#C19A50';ctx.fillText(WAVES[S.wave-1].name,200,34);
   const tot=WAVES[S.wave-1].g.reduce((a,x)=>a+x[1],0),left=S.queue.length+S.foes.length;ctx.fillStyle='rgba(0,0,0,.5)';ctx.fillRect(150,39,100,3);ctx.fillStyle='#C19A50';ctx.fillRect(150,39,100*clamp(1-left/tot,0,1),3)}
@@ -546,14 +576,16 @@ function drawTitleScene(t){const fake={type:'raccoon',x:0,y:0,age:t,face:1,sc:2.
 
 /* ---------- screens ---------- */
 function hideAll(){document.querySelectorAll('.ov').forEach(o=>o.classList.remove('show'))}
-function show(id){hideAll();$(id).classList.add('show')}
+function show(id){hideAll();$(id).classList.add('show');themeChip(true)}
 let back='sTitle';document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>{if(back==='sTitle')toTitle();else{hideAll();if(S&&S.phase==='paused')show('sPause')}});
 function toTitle(){S=null;hover=null;finger=null;$('bar').style.display='none';bgCache=null;selTower=null;placeMenu();$('bCont').style.display=LS.get('save',null)?'':'none';$('tBest').textContent=LS.get('best',0);paintDaily();show('sTitle');ui();layout();publishWidget()}
-function begin(w){audio();selTower=null;hover=null;finger=null;placeMenu();$('bar').style.display='flex';newState(w);S.only='';S.dailyRule='';S.dailyStop=false;S.dailyTitle='';bgCache=null;speed=1;hideAll();fx.length=floats.length=bolts.length=rings.length=0;S.banner={txt:'Wave '+S.wave+': set up your defenses',t:2.5};ui();layout()}
-$('bPlay').onclick=()=>begin(1);$('bDaily').onclick=()=>beginDaily();$('bCont').onclick=()=>{audio();if(load()){$('bar').style.display='flex';hideAll();bgCache=null;S.banner={txt:'Welcome back to the Ridge',t:2};ui();layout()}};
+function begin(w){audio();themeChip(false);selTower=null;hover=null;finger=null;placeMenu();$('bar').style.display='flex';newState(w);S.only='';S.dailyRule='';S.dailyStop=false;S.dailyTitle='';bgCache=null;speed=1;hideAll();fx.length=floats.length=bolts.length=rings.length=0;S.banner={txt:'Wave '+S.wave+': set up your defenses',t:2.5};ui();layout()}
+$('bPlay').onclick=()=>begin(1);$('bDaily').onclick=()=>beginDaily();$('bCont').onclick=()=>{audio();if(load()){themeChip(false);$('bar').style.display='flex';hideAll();bgCache=null;S.banner={txt:'Welcome back to the Ridge',t:2};ui();layout()}};
 $('bHow').onclick=()=>{back='sTitle';show('sHow')};$('bScores').onclick=()=>{back='sTitle';const l=LS.get('top',[]);$('scoreList').innerHTML=l.length?l.map(s=>'<li><b>'+s.i.replace(/[^A-Z]/g,'')+'</b> - '+s.s+(s.w?' ★':'')+'</li>').join(''):'<li>No scores yet. Go defend that garden!</li>';show('sScores')};
 $('bLevels').onclick=()=>{back='sTitle';const reach=LS.get('pass',false)?WAVES.length:LS.get('reach',1);const g=$('lvGrid');g.innerHTML='';for(let i=1;i<=WAVES.length;i++){const b=document.createElement('button');b.textContent=i;b.disabled=i>reach;b.onclick=()=>begin(i);g.appendChild(b)}show('sLevels')};
 $('bMuteT').onclick=$('bMuteP').onclick=()=>{audio();setMute(!muted)};
+['musicT','musicP'].forEach(id=>$(id).addEventListener('input',e=>{audio();setMusic(e.target.value)}));
+['sfxT','sfxP'].forEach(id=>$(id).addEventListener('input',e=>{audio();setSfx(e.target.value)}));
 $('bResume').onclick=resume;$('bRestart').onclick=()=>begin(1);$('bQuit').onclick=()=>{if(S){S.phase=S.prev;if(S.phase==='build')save()}toTitle()};
 $('bAgain').onclick=()=>begin(1);$('bTitle').onclick=toTitle;
 $('bSaveScore').onclick=()=>{const ini=($('initials').value||'AAA').toUpperCase().replace(/[^A-Z]/g,'').slice(0,3)||'AAA';LS.set('ini',ini);const l=LS.get('top',[]);l.push({i:ini,s:S.score,w:S.phase==='won'});l.sort((a,b)=>b.s-a.s);LS.set('top',l.slice(0,5));$('endSave').style.display='none';SFX.coin()};
@@ -562,7 +594,7 @@ function refreshShop(){$('shopCoins').textContent=S.coins;[['fence','buyFence','
  const hurt=S.crops.some(c=>c.hp<c.max);$('buyCare').textContent=CARE+' coins';$('buyCare').disabled=!hurt||S.coins<CARE}
 ['fence','zeus'].forEach(k=>$(k==='fence'?'buyFence':'buyZeus').onclick=()=>{const lv=S[k];if(lv>=3||S.coins<UPS[k][lv])return;S.coins-=UPS[k][lv];S[k]++;if(k==='zeus'){S.dog.x=200;S.dog.y=470}SFX.clear();refreshShop();ui()});
 $('buyCare').onclick=()=>{if(S.coins<CARE)return;S.coins-=CARE;S.crops.forEach(c=>c.hp=Math.min(c.max,Math.max(c.hp,0)+35));SFX.coin();refreshShop()};
-$('bShopDone').onclick=()=>{S.phase=S.prev||'build';save();hideAll();ui()};
+$('bShopDone').onclick=()=>{S.phase=S.prev||'build';save();hideAll();themeChip(false);ui()};
 
 
 /* ---------- Today's Ridge + home-screen widget snapshot ---------- */
@@ -595,7 +627,7 @@ function storeMsg(m,ok){$('storeNote').innerHTML='<span style="color:'+(ok?'#9be
 function freshGate(){const a=Math.floor(rnd(12,20)),b=Math.floor(rnd(6,10));gateAns=a*b;$('gateQ').textContent='What is '+a+' \u00d7 '+b+'?';$('gateA').value='';$('gateMsg').textContent='';$('gateA').focus()}
 function showGate(next){gateNext=next;const tb=$('testBuy');if(tb)tb.style.display='none';show('sGate');freshGate()}
 function passGate(){gateUntil=Date.now()+120000;const next=gateNext;gateNext=null;if(next)next()}
-function withPurchaseGate(fn){if(Date.now()<gateUntil)fn();else showGate(openStoreBody)}
+function withPurchaseGate(fn){if(Date.now()<gateUntil)fn();else showGate(fn)}
 function openStoreBody(){const box=$('storeItems');box.style.display='';$('testBuy').style.display='none';
  const owned=[];if(LS.get('pass',false))owned.push('Ridge Pass');if(LS.get('bank',0))owned.push(LS.get('bank',0)+' coins waiting for your next game');
  $('storeNote').textContent=owned.length?'Owned: '+owned.join(', '):'';

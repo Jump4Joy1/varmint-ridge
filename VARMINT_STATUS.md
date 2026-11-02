@@ -1,6 +1,6 @@
 ## Polish pass (2026-11-02)
 
-The campaign is 12 waves. Fox Trot and Moonlit Run sit in front of the Bandit King. Foxes hop the fence once, then nip the beds. Phone placement is slide-then-lift, with a bigger thumb target. A mouse still places on the click. The banjo has a quieter lower voice, plus a soft wind bed, a fox yip, and a rare crow call. Mist drifts in the yard and healthy crops show dew. Real purchases stay off. The Coin Pack test purchase is still behind the grown-up math screen. Widgets use the same Bandit King line, now wave 12, and the large widget shows waves opened of 12. The daily seed did not change.
+The campaign is 12 waves. Fox Trot and Moonlit Run sit in front of the Bandit King. Foxes hop the fence once, then nip the beds. Phone placement is slide-then-lift, with a bigger thumb target. A mouse still places on the click. The banjo has a quieter lower voice, plus a soft wind bed, a fox yip, and a rare crow call. Mist drifts in the yard and healthy crops show dew. Real purchases stay off. The Coin Pack test purchase is still behind the grown-up math screen. Widgets use the same Bandit King line, now wave 12, and the large widget shows waves opened of 12. The daily seed did not change. Music and effects now have separate sliders on the title and on Pause, saved on the device. Ground varmints keep one sideways offset instead of shaking off the bed every frame. Hit flashes are drawn on the critter, not with ctx.filter. The theme chip hides during play so it does not cover Pause.
 
 # Varmint Ridge: Status (2026-10-14, phone shell 2026-10-30)
 
@@ -41,9 +41,8 @@ Gaps found in the headless audit:
 - Family rule: no people, only critters, the dog, and a straw scarecrow. Colors are #305032, #C19A50, #1A1A1A.
 
 ## Remaining
-- A real-device pass on iOS Safari using `IPHONE.md`. `ctx.filter` hit-flash may not show on older Safari, but that is cosmetic.
-- Balance tuning from human playtests. Optional extras: endless mode, achievements.
-- A music volume slider separate from sound effects (right now one mute covers both).
+- A real-device pass on iOS Safari using `IPHONE.md`. This desk can only check a phone-sized browser, not a physical iPhone.
+- Balance tuning from human playtests. Optional extras: endless mode, achievements. Wave numbers were not retuned this round.
 - Apple Developer account, then `ios-app/README.md`, before the widgets can be installed on a phone.
 
 ## Supporter Store (native IAP, OFF)
