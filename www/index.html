@@ -54,8 +54,8 @@ h2{margin:0 0 8px;color:#ffe2a0;font-size:24px;text-shadow:0 2px 0 #6d5322}
 .stars i{color:#4a4a3a;font-style:normal}
 ol{text-align:left;margin:4px 0 8px;padding-left:22px}
 .how p{text-align:left;font-size:13px;margin:6px 0;line-height:1.35}
-.lv{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:8px 0}
-.lv button{padding:9px 0;border-radius:8px;border:2px solid var(--gold);background:#305032;color:var(--cream);font:700 15px Georgia;cursor:pointer}
+.lv{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:8px 0}
+.lv button{min-height:44px;padding:9px 0;border-radius:8px;border:2px solid var(--gold);background:#305032;color:var(--cream);font:700 15px Georgia;cursor:pointer}
 .lv button:disabled{opacity:.35;cursor:default}
 input{font:700 18px Georgia;text-align:center;text-transform:uppercase;width:90px;padding:6px;border-radius:8px;border:2px solid var(--gold);background:#111;color:#ffe2a0}
 #towerMenu{position:absolute;z-index:4;display:none;transform:translate(-50%,-100%);background:rgba(20,30,20,.95);border:2px solid var(--gold);border-radius:10px;padding:6px;white-space:nowrap;box-shadow:0 6px 20px rgba(0,0,0,.6)}
@@ -85,7 +85,7 @@ html,body{overscroll-behavior:none}
 .btn{min-height:44px}
 a.quiet{color:var(--gold);text-decoration:none}
 html[data-theme=light] a.quiet{color:#305032}
-@media (pointer:coarse){.card{min-height:60px}#towerMenu .btn{min-height:44px;padding:10px 12px}}
+@media (pointer:coarse){.card{min-height:72px;padding:10px 4px 8px}#towerMenu .btn{min-height:48px;padding:12px 14px}}
 @media (max-width:360px){.card .nm{font-size:10px}h1{font-size:36px}}
 </style>
 </head>
@@ -110,19 +110,19 @@ html[data-theme=light] a.quiet{color:#305032}
    <p class="small">All ages &middot; No ads &middot; <a class="quiet" href="privacy.html">Privacy</a></p>
   </div>
   <div class="ov" id="sHow"><div class="panel how"><h2>How to Play</h2>
-   <p>Varmints come down off the ridge after your garden. Keep at least one crop bed alive through all <b>10 waves</b>.</p>
-   <p><b>Build:</b> pick a defense below, then tap the yard to place it. Tap a placed defense to upgrade it or sell it back.</p>
+   <p>Varmints come down off the ridge after your garden. Keep at least one crop bed alive through all <b>12 waves</b>.</p>
+   <p><b>Build:</b> pick a defense below. Click the yard to place it. On a phone, slide your finger, then lift. Tap a placed defense to upgrade it or sell it back.</p>
    <p><b>Scarecrow</b> sends out a pulse that slows everything close by and scares crows off. <b>Lantern</b> fires light bolts and hits fliers hard. <b>Snap Trap</b> bites ground critters, even armadillos while they're digging.</p>
-   <p><b>Critters:</b> raccoons grab a crop and run (catch them before they get away!). Crows fly right over the fence. Armadillos dig under it. Possums play dead once. Wave 10 brings the <b>Bandit King</b>.</p>
+   <p><b>Critters:</b> raccoons grab a crop and run (catch them before they get away!). Foxes are quick and hop the fence. Crows fly right over it. Armadillos dig under it. Possums play dead once. Wave 12 brings the <b>Bandit King</b>.</p>
    <p><b>Between waves</b> you can spend coins on the Fence, Zeus the farm dog, and Crop Care.</p>
    <p class="small">Keys: 1/2/3 pick a defense &middot; Space starts the wave &middot; F fast-forward &middot; P/Esc pause &middot; M mute</p>
    <button class="btn" data-close>Got it</button></div></div>
   <div class="ov" id="sScores"><div class="panel"><h2>Top 5 Ranchers</h2><ol id="scoreList"></ol><button class="btn" data-close>Back</button></div></div>
-  <div class="ov" id="sLevels"><div class="panel"><h2>Choose a Wave</h2><p class="small">Waves you've reached open up here. The Ridge Pass opens all ten.</p><div class="lv" id="lvGrid"></div><button class="btn alt" data-close>Back</button></div></div>
+  <div class="ov" id="sLevels"><div class="panel"><h2>Choose a Wave</h2><p class="small">Waves you've reached open up here. The Ridge Pass opens all twelve.</p><div class="lv" id="lvGrid"></div><button class="btn alt" data-close>Back</button></div></div>
   <div class="ov" id="sPause"><div class="panel"><h2>Paused</h2>
    <button class="btn" id="bResume">Resume</button><button class="btn alt" id="bMuteP">Sound: On</button><button class="btn alt" id="bRestart">Restart Wave 1</button><button class="btn alt" id="bQuit">Save &amp; Quit</button></div></div>
   <div class="ov" id="sShop"><div class="panel"><h2 id="shopTitle">Wave Cleared!</h2><div class="small" id="shopInfo"></div>
-   <div class="row"><span><b>Fence</b> <span id="lvFence"></span><br><span class="small">Slows raccoons and possums at the rail</span></span><button class="btn sm" id="buyFence"></button></div>
+   <div class="row"><span><b>Fence</b> <span id="lvFence"></span><br><span class="small">Slows ground varmints at the rail. A fox still hops it once.</span></span><button class="btn sm" id="buyFence"></button></div>
    <div class="row"><span><b>Zeus the Dog</b> <span id="lvZeus"></span><br><span class="small">Chases down whatever's closest to the crops</span></span><button class="btn sm" id="buyZeus"></button></div>
    <div class="row"><span><b>Crop Care</b><br><span class="small">+35 health for every bed, revives wilted ones</span></span><button class="btn sm" id="buyCare"></button></div>
    <div style="margin-top:8px;font-size:15px">Coins: <b style="color:#ffd877" id="shopCoins"></b></div>
@@ -163,7 +163,7 @@ const REVENUECAT_API_KEY = { ios: '', android: '' }; // public SDK keys, fill in
 const IAP = (function(){
  const products=[
   {sku:'com.jwmanor.varmintridge.coins',key:'coins',type:'consumable',name:'Coin Pack',price:'$0.99',desc:'500 coins added to the start of your next game'},
-  {sku:'com.jwmanor.varmintridge.ridgepass',key:'pass',type:'non-consumable',name:'Ridge Pass',price:'$2.99',desc:'Opens all 10 waves in Choose Wave'},
+  {sku:'com.jwmanor.varmintridge.ridgepass',key:'pass',type:'non-consumable',name:'Ridge Pass',price:'$2.99',desc:'Opens all 12 waves in Choose Wave'},
   {sku:'com.jwmanor.varmintridge.starter',key:'starter',type:'non-consumable',name:'Starter Bundle',price:'$1.99',desc:'300 coins plus Zeus at Level 1 for your next game'}];
  const api={products,onEntitlement:null,backend:'none',ready:false,confirmTest:null};
  const cap=window.Capacitor,native=!!(cap&&cap.isNativePlatform&&cap.isNativePlatform());
@@ -213,6 +213,7 @@ const FOES={
  crow:{hp:24,spd:60,gold:5,pts:12,r:11,fly:1},
  armadillo:{hp:95,spd:27,gold:9,pts:25,r:14},
  possum:{hp:48,spd:34,gold:7,pts:18,r:12},
+ fox:{hp:32,spd:76,gold:8,pts:20,r:12},
  boss:{hp:1100,spd:17,gold:150,pts:500,r:28}
 };
 const WAVES=[
@@ -225,6 +226,8 @@ const WAVES=[
  {name:'Black Flock',g:[['crow',18,.55],['raccoon',10,.9,2]]},
  {name:'Full Moon',g:[['armadillo',8,1.3],['possum',8,1.1,2],['crow',10,.8,5]]},
  {name:'All Three',g:[['raccoon',14,.6],['crow',14,.6,3],['armadillo',8,1.2,6],['possum',6,1,8]]},
+ {name:'Fox Trot',g:[['fox',8,.7],['raccoon',6,1.1,2]]},
+ {name:'Moonlit Run',g:[['fox',8,.55],['crow',8,.7,2],['armadillo',5,1.4,4]]},
  {name:'Bandit King',g:[['raccoon',10,.8],['crow',10,.8,4],['boss',1,1,6],['armadillo',6,1.5,10]]}
 ];
 const CROP_X=[48,124,200,276,352],CROP_Y=530,FENCE_Y=420;
@@ -242,7 +245,8 @@ function newState(startWave,carry){
 }
 /* ---------- audio ---------- */
 let AC=null,master=null,musicGain=null;
-function audio(){if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)();master=AC.createGain();master.gain.value=muted?0:.8;master.connect(AC.destination);musicGain=AC.createGain();musicGain.gain.value=.35;musicGain.connect(master)}catch(e){}}if(AC&&AC.state==='suspended')AC.resume();return AC}
+function audio(){if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)();master=AC.createGain();master.gain.value=muted?0:.8;master.connect(AC.destination);musicGain=AC.createGain();musicGain.gain.value=.35;musicGain.connect(master);windBed()}catch(e){}}if(AC&&AC.state==='suspended')AC.resume();return AC}
+function windBed(){if(!AC||windBed.on)return;windBed.on=1;const n=AC.sampleRate*2,b=AC.createBuffer(1,n,AC.sampleRate),a=b.getChannelData(0);let s=0;for(let i=0;i<n;i++){s=(s*3+Math.random()*2-1)*.25;a[i]=s}const src=AC.createBufferSource();src.buffer=b;src.loop=true;const fl=AC.createBiquadFilter();fl.type='lowpass';fl.frequency.value=380;const g=AC.createGain();g.gain.value=.04;src.connect(fl);fl.connect(g);g.connect(musicGain);src.start()}
 function tone(f,d,type,vol,slide,dest){if(!AC||muted)return;const t=AC.currentTime,o=AC.createOscillator(),g=AC.createGain();o.type=type||'square';o.frequency.setValueAtTime(f,t);if(slide)o.frequency.exponentialRampToValueAtTime(Math.max(30,slide),t+d);g.gain.setValueAtTime(vol||.08,t);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(dest||master);o.start(t);o.stop(t+d+.02)}
 function noise(d,f,vol){if(!AC||muted)return;const n=Math.floor(AC.sampleRate*d),b=AC.createBuffer(1,n,AC.sampleRate),a=b.getChannelData(0);for(let i=0;i<n;i++)a[i]=(Math.random()*2-1)*(1-i/n);const s=AC.createBufferSource(),fl=AC.createBiquadFilter(),g=AC.createGain();s.buffer=b;fl.type='lowpass';fl.frequency.value=f||800;g.gain.value=vol||.12;s.connect(fl);fl.connect(g);g.connect(master);s.start()}
 const SFX={
@@ -255,6 +259,8 @@ const SFX={
  coin(){tone(1320,.06,'square',.03);setTimeout(()=>tone(1760,.08,'square',.03),50)},
  steal(){tone(300,.2,'sawtooth',.05,150)},
  bark(){tone(420,.07,'sawtooth',.07,260);setTimeout(()=>tone(400,.08,'sawtooth',.07,240),110)},
+ yip(){tone(780,.05,'triangle',.045,1040);setTimeout(()=>tone(620,.07,'sine',.03),60)},
+ caw(){tone(480,.09,'sawtooth',.025,320)},
  deny(){tone(110,.12,'square',.06)},
  wave(){[392,523,659].forEach((f,i)=>setTimeout(()=>tone(f,.18,'triangle',.1),i*90))},
  clear(){[523,659,784,1047].forEach((f,i)=>setTimeout(()=>tone(f,.22,'triangle',.1),i*100))},
@@ -264,7 +270,7 @@ const SFX={
 const BANJO=[[196,1],[147,1],[294,.5],[247,.5],[220,1],[196,.5],[147,.5],[98,1],[165,1],[220,1],[330,.5],[247,.5],[196,1],[165,.5],[147,.5],[110,1],[247,1],[196,.5],[294,.5],[220,1],[147,1],[175,.5],[196,.5],[98,1],[220,.5],[262,.5],[294,1],[196,1],[165,.5],[147,.5],[131,1],[98,1]];
 let bNext=0,bStep=0;
 function music(){if(!AC||muted||!S||S.phase==='paused'||document.hidden){bNext=0;return}const t=AC.currentTime;if(!bNext||bNext<t)bNext=t+.05;const tempo=S.phase==='wave'?.24:.3;while(bNext<t+.3){const n=BANJO[bStep++%BANJO.length];pluck(n[0],bNext,.18+n[1]*.08);if(bStep%8===1)pluck(98,bNext,.5,.05);bNext+=tempo*n[1]}}
-function pluck(f,t,d,v){const o=AC.createOscillator(),g=AC.createGain();o.type='triangle';o.frequency.setValueAtTime(f,t);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(v||.09,t+.01);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(musicGain);o.start(t);o.stop(t+d+.05)}
+function pluck(f,t,d,v){const o=AC.createOscillator(),g=AC.createGain();o.type='triangle';o.frequency.setValueAtTime(f,t);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(v||.07,t+.01);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(musicGain);o.start(t);o.stop(t+d+.05);const o2=AC.createOscillator(),g2=AC.createGain();o2.type='sine';o2.frequency.setValueAtTime(f/2,t);g2.gain.setValueAtTime(.0001,t);g2.gain.exponentialRampToValueAtTime((v||.07)*.4,t+.02);g2.gain.exponentialRampToValueAtTime(.0001,t+d*1.25);o2.connect(g2);g2.connect(musicGain);o2.start(t);o2.stop(t+d*1.25+.05)}
 function setMute(m){muted=m;LS.set('mute',m);if(master)master.gain.value=m?0:.8;['bMuteT','bMuteP'].forEach(i=>$(i).textContent='Sound: '+(m?'Off':'On'))}
 
 /* ---------- layout ---------- */
@@ -274,7 +280,7 @@ addEventListener('resize',layout);if(window.visualViewport)visualViewport.addEve
 
 /* ---------- background (cached, palette shifts dusk -> night by wave) ---------- */
 let bgCache=null,bgKey='';
-function sky(w){const t=clamp((w-1)/9,0,1);const top=[[58,74,110],[40,36,74],[12,16,34]],mid=[[226,150,92],[160,88,96],[34,44,70]];const pick=(arr)=>{const k=t*2,i=Math.min(1,Math.floor(k)),f=k-i;return arr[i].map((c,j)=>Math.round(lerp(c,arr[i+1][j],f)))};return{top:'rgb('+pick(top)+')',mid:'rgb('+pick(mid)+')',t}}
+function sky(w){const t=clamp((w-1)/Math.max(1,WAVES.length-1),0,1);const top=[[58,74,110],[40,36,74],[12,16,34]],mid=[[226,150,92],[160,88,96],[34,44,70]];const pick=(arr)=>{const k=t*2,i=Math.min(1,Math.floor(k)),f=k-i;return arr[i].map((c,j)=>Math.round(lerp(c,arr[i+1][j],f)))};return{top:'rgb('+pick(top)+')',mid:'rgb('+pick(mid)+')',t}}
 function buildBg(){const key=(S?S.wave:1)+'|'+cv.width;if(bgCache&&bgKey===key)return bgCache;bgKey=key;const c=document.createElement('canvas');c.width=cv.width;c.height=cv.height;const g=c.getContext('2d');g.scale(cv.width/W,cv.height/H);const p=sky(S?S.wave:1);
  let gr=g.createLinearGradient(0,0,0,300);gr.addColorStop(0,p.top);gr.addColorStop(1,p.mid);g.fillStyle=gr;g.fillRect(0,0,W,320);
  // stars
@@ -316,7 +322,8 @@ function drawCrop(c,i,t){const k=c.hp/c.max;ctx.save();ctx.translate(c.x+(c.shak
   ell(x-5+sw*.5,-10,6,3,'#5fa046',-.6);ell(x+5+sw*.5,-14,6,3,'#5fa046',.6);
   const ty=-24;if(i%3===0){const g=ctx.createRadialGradient(x+sw-2,ty-2,1,x+sw,ty,7);g.addColorStop(0,'#ff8a6a');g.addColorStop(1,'#c0392b');ctx.fillStyle=g;ctx.beginPath();ctx.arc(x+sw,ty,7,0,7);ctx.fill()}
   else if(i%3===1){ctx.fillStyle='#f0c24a';ctx.beginPath();ctx.ellipse(x+sw,ty-2,4.5,9,0,0,7);ctx.fill();ctx.fillStyle='#6fa64a';ctx.beginPath();ctx.moveTo(x+sw-5,ty+6);ctx.lineTo(x+sw,ty-4);ctx.lineTo(x+sw+5,ty+6);ctx.fill()}
-  else{const g=ctx.createRadialGradient(x+sw-2,ty,1,x+sw,ty,8);g.addColorStop(0,'#ffb04a');g.addColorStop(1,'#d9701e');ctx.fillStyle=g;ctx.beginPath();ctx.ellipse(x+sw,ty+1,8,6.5,0,0,7);ctx.fill();ctx.fillStyle='#4f8a3c';ctx.fillRect(x+sw-1,ty-7,2,4)}}
+  else{const g=ctx.createRadialGradient(x+sw-2,ty,1,x+sw,ty,8);g.addColorStop(0,'#ffb04a');g.addColorStop(1,'#d9701e');ctx.fillStyle=g;ctx.beginPath();ctx.ellipse(x+sw,ty+1,8,6.5,0,0,7);ctx.fill();ctx.fillStyle='#4f8a3c';ctx.fillRect(x+sw-1,ty-7,2,4)}
+  if(k>.8){ctx.fillStyle='rgba(255,255,255,.85)';ctx.fillRect(x+sw-6,-16,2,2);ctx.fillRect(x+sw+4,-20,1.5,1.5)}}
  // hp bar
  ctx.fillStyle='rgba(0,0,0,.5)';ctx.fillRect(-24,18,48,5);ctx.fillStyle=k>.5?'#7ad05a':k>.25?'#f0c24a':'#e0553a';ctx.fillRect(-23,19,46*k,3);ctx.restore()}
 function drawFence(){const lv=S?S.fence:0;for(let x=8;x<W;x+=36){shadow(x+3,FENCE_Y+20,6,2);const g=ctx.createLinearGradient(x-4,0,x+4,0);g.addColorStop(0,'#5a3f22');g.addColorStop(1,'#8a6538');ctx.fillStyle=g;ctx.fillRect(x-4,FENCE_Y-18,8,38);ctx.fillStyle='#a07c48';ctx.beginPath();ctx.moveTo(x-4,FENCE_Y-18);ctx.lineTo(x,FENCE_Y-23);ctx.lineTo(x+4,FENCE_Y-18);ctx.fill()}
@@ -337,9 +344,10 @@ function drawTower(tw,t,mini){const T=TOWERS[tw.type],lv=tw.lv||1;ctx.save();ctx
  if(!mini&&lv>1){for(let j=0;j<lv-1;j++){ctx.fillStyle='#ffd66e';ctx.beginPath();const sx=-6+j*12,sy=20;for(let a=0;a<10;a++){const r=a%2?2:4.5;ctx.lineTo(sx+Math.cos(a*Math.PI/5-Math.PI/2)*r,sy+Math.sin(a*Math.PI/5-Math.PI/2)*r)}ctx.fill()}}
  ctx.restore()}
 function drawFoe(f,t){ctx.save();const bob=f.fly?Math.sin(f.age*9)*3:Math.abs(Math.sin(f.age*10))*-2;
+ const hop=f.leap>0?-22*(1-f.leap/.42):0;
  if(f.burrow){ctx.translate(f.x,f.y);ell(0,6,16,6,'#5a3d22');ell(0,4,9,3,'#3a2814');for(let j=0;j<3;j++){ctx.fillStyle='#6b4a2a';ctx.fillRect(Math.sin(f.age*20+j)*12,2-Math.abs(Math.sin(f.age*15+j*2))*6,3,3)}ctx.restore();return}
  if(!f.fly)shadow(f.x,f.y+12*f.sc,f.r*f.sc,4*f.sc);else shadow(f.x,f.y+28,8,3);
- ctx.translate(f.x,f.y+bob);ctx.scale(f.face*f.sc,f.sc);if(f.dead){ctx.rotate(Math.PI);ctx.translate(0,-6)}
+ ctx.translate(f.x,f.y+bob+hop);ctx.scale(f.face*f.sc,f.sc);if(f.dead){ctx.rotate(Math.PI);ctx.translate(0,-6)}
  if(f.hitT>0&&ctx.filter!==undefined)ctx.filter='brightness(2.6)';
  const leg=Math.sin(f.age*14)*3;
  if(f.type==='raccoon'||f.type==='boss'){
@@ -358,6 +366,11 @@ function drawFoe(f,t){ctx.save();const bob=f.fly?Math.sin(f.age*9)*3:Math.abs(Ma
   const g=ctx.createLinearGradient(0,-12,0,8);g.addColorStop(0,'#c4a07a');g.addColorStop(1,'#7a5a42');ctx.fillStyle=g;ctx.beginPath();ctx.ellipse(0,0,16,12,0,Math.PI,0);ctx.lineTo(16,6);ctx.lineTo(-16,6);ctx.fill();
   ctx.strokeStyle='rgba(60,40,30,.6)';ctx.lineWidth=1.2;for(let j=-9;j<=9;j+=4.5){ctx.beginPath();ctx.moveTo(j,-11+Math.abs(j)*.4);ctx.lineTo(j,6);ctx.stroke()}
   ctx.fillStyle='#b08a6a';ctx.beginPath();ctx.moveTo(14,-4);ctx.lineTo(26,2);ctx.lineTo(14,6);ctx.fill();ell(14,-6,2,3,'#9a7a5a');ell(18,0,1.3,1.3,'#1A1A1A')}
+ else if(f.type==='fox'){ctx.save();ctx.translate(-12,1);ctx.rotate(-.35+Math.sin(f.age*8)*.25);ell(-6,0,8,3.5,'#f0d7a4');ell(-12,-1,4,2.4,'#fff6e4');ctx.restore();
+  ctx.fillStyle='#c45a1a';ctx.fillRect(-7,5,3,6+leg*.4);ctx.fillRect(4,5,3,6-leg*.4);
+  ell(0,0,13,6.5,'#e07028');ell(1,2,6,2.6,'#f6e2c4');ell(11,-4,6,4.6,'#d86520');
+  ctx.fillStyle='#7a3010';ctx.beginPath();ctx.moveTo(7,-8);ctx.lineTo(9,-16);ctx.lineTo(13,-7);ctx.fill();ctx.beginPath();ctx.moveTo(12,-7);ctx.lineTo(16,-16);ctx.lineTo(18,-5);ctx.fill();
+  ell(12,-4,1.3,1.3,'#1A1A1A');ctx.fillStyle='#1A1A1A';ctx.beginPath();ctx.moveTo(16,-1);ctx.lineTo(21,0);ctx.lineTo(16,2);ctx.fill()}
  else{// crow
   const fl=Math.sin(f.age*16);ctx.shadowColor='rgba(255,230,170,.9)';ctx.shadowBlur=6;ell(0,0,12,7,'#1f2228');ctx.shadowBlur=0;ctx.fillStyle='#1f2228';ctx.beginPath();ctx.moveTo(-10,0);ctx.lineTo(-20,-3);ctx.lineTo(-19,4);ctx.fill();
   ctx.fillStyle='#2e3440';ctx.beginPath();ctx.moveTo(-4,-2);ctx.quadraticCurveTo(-6,-14*fl-4,-16,-16*fl);ctx.lineTo(4,-2);ctx.fill();
@@ -377,12 +390,13 @@ function floatTxt(x,y,txt,c,big){floats.push({x,y,txt,c:c||'#ffd877',life:1,big}
 function coinFly(x,y,n){for(let i=0;i<Math.min(n,6);i++)fx.push({x,y,vx:rnd(-60,60),vy:rnd(-120,-60),life:1.1,max:1.1,c:'#ffd24a',r:3,coin:1,g:0,d:i*.05})}
 
 /* ---------- gameplay ---------- */
-function startWave(){if(!S||S.phase!=='build')return;audio();S.phase='wave';S.queue=[];const w=WAVES[S.wave-1],hpm=1+(S.wave-1)*.13;
+function startWave(){if(!S||S.phase!=='build')return;audio();S.phase='wave';S.queue=[];const w=WAVES[S.wave-1],hpm=1+Math.min(S.wave-1,9)*.13;
  w.g.forEach(([type,n,gap,delay])=>{for(let i=0;i<n;i++)S.queue.push({t:(delay||0)+i*gap,type,hpm})});S.queue.sort((a,b)=>a.t-b.t);S.clock=0;
- S.banner={txt:'Wave '+S.wave+' - '+w.name,t:2.4};SFX.wave();if(S.wave===10)setTimeout(()=>SFX.boss(),6000);ui()}
+ S.banner={txt:'Wave '+S.wave+' - '+w.name,t:2.4};SFX.wave();if(w.g.some(g=>g[0]==='boss'))setTimeout(()=>SFX.boss(),6000);ui()}
 function spawn(type,hpm,x,y){const F=FOES[type],alive=S.crops.filter(c=>c.hp>0);const tgt=alive.length?alive[Math.floor(Math.random()*alive.length)]:S.crops[2];
- const f={type,x:x!=null?x:rnd(30,W-30),y:y!=null?y:(F.fly?rnd(60,120):250),hp:F.hp*hpm,max:F.hp*hpm,spd:F.spd*rnd(.9,1.1),r:F.r,fly:!!F.fly,tgt,age:rnd(0,3),face:1,sc:type==='boss'?1.9:1,slow:0,fear:0,hitT:0,state:'go',eat:0,played:false};
+ const f={type,x:x!=null?x:rnd(30,W-30),y:y!=null?y:(F.fly?rnd(60,120):250),hp:F.hp*hpm,max:F.hp*hpm,spd:F.spd*rnd(.9,1.1),r:F.r,fly:!!F.fly,tgt,age:rnd(0,3),face:1,sc:type==='boss'?1.9:1,slow:0,fear:0,hitT:0,state:'go',eat:0,played:false,leap:0,leapt:0};
  if(type==='boss'){f.x=200;f.summon=2;S.banner={txt:'The Bandit King!',t:2.6};S.shake=10}
+ if(type==='fox')SFX.yip();else if(type==='crow'&&Math.random()<.22)SFX.caw();
  S.foes.push(f);return f}
 function damage(f,d,src){if(f.dead||f.hp<=0)return;f.hp-=d;f.hitT=.08;if(f.hp<=0){if(f.type==='possum'&&!f.played){f.played=true;f.dead=1.8;f.hp=f.max*.4;floatTxt(f.x,f.y-18,'playing possum...','#ddd');return}kill(f)}
  else if(f.type==='boss'&&f.summon>0&&f.hp<f.max*(f.summon===2?.66:.33)){f.summon--;for(let i=0;i<4;i++)spawn('raccoon',1+(S.wave-1)*.11,f.x+rnd(-40,40),f.y-10);S.banner={txt:'The King calls his gang!',t:1.6};SFX.boss()}}
@@ -411,10 +425,12 @@ function step(dt){if(!S)return;S.t+=dt;
   const inBand=f.y>FENCE_Y-26&&f.y<FENCE_Y+22;
   if(f.type==='armadillo')f.burrow=inBand||(f.y>FENCE_Y-60&&f.y<FENCE_Y+40);
   if(inBand&&!f.fly&&f.type!=='armadillo')sp*=f.type==='boss'?Math.max(.6,fenceSlow+.2):fenceSlow;
+  if(f.type==='fox'&&inBand&&!f.leapt){f.leapt=1;f.leap=.42;rings.push({x:f.x,y:FENCE_Y,r:22,t:0,d:.4,c:'193,154,80'})}
+  if(f.leap>0){f.leap-=dt;sp=f.spd*1.85}
   const tx=f.tgt.x+(f.fly?0:rnd(-2,2)),ty=f.tgt.y-(f.fly?22:4),dx=tx-f.x,dy=ty-f.y,dd=Math.hypot(dx,dy)||1;
   if(Math.abs(dx)>2)f.face=dx>0?1:-1;
   if(dd>14){f.x+=dx/dd*sp*dt;f.y+=dy/dd*sp*dt}
-  else{f.eat+=dt;const rate={raccoon:0,crow:9,armadillo:11,possum:8,boss:26}[f.type];if(rate){f.tgt.hp-=rate*dt;f.tgt.shake=.15}
+  else{f.eat+=dt;const rate={raccoon:0,crow:9,armadillo:11,possum:8,fox:12,boss:26}[f.type];if(rate){f.tgt.hp-=rate*dt;f.tgt.shake=.15}
    if(f.type==='raccoon'&&f.eat>.6){f.tgt.hp-=22;f.loot=1;f.state='flee';f.tgt.shake=.4;SFX.steal();burst(f.x,f.y,8,['#5fa046','#f0a040'],60)}
    if(f.type==='crow'&&f.eat>2.2){f.fear=3}
    if(f.tgt.hp<=0){f.tgt.hp=0;burst(f.tgt.x,f.tgt.y-10,18,['#6b5a3a','#5fa046'],80);S.shake=6;floatTxt(f.tgt.x,f.tgt.y-30,'Bed lost!','#e0553a')}}
@@ -437,8 +453,8 @@ function step(dt){if(!S)return;S.t+=dt;
  if(S.crops.every(c=>c.hp<=0)){end(false);return}
  if(!S.queue.length&&!S.foes.length)waveClear()}
 function waveClear(){const bonus=20+S.wave*5,alive=S.crops.filter(c=>c.hp>0).length;S.coins+=bonus+alive*3;S.score+=50*S.wave+alive*20;S.crops.forEach(c=>{if(c.hp>0)c.hp=Math.min(c.max,c.hp+10)});
- const best=LS.get('reach',1);if(S.wave+1>best)LS.set('reach',Math.min(10,S.wave+1));
- if(S.wave>=10||S.dailyStop){end(true);return}SFX.clear();S.wave++;S.phase='build';S.banner={txt:'Wave cleared! +'+(bonus+alive*3)+' coins',t:2};save();bgCache=null;setTimeout(()=>{if(S&&S.phase==='build')openShop(true)},900);ui()}
+ const best=LS.get('reach',1);if(S.wave+1>best)LS.set('reach',Math.min(WAVES.length,S.wave+1));
+ if(S.wave>=WAVES.length||S.dailyStop){end(true);return}SFX.clear();S.wave++;S.phase='build';S.banner={txt:'Wave cleared! +'+(bonus+alive*3)+' coins',t:2};save();bgCache=null;setTimeout(()=>{if(S&&S.phase==='build')openShop(true)},900);ui()}
 function end(won){S.phase=won?'won':'lost';LS.del('save');const alive=S.crops.filter(c=>c.hp>0),pct=S.crops.reduce((a,c)=>a+Math.max(0,c.hp),0)/500;
  if(won)S.score+=1000+Math.round(pct*1000);const stars=won?(pct>.7&&S.lost===0?3:pct>.4?2:1):0;
  $('endTitle').textContent=won?'The Ridge Holds!':'Garden Overrun';$('endStars').innerHTML='★'.repeat(stars)+'<i>'+'★'.repeat(3-stars)+'</i>';
@@ -451,17 +467,23 @@ function load(){const d=LS.get('save',null);if(!d)return false;newState(d.wave);
 
 /* ---------- input ---------- */
 function canPlace(x,y){if(y<285||y>486)return 'Build in the yard';if(y>FENCE_Y-28&&y<FENCE_Y+22)return 'Not on the fence';if(S.towers.some(t=>Math.hypot(t.x-x,t.y-y)<30))return 'Too close';return null}
-function pointer(e){const r=cv.getBoundingClientRect();return{x:(e.clientX-r.left)/r.width*W,y:(e.clientY-r.top)/r.height*H}}
-cv.addEventListener('pointermove',e=>{hover=pointer(e)});cv.addEventListener('pointerleave',()=>hover=null);
-cv.addEventListener('pointerdown',e=>{e.preventDefault();audio();if(!S||!(S.phase==='build'||S.phase==='wave'))return;const p=pointer(e);hover=e.pointerType==='mouse'?p:null;
- if(p.y<64&&p.x>W-112){if(p.x>W-54)pause();else toggleFast();return}
- if(p.y<64&&p.x>118&&p.x<282&&S.phase==='build'){startWave();return}
- if(S.only&&sel!==S.only)sel=S.only;
- const hit=S.towers.find(t=>Math.hypot(t.x-p.x,t.y-8-p.y)<(e.pointerType==='mouse'?22:34));if(hit){selTower=selTower===hit?null:hit;placeMenu();return}
+function actAt(p,kind){if(S.only&&sel!==S.only)sel=S.only;const reach=kind==='mouse'?22:40;
+ const hit=S.towers.find(t=>Math.hypot(t.x-p.x,t.y-8-p.y)<reach);if(hit){selTower=selTower===hit?null:hit;placeMenu();return}
  if(selTower){selTower=null;placeMenu();return}
  const T=TOWERS[sel],why=canPlace(p.x,p.y);if(why){floatTxt(p.x,p.y,why,'#ffb0a0');SFX.deny();return}
  if(S.coins<T.cost){floatTxt(p.x,p.y,'Need '+T.cost+' coins','#ffb0a0');SFX.deny();return}
- S.coins-=T.cost;S.towers.push({type:sel,x:p.x,y:p.y,lv:1,spent:T.cost,cdLeft:.2,kick:1});burst(p.x,p.y+10,14,['#8a6a3a','#C19A50','#5fa046'],80);SFX.place();ui()});
+ S.coins-=T.cost;S.towers.push({type:sel,x:p.x,y:p.y,lv:1,spent:T.cost,cdLeft:.2,kick:1});burst(p.x,p.y+10,14,['#8a6a3a','#C19A50','#5fa046'],80);SFX.place();ui()}
+let finger=null;
+function pointer(e){const r=cv.getBoundingClientRect();return{x:(e.clientX-r.left)/r.width*W,y:(e.clientY-r.top)/r.height*H}}
+cv.addEventListener('pointerdown',e=>{e.preventDefault();audio();if(!S||!(S.phase==='build'||S.phase==='wave'))return;const p=pointer(e);
+ if(p.y<72&&p.x>W-120){if(p.x>W-56)pause();else toggleFast();return}
+ if(p.y<72&&p.x>110&&p.x<290&&S.phase==='build'){startWave();return}
+ if(e.pointerType==='mouse'){hover=p;actAt(p,'mouse');return}
+ finger={id:e.pointerId,x:p.x,y:p.y};hover=p;try{cv.setPointerCapture(e.pointerId)}catch(_){}});
+cv.addEventListener('pointermove',e=>{const p=pointer(e);if(finger&&e.pointerId===finger.id){finger.x=p.x;finger.y=p.y;hover=p}else if(!finger)hover=p});
+cv.addEventListener('pointerup',e=>{if(!finger||e.pointerId!==finger.id)return;const p={x:finger.x,y:finger.y};finger=null;hover=null;if(!S||!(S.phase==='build'||S.phase==='wave'))return;if(p.y<72&&p.x>W-120){if(p.x>W-56)pause();else toggleFast();return}if(p.y<72&&p.x>110&&p.x<290&&S.phase==='build'){startWave();return}actAt(p,'touch')});
+cv.addEventListener('pointercancel',e=>{if(finger&&(!e.pointerId||e.pointerId===finger.id)){finger=null;hover=null}});
+cv.addEventListener('pointerleave',()=>{if(!finger)hover=null});
 function placeMenu(){const m=$('towerMenu');if(!selTower||!S){m.style.display='none';return}const T=TOWERS[selTower.type],lv=selTower.lv;$('tmName').textContent=T.name+' - Level '+lv;
  const up=$('tmUp');if(lv>=3){up.textContent='MAX';up.disabled=true}else{const c=T.ups[lv-1];up.textContent='Upgrade '+c;up.disabled=S.coins<c}
  $('tmSell').textContent='Sell +'+Math.floor(selTower.spent*.6);m.style.display='block';const r=cv.getBoundingClientRect();m.style.left=clamp(selTower.x*scale,90,r.width-90)+'px';m.style.top=Math.max(70,(selTower.y-30)*scale)+'px'}
@@ -491,6 +513,7 @@ function render(){const t=S?S.t:performance.now()/1000;ctx.setTransform(1,0,0,1,
  if(S&&S.shake>0)ctx.translate(rnd(-1,1)*S.shake*.4,rnd(-1,1)*S.shake*.4);
  // clouds
  clouds.forEach(c=>{ctx.fillStyle='rgba(255,240,220,'+(.18-sky(S?S.wave:1).t*.1)+')';ell(c.x,c.y,c.w*.5,10);ell(c.x+c.w*.2,c.y-6,c.w*.3,10);ell(c.x-c.w*.2,c.y-3,c.w*.25,8)});
+ if(S){const mist=sky(S.wave).t;ctx.globalAlpha=.07+mist*.06;for(let i=0;i<4;i++)ell(((t*14+i*120)%(W+90))-40,468+i*10,78,11,'#e7f0dc');ctx.globalAlpha=1}
  if(!S){drawTitleScene(t);return}
  const night=sky(S.wave).t;flies.forEach(f=>{ctx.globalAlpha=(.2+night*.7)*(.5+.5*Math.sin(f.a*3));ell(f.x,f.y,2.2,2.2,'#fff3a0');ctx.globalAlpha=1});
  // placement preview
@@ -510,13 +533,14 @@ function hud(t){ctx.setTransform(cv.width/W,0,0,cv.height/H,0,0);const g=ctx.cre
  ell(22,20,7,7,'#ffd24a');ell(20,18,2.5,2.5,'#fff8c0');ctx.fillStyle='#ffe2a0';ctx.font='bold 14px Georgia';ctx.fillText(S.coins,34,25);
  ctx.font='bold 13px Georgia';ctx.textAlign='center';ctx.fillText(speed>1?'»2':'»1',W-73,25);ctx.fillText('II',W-27,25);
  if(S.phase==='build'){const p=.5+.5*Math.sin(t*4);ctx.fillStyle='rgba(193,154,80,'+(.75+p*.25)+')';ctx.strokeStyle='#ffe2a0';pill(130,8,140,26);ctx.fillStyle=INK;ctx.fillText('▶ Start Wave '+S.wave,200,26)}
- else{ctx.fillStyle='#ffe2a0';ctx.fillText('Wave '+S.wave+'/10',200,20);ctx.font='italic 11px Georgia';ctx.fillStyle='#C19A50';ctx.fillText(WAVES[S.wave-1].name,200,34);
+ else{ctx.fillStyle='#ffe2a0';ctx.fillText('Wave '+S.wave+'/'+WAVES.length,200,20);ctx.font='italic 11px Georgia';ctx.fillStyle='#C19A50';ctx.fillText(WAVES[S.wave-1].name,200,34);
   const tot=WAVES[S.wave-1].g.reduce((a,x)=>a+x[1],0),left=S.queue.length+S.foes.length;ctx.fillStyle='rgba(0,0,0,.5)';ctx.fillRect(150,39,100,3);ctx.fillStyle='#C19A50';ctx.fillRect(150,39,100*clamp(1-left/tot,0,1),3)}
  ctx.textAlign='left';ctx.font='11px Georgia';ctx.fillStyle='#cdbb8f';ctx.fillText('Score '+S.score,10,46);
  const boss=S.foes.find(f=>f.type==='boss');if(boss){ctx.fillStyle='rgba(0,0,0,.6)';ctx.fillRect(60,56,280,12);const bg=ctx.createLinearGradient(60,0,340,0);bg.addColorStop(0,'#c0392b');bg.addColorStop(1,'#ffcf4a');ctx.fillStyle=bg;ctx.fillRect(62,58,276*boss.hp/boss.max,8);ctx.strokeStyle='#ffe2a0';ctx.strokeRect(60,56,280,12);ctx.fillStyle='#ffe2a0';ctx.font='bold 11px Georgia';ctx.textAlign='center';ctx.fillText('👑 BANDIT KING',200,82);ctx.textAlign='left'}
  if(S.banner){const a=clamp(S.banner.t*2,0,1),sc=1+Math.max(0,S.banner.t-2.1)*.6;ctx.save();ctx.globalAlpha=a;ctx.translate(200,170);ctx.scale(sc,sc);ctx.fillStyle='rgba(15,20,15,.82)';ctx.strokeStyle=GOLD;ctx.lineWidth=2;pill(-150,-20,300,40);ctx.fillStyle='#ffe2a0';ctx.font='bold 18px Georgia';ctx.textAlign='center';ctx.fillText(S.banner.txt,0,6);ctx.restore();ctx.textAlign='left'}
- if(S.phase==='build'&&S.wave===S.started&&!S.towers.length){ctx.fillStyle='rgba(255,236,170,'+(.6+.4*Math.sin(t*3))+')';ctx.font='italic 14px Georgia';ctx.textAlign='center';ctx.fillText('Tap the yard to place a defense',200,350);ctx.textAlign='left'}}
-function drawTitleScene(t){const fake={type:'raccoon',x:0,y:0,age:t,face:1,sc:2.2,r:13,hp:1,max:1,hitT:0,slow:0};ctx.save();fake.x=110+Math.sin(t*.8)*20;fake.y=470;drawFoe(fake,t);
+ if(S.phase==='build'&&S.wave===S.started&&!S.towers.length){ctx.fillStyle='rgba(255,236,170,'+(.6+.4*Math.sin(t*3))+')';ctx.font='italic 14px Georgia';ctx.textAlign='center';const hint=matchMedia('(pointer:coarse)').matches?'Slide on the yard, then lift, to place':'Click the yard to place a defense';ctx.fillText(hint,200,350);ctx.textAlign='left'}}
+function drawTitleScene(t){const fake={type:'raccoon',x:0,y:0,age:t,face:1,sc:2.2,r:13,hp:1,max:1,hitT:0,slow:0,leap:0};ctx.save();fake.x=110+Math.sin(t*.8)*20;fake.y=470;drawFoe(fake,t);
+ drawFoe({...fake,type:'fox',x:52+Math.sin(t*1.15)*14,y:448,face:1,sc:1.55},t);
  drawFoe({...fake,type:'armadillo',x:290-Math.sin(t*.7)*20,y:500,face:-1,sc:2},t);drawFoe({...fake,type:'crow',fly:1,x:200+Math.cos(t*.9)*120,y:150+Math.sin(t*1.8)*20,face:Math.sin(t*.9)>0?-1:1,sc:1.8},t);
  drawFoe({...fake,type:'possum',x:340,y:420,face:-1,sc:1.6},t);ctx.restore()}
 
@@ -524,11 +548,11 @@ function drawTitleScene(t){const fake={type:'raccoon',x:0,y:0,age:t,face:1,sc:2.
 function hideAll(){document.querySelectorAll('.ov').forEach(o=>o.classList.remove('show'))}
 function show(id){hideAll();$(id).classList.add('show')}
 let back='sTitle';document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>{if(back==='sTitle')toTitle();else{hideAll();if(S&&S.phase==='paused')show('sPause')}});
-function toTitle(){S=null;$('bar').style.display='none';bgCache=null;selTower=null;placeMenu();$('bCont').style.display=LS.get('save',null)?'':'none';$('tBest').textContent=LS.get('best',0);paintDaily();show('sTitle');ui();layout();publishWidget()}
-function begin(w){audio();selTower=null;placeMenu();$('bar').style.display='flex';newState(w);S.only='';S.dailyRule='';S.dailyStop=false;S.dailyTitle='';bgCache=null;speed=1;hideAll();fx.length=floats.length=bolts.length=rings.length=0;S.banner={txt:'Wave '+S.wave+': set up your defenses',t:2.5};ui();layout()}
+function toTitle(){S=null;hover=null;finger=null;$('bar').style.display='none';bgCache=null;selTower=null;placeMenu();$('bCont').style.display=LS.get('save',null)?'':'none';$('tBest').textContent=LS.get('best',0);paintDaily();show('sTitle');ui();layout();publishWidget()}
+function begin(w){audio();selTower=null;hover=null;finger=null;placeMenu();$('bar').style.display='flex';newState(w);S.only='';S.dailyRule='';S.dailyStop=false;S.dailyTitle='';bgCache=null;speed=1;hideAll();fx.length=floats.length=bolts.length=rings.length=0;S.banner={txt:'Wave '+S.wave+': set up your defenses',t:2.5};ui();layout()}
 $('bPlay').onclick=()=>begin(1);$('bDaily').onclick=()=>beginDaily();$('bCont').onclick=()=>{audio();if(load()){$('bar').style.display='flex';hideAll();bgCache=null;S.banner={txt:'Welcome back to the Ridge',t:2};ui();layout()}};
 $('bHow').onclick=()=>{back='sTitle';show('sHow')};$('bScores').onclick=()=>{back='sTitle';const l=LS.get('top',[]);$('scoreList').innerHTML=l.length?l.map(s=>'<li><b>'+s.i.replace(/[^A-Z]/g,'')+'</b> - '+s.s+(s.w?' ★':'')+'</li>').join(''):'<li>No scores yet. Go defend that garden!</li>';show('sScores')};
-$('bLevels').onclick=()=>{back='sTitle';const reach=LS.get('pass',false)?10:LS.get('reach',1);const g=$('lvGrid');g.innerHTML='';for(let i=1;i<=10;i++){const b=document.createElement('button');b.textContent=i;b.disabled=i>reach;b.onclick=()=>begin(i);g.appendChild(b)}show('sLevels')};
+$('bLevels').onclick=()=>{back='sTitle';const reach=LS.get('pass',false)?WAVES.length:LS.get('reach',1);const g=$('lvGrid');g.innerHTML='';for(let i=1;i<=WAVES.length;i++){const b=document.createElement('button');b.textContent=i;b.disabled=i>reach;b.onclick=()=>begin(i);g.appendChild(b)}show('sLevels')};
 $('bMuteT').onclick=$('bMuteP').onclick=()=>{audio();setMute(!muted)};
 $('bResume').onclick=resume;$('bRestart').onclick=()=>begin(1);$('bQuit').onclick=()=>{if(S){S.phase=S.prev;if(S.phase==='build')save()}toTitle()};
 $('bAgain').onclick=()=>begin(1);$('bTitle').onclick=toTitle;
@@ -547,7 +571,7 @@ const RIDGE_CRITTERS=[
  {id:'crow',name:'Crow',line:'Flies right over the fence. Scarecrows and lanterns watch the sky.'},
  {id:'armadillo',name:'Armadillo',line:'Digs under the rail. Snap traps still bite while it digs.'},
  {id:'possum',name:'Possum',line:'Plays dead once. Wait it out, then it gets back up.'},
- {id:'boss',name:'Bandit King',line:'The wave 10 boss. The gang shows up twice as his health drops.'}
+ {id:'boss',name:'Bandit King',line:'The wave 12 boss. The gang shows up twice as his health drops.'}
 ];
 const RIDGE_DAILIES=[
  {title:'Straw Only',blurb:'Clear this wave with scarecrows only.',rule:'only:scarecrow'},
@@ -592,7 +616,7 @@ IAP.confirmTest=(p)=>new Promise(resolve=>{
  $('testBuyOk').onclick=()=>finish(true);$('testBuyNo').onclick=()=>finish(false);
 });
 function grant(key){if(key==='coins'){LS.set('bank',LS.get('bank',0)+500);return 'Coin Pack: 500 coins will be added to your next game.'}
- if(key==='pass'){if(LS.get('pass',false))return null;LS.set('pass',true);LS.set('reach',10);return 'Ridge Pass unlocked! All 10 waves are open.'}
+ if(key==='pass'){if(LS.get('pass',false))return null;LS.set('pass',true);LS.set('reach',WAVES.length);return 'Ridge Pass unlocked! All 12 waves are open.'}
  if(key==='starter'){if(LS.get('starterOwned',false))return null;LS.set('starterOwned',true);LS.set('bank',LS.get('bank',0)+300);LS.set('zeusBonus',1);return 'Starter Bundle: 300 coins and Zeus join your next game.'}return null}
 IAP.onEntitlement=(key)=>{const m=grant(key);if(m)storeMsg('Thank you! '+m,true)};
 IAP.init();

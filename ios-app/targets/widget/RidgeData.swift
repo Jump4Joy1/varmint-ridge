@@ -12,7 +12,7 @@ enum RidgeCalendar {
     ("Crow", "Flies right over the fence. Scarecrows and lanterns watch the sky."),
     ("Armadillo", "Digs under the rail. Snap traps still bite while it digs."),
     ("Possum", "Plays dead once. Wait it out, then it gets back up."),
-    ("Bandit King", "The wave 10 boss. The gang shows up twice as his health drops."),
+    ("Bandit King", "The wave 12 boss. The gang shows up twice as his health drops."),
   ]
 
   static let dailies: [(title: String, blurb: String)] = [

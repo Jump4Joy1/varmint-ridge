@@ -10,7 +10,7 @@ There are four widgets:
 | --- | --- | --- |
 | Best Score | Home Screen small | Top score and initials |
 | Daily Challenge | Home Screen medium | Today's rule and wave |
-| Varmint of the Day | Home Screen large | Critter, line, daily, best score |
+| Varmint of the Day | Home Screen large | Critter, line, daily, best score, waves opened of 12 |
 | Ridge Glance | Lock Screen | Varmint, best score, daily title |
 
 Tapping Daily, Varmint, or Glance opens `varmintridge://play?daily=1` and highlights Today's Ridge. Tapping Best Score just opens the game.

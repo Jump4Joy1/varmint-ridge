@@ -1,3 +1,7 @@
+## Polish pass (2026-11-02)
+
+The campaign is 12 waves. Fox Trot and Moonlit Run sit in front of the Bandit King. Foxes hop the fence once, then nip the beds. Phone placement is slide-then-lift, with a bigger thumb target. A mouse still places on the click. The banjo has a quieter lower voice, plus a soft wind bed, a fox yip, and a rare crow call. Mist drifts in the yard and healthy crops show dew. Real purchases stay off. The Coin Pack test purchase is still behind the grown-up math screen. Widgets use the same Bandit King line, now wave 12, and the large widget shows waves opened of 12. The daily seed did not change.
+
 # Varmint Ridge: Status (2026-10-14, phone shell 2026-10-30)
 
 ## iPhone install + widgets (2026-10-30)
@@ -28,9 +32,9 @@ Gaps found in the headless audit:
 
 ## After (the single-file rewrite)
 **Honest completion: ~90%.** Clean single-file rewrite. All the content from the add-on was kept.
-- Full loop: title, build phase, 10 named waves, between-wave upgrade shop, then win or lose with a 1 to 3 star rating, initials, and a top 5 board. Continue/save works, plus Choose Wave (unlocks as you progress).
+- Full loop: title, build phase, named waves (10 in the rewrite, 12 after the polish above), between-wave upgrade shop, then win or lose with a 1 to 3 star rating, initials, and a top 5 board. Continue/save works, plus Choose Wave (unlocks as you progress).
 - Defenses: Scarecrow (slow pulse that scares crows), Lantern (light bolts, extra damage on fliers), Snap Trap (hits ground critters, including armadillos while they dig). Each upgrades to Level 3 and can be sold for 60% back. Placement rules come with a live range preview.
-- Critters: Raccoon (steals a crop and runs, and catching it saves the crop), Crow (flies over the fence), Armadillo (burrows under the fence), Possum (plays dead once), and the Bandit King boss on wave 10, who calls in his gang at 66% and 33% health. Homestead upgrades: Fence Lv 3, Zeus the farm dog Lv 3, and Crop Care.
+- Critters: Raccoon (steals a crop and runs, and catching it saves the crop), Crow (flies over the fence), Armadillo (burrows under the fence), Possum (plays dead once), Fox (hops the fence once, then nips the beds), and the Bandit King boss on wave 12, who calls in his gang at 66% and 33% health. Homestead upgrades: Fence Lv 3, Zeus the farm dog Lv 3, and Crop Care.
 - You lose only when all 5 crop beds are gone. The Clean Beds daily ends if any one bed is lost.
 - Visuals are all canvas-drawn: a sky that moves from dusk to night across the waves, layered hills, treeline, barn, drifting clouds, fireflies and stars, and a vignette. Critters are animated and drawn with gradients. You get hit flashes, particle bursts, lightning-style lantern bolts, pulse rings, screen shake, coins that fly to the HUD, floating text, an animated wave banner, and a boss health bar.
 - UI: styled overlays with no alerts, tower cards drawn on canvas showing costs and affordability, a pause screen, x2 fast-forward, and a mute toggle that is saved. Keys: 1/2/3, Space, F, P/Esc, M. Pointer events work for mouse and touch. The layout is responsive with crisp DPR scaling, and the game auto-pauses when the tab is hidden.

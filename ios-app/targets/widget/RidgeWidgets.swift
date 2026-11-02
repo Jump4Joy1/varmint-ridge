@@ -178,7 +178,7 @@ struct VarmintDayView: View {
         .font(.custom("Georgia", size: 14))
         .foregroundStyle(scheme == .dark ? RidgePalette.cream.opacity(0.85) : RidgePalette.pine)
       Spacer(minLength: 0)
-      Text(snap.best > 0 ? "Best \(snap.bestText)" : "Best score shows up after you play")
+      Text(snap.best > 0 ? "Best \(snap.bestText) · opened \(min(snap.reach, 12)) of 12" : "Best score shows up after you play")
         .font(.custom("Georgia", size: 13))
         .foregroundStyle(RidgePalette.gold)
     }
