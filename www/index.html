@@ -131,9 +131,21 @@ html[data-theme=light] a.quiet{color:#305032}
    <p style="font-size:20px;margin:8px 0">Score <b style="color:#ffd877" id="endScore">0</b></p>
    <div id="endSave"><input id="initials" maxlength="3" placeholder="AAA"> <button class="btn sm" id="bSaveScore">Save</button></div>
    <button class="btn" id="bAgain">Play Again</button><button class="btn alt" id="bTitle">Title</button></div></div>
+  <div class="ov" id="sGate"><div class="panel"><h2>Grown-ups</h2>
+   <p class="small">A grown-up has to answer before the store opens. All ages. No ads. A test purchase does not charge a card.</p>
+   <p style="font-size:20px" id="gateQ"></p>
+   <input id="gateA" inputmode="numeric" maxlength="4" autocomplete="off" aria-label="Answer">
+   <button class="btn sm" id="gateGo">OK</button>
+   <p class="small" id="gateMsg"></p>
+   <button class="btn alt" id="gateBack">Back</button></div></div>
   <div class="ov" id="sStore"><div class="panel"><h2>Supporter Store</h2>
-   <div id="gate"><p class="small">Grown-ups only. Please answer to continue:</p><p style="font-size:20px" id="gateQ"></p><input id="gateA" inputmode="numeric" maxlength="4"> <button class="btn sm" id="gateGo">OK</button><p class="small" id="gateMsg"></p></div>
-   <div id="storeItems" style="display:none"></div>
+   <div id="storeItems"></div>
+   <div id="testBuy" style="display:none">
+    <p class="small">Test purchase. No card is charged.</p>
+    <p><b id="testBuyName"></b></p>
+    <button class="btn sm" id="testBuyOk" type="button">Confirm test purchase</button>
+    <button class="btn alt sm" id="testBuyNo" type="button">Cancel</button>
+   </div>
    <p class="small" id="storeNote"></p>
    <button class="btn alt" data-close>Back</button></div></div>
  </div>
@@ -141,24 +153,27 @@ html[data-theme=light] a.quiet{color:#305032}
 </div>
 <script>
 'use strict';
-/* ================= Supporter Store: native in-app purchases (App Store / Google Play) =================
-   IAP_ENABLED=false keeps the whole store OFF. In a plain browser the store is always disabled.
-   Natively (Capacitor) it uses RevenueCat (@revenuecat/purchases-capacitor), falling back to
-   cordova-plugin-purchase (window.CdvPurchase). Entitlements are validated server-side by RevenueCat. */
+/* ================= Supporter Store =================
+   Real App Store / Play billing stays off (IAP_ENABLED=false). No ads.
+   IAP_TEST lets the browser finish a purchase with no charge, after the grown-up gate.
+   A native build uses RevenueCat, then cordova-plugin-purchase, only when IAP_ENABLED is true. */
 const IAP_ENABLED = false;
+const IAP_TEST = true;
 const REVENUECAT_API_KEY = { ios: '', android: '' }; // public SDK keys, fill in at launch
 const IAP = (function(){
  const products=[
-  {sku:'com.jwmanor.varmintridge.coins',key:'coins',type:'consumable',name:'Coin Pouch',price:'$0.99',desc:'500 coins added to the start of your next game'},
+  {sku:'com.jwmanor.varmintridge.coins',key:'coins',type:'consumable',name:'Coin Pack',price:'$0.99',desc:'500 coins added to the start of your next game'},
   {sku:'com.jwmanor.varmintridge.ridgepass',key:'pass',type:'non-consumable',name:'Ridge Pass',price:'$2.99',desc:'Opens all 10 waves in Choose Wave'},
   {sku:'com.jwmanor.varmintridge.starter',key:'starter',type:'non-consumable',name:'Starter Bundle',price:'$1.99',desc:'300 coins plus Zeus at Level 1 for your next game'}];
- const api={products,onEntitlement:null,backend:'none',ready:false};
+ const api={products,onEntitlement:null,backend:'none',ready:false,confirmTest:null};
  const cap=window.Capacitor,native=!!(cap&&cap.isNativePlatform&&cap.isNativePlatform());
  const rc=native&&cap.Plugins&&cap.Plugins.Purchases, cdv=native&&window.CdvPurchase;
  const fire=(key,sku)=>{try{api.onEntitlement&&api.onEntitlement(key,sku)}catch(e){}};
  const keyOf=sku=>(products.find(p=>p.sku===sku)||{}).key;
- api.available=()=>IAP_ENABLED&&native&&api.ready;
- api.init=async()=>{if(!IAP_ENABLED||!native)return false;try{
+ const testMode=()=>IAP_TEST&&!native;
+ const remember=(sku)=>{const p=products.find(x=>x.sku===sku);if(!p||p.type==='consumable')return;const owned=LS.get('testOwned',[]);if(owned.indexOf(sku)<0){owned.push(sku);LS.set('testOwned',owned)}};
+ api.available=()=>testMode()||(IAP_ENABLED&&native&&api.ready);
+ api.init=async()=>{if(testMode()){api.backend='test';api.ready=true;return true}if(!IAP_ENABLED||!native)return false;try{
   if(rc){const plat=cap.getPlatform();await rc.configure({apiKey:REVENUECAT_API_KEY[plat]||''});api.backend='revenuecat';
    const r=await rc.getProducts({productIdentifiers:products.map(p=>p.sku)});(r.products||[]).forEach(sp=>{const p=products.find(x=>x.sku===sp.identifier);if(p)p.price=sp.priceString});}
   else if(cdv){const {store,ProductType,Platform}=cdv;api.backend='cordova';
@@ -166,12 +181,16 @@ const IAP = (function(){
    store.when().approved(t=>t.verify()).verified(r=>r.finish()).finished(t=>(t.products||[]).forEach(pp=>fire(keyOf(pp.id),pp.id)));
    await store.initialize();products.forEach(p=>{const sp=store.get(p.sku);if(sp&&sp.pricing)p.price=sp.pricing.price})}
   else return false;api.ready=true;return true}catch(e){return false}};
- api.purchase=async(sku)=>{if(!api.available())return{ok:false,reason:'disabled'};try{
+ api.purchase=async(sku)=>{if(testMode()){const p=products.find(x=>x.sku===sku);if(!p)return{ok:false,reason:'not found'};
+  if(api.confirmTest){const ok=await api.confirmTest(p);if(!ok)return{ok:false,reason:'cancelled'}}
+  remember(sku);fire(p.key,sku);return{ok:true,test:true}}
+  if(!api.available())return{ok:false,reason:'disabled'};try{
   if(api.backend==='revenuecat'){const r=await rc.getProducts({productIdentifiers:[sku]});const prod=(r.products||[])[0];if(!prod)return{ok:false,reason:'not found'};
    await rc.purchaseStoreProduct({product:prod});fire(keyOf(sku),sku);return{ok:true}}
   const offer=window.CdvPurchase.store.get(sku)?.getOffer();if(!offer)return{ok:false,reason:'not found'};const err=await offer.order();return err?{ok:false,reason:err.message}:{ok:true}}
   catch(e){return{ok:false,reason:e&&e.userCancelled?'cancelled':(e&&e.message)||'error'}}};
- api.restore=async()=>{if(!api.available())return{ok:false,reason:'disabled'};try{let ids=[];
+ api.restore=async()=>{if(testMode()){const ids=LS.get('testOwned',[]);ids.forEach(sku=>{const p=products.find(x=>x.sku===sku);if(p&&p.type==='non-consumable')fire(p.key,sku)});return{ok:true,count:ids.length,test:true}}
+  if(!api.available())return{ok:false,reason:'disabled'};try{let ids=[];
   if(api.backend==='revenuecat'){const r=await rc.restorePurchases();const ci=r.customerInfo||r;ids=(ci.allPurchasedProductIdentifiers||[])}
   else{await window.CdvPurchase.store.restorePurchases();ids=products.filter(p=>window.CdvPurchase.store.owned(p.sku)).map(p=>p.sku)}
   ids.forEach(sku=>{const p=products.find(x=>x.sku===sku);if(p&&p.type==='non-consumable')fire(p.key,sku)});return{ok:true,count:ids.length}}catch(e){return{ok:false,reason:(e&&e.message)||'error'}}};
@@ -546,21 +565,33 @@ function beginDaily(){const pack=ridgeToday();begin(pack.wave);S.dailyStop=true;
 function publishWidget(){const pack=ridgeToday();const snap={best:LS.get('best',0)|0,initials:LS.get('ini','')||'',reach:LS.get('reach',1)|0,theme:document.documentElement.getAttribute('data-theme')||'dark'};LS.set('widget',Object.assign({day:pack.key,varmint:pack.critter.name,daily:pack.challenge.title,wave:pack.wave},snap));try{if(window.ReactNativeWebView)window.ReactNativeWebView.postMessage(JSON.stringify({type:'vr-widget',snap:snap}))}catch(e){}}
 function promptDaily(){if(S)return;const b=$('bDaily');if(b){b.style.boxShadow='0 0 0 3px #ffe39a';b.focus()}}
 
-/* ---------- Supporter Store (native IAP, OFF by default) ---------- */
+/* ---------- Supporter Store (test purchases on, real billing off) ---------- */
 let gateAns=0,gateUntil=0,gateNext=null;
 function storeMsg(m,ok){$('storeNote').innerHTML='<span style="color:'+(ok?'#9be27a':'#ffb0a0')+'">'+m+'</span>'}
-function freshGate(){const a=Math.floor(rnd(12,20)),b=Math.floor(rnd(6,10));gateAns=a*b;$('gateQ').textContent='What is '+a+' \u00d7 '+b+'?';$('gateA').value='';$('gateMsg').textContent=''}
-function showGate(next,keepItems){gateNext=next;freshGate();$('gate').style.display='';if(!keepItems)$('storeItems').style.display='none'}
-function passGate(){gateUntil=Date.now()+120000;$('gate').style.display='none';const next=gateNext;gateNext=null;if(next)next()}
-function withPurchaseGate(fn){if(Date.now()<gateUntil)fn();else showGate(fn,true)}
-function openStoreBody(){const box=$('storeItems');box.style.display='';
- if(!IAP.available()){box.innerHTML='<p class="small">The store isn\'t open yet. There are no ads. When the App Store build is on, every purchase and Restore still asks a grown-up first.</p>';return}
- box.innerHTML=IAP.products.map(p=>'<div class="row"><span><b>'+p.name+'</b> '+p.price+'<br><span class="small">'+p.desc+'</span></span><button class="btn sm" data-sku="'+p.sku+'">Buy</button></div>').join('')+'<button class="btn alt sm" id="bRestore">Restore Purchases</button>';
+function freshGate(){const a=Math.floor(rnd(12,20)),b=Math.floor(rnd(6,10));gateAns=a*b;$('gateQ').textContent='What is '+a+' \u00d7 '+b+'?';$('gateA').value='';$('gateMsg').textContent='';$('gateA').focus()}
+function showGate(next){gateNext=next;const tb=$('testBuy');if(tb)tb.style.display='none';show('sGate');freshGate()}
+function passGate(){gateUntil=Date.now()+120000;const next=gateNext;gateNext=null;if(next)next()}
+function withPurchaseGate(fn){if(Date.now()<gateUntil)fn();else showGate(openStoreBody)}
+function openStoreBody(){const box=$('storeItems');box.style.display='';$('testBuy').style.display='none';
+ const owned=[];if(LS.get('pass',false))owned.push('Ridge Pass');if(LS.get('bank',0))owned.push(LS.get('bank',0)+' coins waiting for your next game');
+ $('storeNote').textContent=owned.length?'Owned: '+owned.join(', '):'';
+ if(!IAP.available()){box.innerHTML='<p class="small">The store isn\'t open yet. There are no ads.</p>';show('sStore');return}
+ const note=IAP.backend==='test'?'<p class="small">Test mode. Confirming a pack does not charge a card. No ads.</p>':'';
+ box.innerHTML=note+IAP.products.map(p=>'<div class="row"><span><b>'+p.name+'</b> '+p.price+'<br><span class="small">'+p.desc+'</span></span><button class="btn sm" data-sku="'+p.sku+'">Buy</button></div>').join('')+'<button class="btn alt sm" id="bRestore">Restore Purchases</button>';
  box.querySelectorAll('[data-sku]').forEach(b=>b.onclick=()=>withPurchaseGate(async()=>{b.disabled=true;const r=await IAP.purchase(b.dataset.sku);b.disabled=false;if(!r.ok&&r.reason!=='cancelled')storeMsg('Purchase did not finish ('+r.reason+').')}));
- const restore=$('bRestore');if(restore)restore.onclick=()=>withPurchaseGate(async()=>{const r=await IAP.restore();storeMsg(r.ok?'Purchases restored.':'Restore failed ('+r.reason+').',r.ok)})}
-$('bStore').onclick=()=>{back='sTitle';const owned=[];if(LS.get('pass',false))owned.push('Ridge Pass');if(LS.get('bank',0))owned.push(LS.get('bank',0)+' coins waiting for your next game');$('storeNote').textContent=owned.length?'Owned: '+owned.join(', '):'';show('sStore');showGate(openStoreBody,false)};
-$('gateGo').onclick=()=>{if(parseInt($('gateA').value,10)!==gateAns){$('gateMsg').textContent='Not quite. Ask a grown-up for help.';freshGate();return}passGate()};
-function grant(key){if(key==='coins'){LS.set('bank',LS.get('bank',0)+500);return 'Coin Pouch: 500 coins will be added to your next game.'}
+ const restore=$('bRestore');if(restore)restore.onclick=()=>withPurchaseGate(async()=>{const r=await IAP.restore();storeMsg(r.ok?(r.count?'Purchases restored.':'Nothing to restore.'):'Restore failed ('+r.reason+').',r.ok)});
+ show('sStore')}
+$('bStore').onclick=()=>{back='sTitle';if(Date.now()<gateUntil)openStoreBody();else showGate(openStoreBody)};
+$('gateGo').onclick=()=>{if(parseInt($('gateA').value,10)!==gateAns){freshGate();$('gateMsg').textContent='Not quite. Ask a grown-up for help.';return}passGate()};
+$('gateA').addEventListener('keydown',e=>{if(e.key==='Enter'){$('gateGo').click()}});
+$('gateBack').onclick=()=>{gateNext=null;toTitle()};
+IAP.confirmTest=(p)=>new Promise(resolve=>{
+ $('testBuyName').textContent=p.name+' · '+p.price;
+ $('testBuy').style.display='';
+ const finish=ok=>{$('testBuy').style.display='none';$('testBuyOk').onclick=null;$('testBuyNo').onclick=null;resolve(ok)};
+ $('testBuyOk').onclick=()=>finish(true);$('testBuyNo').onclick=()=>finish(false);
+});
+function grant(key){if(key==='coins'){LS.set('bank',LS.get('bank',0)+500);return 'Coin Pack: 500 coins will be added to your next game.'}
  if(key==='pass'){if(LS.get('pass',false))return null;LS.set('pass',true);LS.set('reach',10);return 'Ridge Pass unlocked! All 10 waves are open.'}
  if(key==='starter'){if(LS.get('starterOwned',false))return null;LS.set('starterOwned',true);LS.set('bank',LS.get('bank',0)+300);LS.set('zeusBonus',1);return 'Starter Bundle: 300 coins and Zeus join your next game.'}return null}
 IAP.onEntitlement=(key)=>{const m=grant(key);if(m)storeMsg('Thank you! '+m,true)};

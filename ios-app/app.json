@@ -1,0 +1,37 @@
+{
+  "expo": {
+    "name": "Varmint Ridge",
+    "slug": "varmint-ridge",
+    "scheme": "varmintridge",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "backgroundColor": "#1A1A1A",
+    "ios": {
+      "bundleIdentifier": "com.jwmanor.varmintridge",
+      "supportsTablet": false,
+      "buildNumber": "1",
+      "entitlements": {
+        "com.apple.security.application-groups": [
+          "group.com.jwmanor.varmintridge"
+        ]
+      },
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "plugins": [
+      "@bacons/apple-targets",
+      "expo-asset",
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "deploymentTarget": "17.0"
+          }
+        }
+      ]
+    ]
+  }
+}

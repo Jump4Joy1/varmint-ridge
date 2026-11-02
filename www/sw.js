@@ -1,5 +1,5 @@
 /* Varmint Ridge offline cache. The game is one page plus icons. No ads, no remote calls. */
-const CACHE = "varmint-ridge-iphone-1";
+const CACHE = "varmint-ridge-iphone-2";
 const ASSETS = [
   "./",
   "./index.html",
