@@ -1,0 +1,1581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Homestead Harvest — JW Manor</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect fill='%23305032' width='16' height='16'/%3E%3C/svg%3E">
+<link rel="manifest" href="manifest.webmanifest">
+<script src="strings.js"></script>
+<script id="themeTheme">/* theme: prefers-color-scheme, or a Settings choice saved in localStorage */
+(function(){var K='harvest.theme',mq=matchMedia('(prefers-color-scheme: dark)');
+function get(){try{return localStorage.getItem(K)||'auto'}catch(e){return 'auto'}}
+function apply(){var v=get(),t=v==='auto'?(mq.matches?'dark':'light'):v;document.documentElement.setAttribute('data-theme',t);
+document.querySelectorAll('[data-theme-choice]').forEach(function(b){b.setAttribute('aria-pressed',b.getAttribute('data-theme-choice')===v?'true':'false')})}
+function set(mode){try{localStorage.setItem(K,mode)}catch(e){}apply()}
+window.HarvestTheme={get:get,set:set,apply:apply};
+apply();mq.addEventListener('change',apply)})();
+</script>
+<style>
+body { margin:0; background:#1A1A1A; color:#C19A50; font-family:Georgia, "Iowan Old Style", Palatino, "Palatino Linotype", serif; display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; overflow:hidden; }
+canvas { border:6px solid #305032; background:#0F0F0F; touch-action:none; max-width:100%; }
+.menu { position:fixed; inset:0; background:rgba(26,26,26,0.95); display:flex; flex-direction:column; justify-content:center; align-items:center; z-index:10; text-align:center; }
+button { background:#305032; color:#C19A50; border:2px solid #C19A50; padding:10px 18px; margin:6px; font-size:16px; cursor:pointer; border-radius:6px; }
+button:hover { background:#C19A50; color:#1A1A1A; }
+#touchControls { display:none; position:fixed; bottom:10px; }
+@media (max-width:600px) { #touchControls { display:flex; } }
+
+/* light/dark */
+html[data-theme=dark] button{color:#F3E6C4}
+html[data-theme=dark] button:hover{color:#1A1A1A}
+html[data-theme=light] body{background:#F3EEDF;color:#2b4a2d}
+html[data-theme=light] .menu{background:rgba(243,238,223,.97);color:#1f2a1f}
+html[data-theme=light] .menu h1,html[data-theme=light] .menu h2,html[data-theme=light] .menu h3{color:#305032}
+html[data-theme=light] button{background:#305032;color:#F3E6C4;border-color:#305032}
+html[data-theme=light] button:hover{background:#C19A50;color:#1A1A1A;border-color:#8d6d2e}
+html[data-theme=light] #sidePanel{background:rgba(255,252,242,.96);color:#1A1A1A;border-color:#305032}
+html[data-theme=light] input{background:#fff;color:#1A1A1A;border-color:#305032}
+html[data-theme=light] a{color:#305032}
+a.hub-link{color:#C19A50;font-size:15px;margin:6px 0 2px;text-decoration:underline}
+html[data-theme=light] a.hub-link{color:#305032}
+#hhArt{width:min(92vw,420px);height:auto;border-radius:16px;border:3px solid #305032;margin:8px 0 12px;display:block;background:#1A1A1A}
+#hhHelp .sheet{background:#241c14;color:#F3E6C4;border:3px solid #C19A50;border-radius:16px;padding:16px 18px 18px;width:min(92vw,420px);max-height:min(78vh,640px);overflow:auto;text-align:left;box-shadow:0 12px 32px rgba(0,0,0,.35)}
+#hhHelp h2{margin:0 0 8px;color:#F3E6C4}
+#hhHelp p{font-size:16px;line-height:1.45;margin:8px 0}
+#hhHelp .brand{letter-spacing:.12em;text-transform:uppercase;font-size:12px;color:#C19A50;font-weight:700;margin:0}
+html[data-theme=light] #hhHelp .sheet{background:#fffaf0;color:#1A1A1A}
+html[data-theme=light] #hhHelp h2{color:#305032}
+#hhHud{position:relative;z-index:6;display:none;gap:8px;width:100%;box-sizing:border-box;padding:10px 12px 8px;pointer-events:none}
+body.is-play #hhHud{display:flex}
+#hhHud[hidden]{display:none !important}
+.hh-chip{flex:1 1 58px;min-width:0;background:#FFF8EA;color:#1A1A1A;border:3px solid #C19A50;box-shadow:inset 0 0 0 2px #305032;border-radius:12px;padding:6px 8px 7px;font-family:Georgia, "Iowan Old Style", Palatino, "Palatino Linotype", serif}
+.hh-chip span{display:block;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#305032;font-weight:700;line-height:1.1}
+.hh-chip b{display:block;margin-top:2px;font-size:16px;line-height:1.1;color:#1A1A1A;font-variant-numeric:tabular-nums}
+html[data-theme=dark] .hh-chip{background:#1A1A1A;color:#F3E6C4}
+html[data-theme=dark] .hh-chip span{color:#F3E6C4}
+html[data-theme=dark] .hh-chip b{color:#F3E6C4}
+.hh-chip.is-pop{animation:hhPop .35s ease}
+@keyframes hhPop{40%{transform:scale(1.08)}}
+#hhToast{position:fixed;left:50%;top:78px;transform:translateX(-50%);z-index:9;background:#1A1A1A;color:#F3E6C4;border:3px solid #C19A50;border-radius:12px;padding:8px 14px;font:700 16px Georgia, "Iowan Old Style", Palatino, "Palatino Linotype", serif;pointer-events:none;white-space:nowrap}
+#hhToast[hidden]{display:none}
+button.icon-btn,html[data-theme=light] button.icon-btn{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-width:64px;min-height:56px;margin:4px;padding:8px 10px;border-radius:14px;border:3px solid #C19A50;background:linear-gradient(#3e6842,#305032);color:#F3E6C4;box-shadow:inset 0 0 0 2px #1A1A1A,0 3px 0 #1A1A1A;font:700 11px Georgia, "Iowan Old Style", Palatino, "Palatino Linotype", serif;letter-spacing:.04em}
+.icon-btn svg{width:26px;height:26px;display:block}
+.icon-btn span{line-height:1.1}
+button.icon-btn:hover,html[data-theme=light] button.icon-btn:hover{background:linear-gradient(#3e6842,#305032);color:#F3E6C4}
+button.icon-btn:active,button.icon-btn.is-down{transform:translateY(2px);box-shadow:inset 0 0 0 2px #1A1A1A}
+button.icon-btn[aria-pressed="true"],button.icon-btn.is-on,html[data-theme=light] button.icon-btn[aria-pressed="true"]{background:linear-gradient(#e6d3a1,#C19A50);color:#1A1A1A}
+#touchControls{display:none;position:fixed;left:0;right:0;bottom:0;z-index:8;gap:6px;justify-content:center;padding:8px 8px calc(8px + env(safe-area-inset-bottom));background:#1A1A1A;box-sizing:border-box}
+body.is-play #touchControls{display:flex}
+#touchControls .icon-btn{flex:1;max-width:92px;margin:0}
+.theme-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.hh-coin{position:fixed;z-index:20;width:20px;height:20px;margin:0;border-radius:50%;background:radial-gradient(circle at 35% 35%,#ffe7a3,#C19A50 55%,#8d6d2e);border:2px solid #1A1A1A;pointer-events:none;box-shadow:0 2px 0 #1A1A1A}
+html[data-theme=light] #touchControls{background:#F3EEDF}
+@media (prefers-reduced-motion:reduce){.hh-chip.is-pop{animation:none}.icon-btn:active,.icon-btn.is-down{transform:none}}
+</style>
+</head>
+<body>
+<div id="title" class="menu">
+<h1 data-i18n="title">Homestead Harvest</h1>
+<h3 data-i18n="subtitle">JW Manor Crop Timing</h3>
+<a class="hub-link" href="../index.html" data-i18n="allGames">All games</a>
+<button class="icon-btn labeled" type="button" onclick="startGame()" data-i18n-aria="play"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M8 5v14l12-7z"/></svg><span data-i18n="play">Play</span></button>
+<button class="icon-btn labeled" type="button" onclick="showHow()" data-i18n-aria="howAria"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path fill="currentColor" d="M11 17h2v-2h-2zm1-10a3 3 0 0 0-3 3h2a1 1 0 1 1 1.6.8c-.7.5-1.6 1-1.6 2.2V14h2v-.4c0-.5.4-.8 1.1-1.2A3 3 0 0 0 12 7z"/></svg><span data-i18n="how">How</span></button>
+<button class="icon-btn labeled" type="button" onclick="showScores()" data-i18n-aria="scoresAria"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 3l2.2 5.6L20 9.2l-4.2 3.6L17 19l-5-3.2L7 19l1.2-6.2L4 9.2l5.8-.6z"/></svg><span data-i18n="scores">Scores</span></button>
+<button class="icon-btn labeled" type="button" id="hhSettingsBtn" data-i18n-aria="settings"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="2"/><path fill="none" stroke="currentColor" stroke-width="2" d="M12 3v2.5M12 18.5V21M3 12h2.5M18.5 12H21M5.6 5.6l1.8 1.8M16.6 16.6l1.8 1.8M18.4 5.6l-1.8 1.8M7.4 16.6l-1.8 1.8"/></svg><span data-i18n="settings">Settings</span></button>
+</div>
+<div id="hhSettings" class="menu" style="display:none">
+<p class="brand">JW Manor</p>
+<h2 data-i18n="settings">Settings</h2>
+<p data-i18n="theme">Theme</p>
+<div class="theme-row" role="group" data-i18n-aria="theme">
+<button type="button" class="icon-btn labeled" data-theme-choice="auto" aria-pressed="true"><span data-i18n="themeAuto">Auto</span></button>
+<button type="button" class="icon-btn labeled" data-theme-choice="light"><span data-i18n="themeLight">Light</span></button>
+<button type="button" class="icon-btn labeled" data-theme-choice="dark"><span data-i18n="themeDark">Dark</span></button>
+</div>
+<p data-i18n="language">Language</p>
+<div class="theme-row" role="group" data-i18n-aria="language">
+<button type="button" class="icon-btn labeled" data-lang-choice="en" aria-pressed="true"><span data-i18n="langEn">English</span></button>
+<button type="button" class="icon-btn labeled" data-lang-choice="es"><span data-i18n="langEs">Español</span></button>
+</div>
+<button class="icon-btn labeled" type="button" id="hhSettingsBack" data-i18n-aria="back"><span data-i18n="back">Back</span></button>
+</div>
+<div id="pause" class="menu" style="display:none">
+<h2 data-i18n="paused">Paused</h2>
+<button class="icon-btn labeled" type="button" onclick="togglePause()" data-i18n-aria="resume"><span data-i18n="resume">Resume</span></button>
+<button class="icon-btn labeled" type="button" onclick="startGame()" data-i18n-aria="restart"><span data-i18n="restart">Restart</span></button>
+</div>
+<div id="over" class="menu" style="display:none">
+<h2 data-i18n="seasonOver">Season Over</h2>
+<p><span data-i18n="scoreLine">Score:</span> <span id="finalScore">0</span></p>
+<input id="initials" placeholder="AAA" maxlength="3" style="padding:8px;margin:8px;text-transform:uppercase;">
+<button class="icon-btn labeled" type="button" onclick="saveScore()" data-i18n-aria="saveAria"><span data-i18n="save">Save</span></button>
+<button class="icon-btn labeled" type="button" onclick="startGame()" data-i18n-aria="againAria"><span data-i18n="again">Again</span></button>
+</div>
+<div id="scores" class="menu" style="display:none">
+<h2 data-i18n="topScores">Top 5 Scores</h2>
+<div id="scorelist"></div>
+<button class="icon-btn labeled" type="button" onclick="showTitle()" data-i18n-aria="back"><span data-i18n="back">Back</span></button>
+</div>
+<div id="hhHud" hidden>
+<div class="hh-chip"><span data-i18n="chipScore">Score</span><b id="hhScoreVal">0</b></div>
+<div class="hh-chip" id="hhCoinChip"><span data-i18n="chipCoins">Coins</span><b id="hhCoinVal">0</b></div>
+<div class="hh-chip"><span data-i18n="chipSeason">Season</span><b id="hhSeasonVal">1</b></div>
+<div class="hh-chip"><span data-i18n="chipSun">Sun</span><b id="hhSunVal">0</b></div>
+<div class="hh-chip"><span data-i18n="chipWilt">Wilt</span><b id="hhWiltVal">0/4</b></div>
+</div>
+<div id="hhToast" hidden></div>
+<canvas id="game" width="400" height="500" style="display:none;"></canvas>
+<div id="touchControls">
+<button type="button" class="icon-btn" id="hhPauseBtn" onclick="togglePause()" data-i18n-aria="pause"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="4" width="4.2" height="16" rx="1.2" fill="currentColor"/><rect x="13.8" y="4" width="4.2" height="16" rx="1.2" fill="currentColor"/></svg></button>
+</div>
+<script>
+var hhT = HarvestStrings.t;
+const canvas=document.getElementById('game'), ctx=canvas.getContext('2d');
+let score=0, level=1, high=parseInt(localStorage.getItem('harvestHigh')||'0');
+let running=false, paused=false, muted=localStorage.getItem('harvestMute')==='1', gameOver=false;
+let crops=[], seasonTime=0;
+const cropTypes=['Tomato','Pepper','Corn','Pumpkin','Carrot','Strawberry'];
+function init(){
+ crops=[];
+ for(let i=0;i<9;i++){
+  crops.push({
+   x:30+i*60,
+   y:280,
+   growth:0,
+   type:cropTypes[Math.floor(Math.random()*cropTypes.length)],
+   ready:false,
+   maxGrowth:1
+  });
+ }
+ score=0; level=1; seasonTime=0; running=true; paused=false; gameOver=false;
+}
+function drawCrop(c){
+ const g=Math.min(1,c.growth);
+ const h=g*100;
+ ctx.fillStyle=g>0.85?'#305032':(g>0.4?'#C19A50':'#8B7355');
+ ctx.fillRect(c.x, c.y-h, 45, h);
+ ctx.fillStyle='#C19A50';
+ ctx.font='11px Arial';
+ ctx.fillText(c.type, c.x, c.y+15);
+ if(c.ready){
+  ctx.fillStyle='#FFD700';
+  ctx.fillText('READY', c.x, c.y-h-8);
+ }
+}
+function draw(){
+ ctx.fillStyle='#0F0F0F';
+ ctx.fillRect(0,0,canvas.width,canvas.height);
+ crops.forEach(drawCrop);
+ ctx.fillStyle='#C19A50';
+ ctx.font='16px Georgia, "Iowan Old Style", Palatino, "Palatino Linotype", serif';
+ ctx.fillText(`Score: ${score}  Level: ${level}`, 10, 30);
+ if(paused){
+  ctx.fillStyle='rgba(0,0,0,0.7)';
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle='#C19A50';
+  ctx.font='28px Georgia, "Iowan Old Style", Palatino, "Palatino Linotype", serif';
+  ctx.fillText('PAUSED', 140, 250);
+ }
+}
+function update(){
+ if(!running||paused||gameOver){ draw(); requestAnimationFrame(update); return; }
+ seasonTime+=0.016;
+ crops.forEach(c=>{
+  c.growth += 0.003 * level;
+  if(c.growth >= 1 && !c.ready) c.ready=true;
+  if(c.growth > 1.4){
+   c.growth=0; c.ready=false; score=Math.max(0,score-10); playSound(100,0.2);
+  }
+ });
+ if(seasonTime > 40){
+  level++;
+  seasonTime=0;
+  playSound(500,0.15);
+  if(level>10){ gameOver=true; document.getElementById('finalScore').textContent=score; document.getElementById('over').style.display='flex'; canvas.style.display='none'; }
+ }
+ draw();
+ requestAnimationFrame(update);
+}
+function startGame(){
+ document.getElementById('title').style.display='none';
+ document.getElementById('over').style.display='none';
+ document.getElementById('scores').style.display='none';
+ canvas.style.display='block';
+ init();
+ requestAnimationFrame(update);
+ playSound(440,0.1);
+ scaleCanvas();
+}
+function togglePause(){
+ if(!running||gameOver) return;
+ paused=!paused;
+ document.getElementById('pause').style.display=paused?'flex':'none';
+}
+function showHow(){}
+function showScores(){
+ document.getElementById('title').style.display='none';
+ document.getElementById('scores').style.display='flex';
+ const list=JSON.parse(localStorage.getItem('harvestTop')||'[]');
+ document.getElementById('scorelist').innerHTML=list.length?list.map((s,i)=>`<div>${i+1}. ${s.initials} - ${s.score}</div>`).join(''):'<div>'+hhT('noScores')+'</div>';
+}
+function saveScore(){
+ const initials=(document.getElementById('initials').value||'AAA').toUpperCase().slice(0,3);
+ let list=JSON.parse(localStorage.getItem('harvestTop')||'[]');
+ list.push({initials,score});
+ list.sort((a,b)=>b.score-a.score);
+ localStorage.setItem('harvestTop',JSON.stringify(list.slice(0,5)));
+ if(score>high) localStorage.setItem('harvestHigh',score);
+ showScores();
+}
+function showTitle(){
+ document.getElementById('title').style.display='flex';
+ document.getElementById('scores').style.display='none';
+ canvas.style.display='none';
+ running=false;
+}
+function scaleCanvas(){
+ const maxW=window.innerWidth-20, maxH=window.innerHeight-60;
+ const scale=Math.min(maxW/400, maxH/500, 1);
+ canvas.style.transform=`scale(${scale})`;
+ canvas.style.transformOrigin='center';
+}
+canvas.addEventListener('click', e=>{
+ if(typeof hhPointer==='function'){ hhPointer(e.clientX, e.clientY); return; }
+});
+canvas.addEventListener('touchstart', e=>{
+ e.preventDefault();
+ if(typeof hhPointer==='function' && e.touches[0]) hhPointer(e.touches[0].clientX, e.touches[0].clientY);
+}, {passive:false});
+document.addEventListener('keydown', e=>{
+ if(e.key==='p'||e.key==='P'||e.key==='Escape') togglePause();
+ if(e.key==='m'||e.key==='M'){ muted=!muted; localStorage.setItem('harvestMute',muted?'1':'0'); }
+});
+window.addEventListener('resize', scaleCanvas);
+let audioCtx;
+function playSound(freq,dur){
+ if(muted) return;
+ if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+ const o=audioCtx.createOscillator(), g=audioCtx.createGain();
+ o.frequency.setValueAtTime(freq, audioCtx.currentTime);
+ g.gain.setValueAtTime(0.08, audioCtx.currentTime);
+ g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime+dur);
+ o.connect(g); g.connect(audioCtx.destination);
+ o.start(); o.stop(audioCtx.currentTime+dur);
+}
+</script>
+<script>
+/* Homestead Harvest add-on. Insert before </body>. Does not replace the first script. */
+var HH_INK = '#1A1A1A';
+var HH_GOLD = '#C19A50';
+var HH_PINE = '#305032';
+var HH_TYPES = {
+  Tomato: { rate: 0.28, spoil: 1.72, kind: 'tomato' },
+  Pepper: { rate: 0.24, spoil: 1.78, kind: 'pepper' },
+  Peppers: { rate: 0.24, spoil: 1.78, kind: 'pepper' },
+  Corn: { rate: 0.18, spoil: 1.95, kind: 'corn' },
+  Pumpkin: { rate: 0.16, spoil: 2.1, kind: 'pumpkin' },
+  Carrot: { rate: 0.32, spoil: 1.66, kind: 'carrot' },
+  Strawberry: { rate: 0.34, spoil: 1.55, kind: 'strawberry' },
+  Beans: { rate: 0.36, spoil: 1.58, kind: 'strawberry' },
+  Squash: { rate: 0.15, spoil: 2.15, kind: 'pumpkin' }
+};
+var HH_SEASONS = [
+  { name: 'Dew Morning', mult: 1.00 },
+  { name: 'Bean Row', mult: 1.12 },
+  { name: 'Warm Beds', mult: 1.24 },
+  { name: 'Green Shoot', mult: 1.36 },
+  { name: 'Tall Corn', mult: 1.50 },
+  { name: 'Pepper Heat', mult: 1.64 },
+  { name: 'Squash Run', mult: 1.80 },
+  { name: 'Dry Spell', mult: 1.96 },
+  { name: 'Golden Rows', mult: 2.14 },
+  { name: 'High Summer', mult: 2.34 }
+];
+var HH_COST = {
+  water: [30, 48, 70],
+  basket: [28, 44, 66],
+  compost: [34, 52, 78]
+};
+var HH_BANJO = [
+  [220.00, 1], [174.61, 1], [261.63, 0.5], [220.00, 0.5],
+  [196.00, 1], [164.81, 1], [146.83, 1], [110.00, 1],
+  [246.94, 1], [196.00, 0.5], [293.66, 0.5], [246.94, 1],
+  [220.00, 1], [174.61, 0.5], [164.81, 0.5], [130.81, 1],
+  [261.63, 0.5], [329.63, 0.5], [293.66, 1], [220.00, 1],
+  [196.00, 1], [246.94, 0.5], [220.00, 0.5], [174.61, 1],
+  [164.81, 1], [146.83, 0.5], [130.81, 0.5], [196.00, 1],
+  [220.00, 1], [174.61, 1], [146.83, 1], [110.00, 1]
+];
+var hh = {
+  phase: 'title',
+  levels: { water: 0, basket: 0, compost: 0 },
+  coins: 20,
+  spoiled: 0,
+  water: 0,
+  fx: [],
+  wasReady: [false, false, false, false, false, false, false, false, false],
+  cssW: 400,
+  cssH: 500,
+  dpr: 1,
+  banner: '',
+  bannerT: 0,
+  looping: false,
+  pending: null,
+  banjoNext: 0,
+  banjoStep: 0,
+  last: 0,
+  walk: 0,
+  bees: [],
+  len: 32,
+  between: false
+};
+var hhBee;
+for (hhBee = 0; hhBee < 12; hhBee++) {
+  hh.bees.push({ x: 20 + hhBee * 30, y: 70 + (hhBee % 4) * 28, a: hhBee * 0.6, s: 14 + (hhBee % 3) * 6 });
+}
+var hhStyle = document.createElement('style');
+hhStyle.textContent = ''
+  + '#hhShop{z-index:16;overflow:auto;padding:16px 8px;}'
+  + '#hhShop button{min-width:180px;}'
+  + '#title,#pause,#over,#scores,#hhSettings{overflow:auto;}'
+  + 'canvas{touch-action:none;}'
+  + 'body.is-play{justify-content:flex-start;align-items:stretch;}';
+document.head.appendChild(hhStyle);
+
+function hhInfo(c) { return HH_TYPES[c.type] || HH_TYPES.Tomato; }
+function hhSeason() { return HH_SEASONS[Math.max(0, Math.min(9, level - 1))]; }
+function hhSize() {
+  return { w: hh.cssW || canvas.clientWidth || 400, h: hh.cssH || canvas.clientHeight || 500 };
+}
+function hhLayout() {
+  var s = hhSize();
+  var cols = 3;
+  var rows = Math.max(1, Math.ceil((crops.length || 9) / cols));
+  var sky = Math.max(108, Math.round(s.h * 0.2));
+  var foot = 10;
+  var hang = 30;
+  var cellW = s.w / cols;
+  var cellH = (s.h - sky - foot) / rows;
+  var gap = Math.max(18, Math.round(cellH * 0.14));
+  var i, c, col, row;
+  for (i = 0; i < crops.length; i++) {
+    c = crops[i];
+    col = i % cols;
+    row = Math.floor(i / cols);
+    c.cellW = cellW;
+    c.cellH = cellH;
+    c.bedRx = Math.max(40, Math.min(cellW * 0.36, 52));
+    c.hang = hang;
+    c.maxH = Math.max(24, cellH - hang - gap);
+    c.y = sky + row * cellH + gap + c.maxH;
+    c.x = col * cellW + cellW * 0.5 - 44;
+  }
+}
+function hhFresh() {
+  var i;
+  hh.levels = { water: 0, basket: 0, compost: 0 };
+  hh.coins = 20;
+  hh.spoiled = 0;
+  hh.water = 0;
+  hh.phase = 'grow';
+  hh.fx = [];
+  hh.wasReady = [];
+  for (i = 0; i < crops.length; i++) hh.wasReady.push(false);
+  hh.bannerT = 0;
+  hh.walk = 0;
+  hh.between = false;
+}
+function hhBanner() {
+  var s = hhSeason();
+  hh.banner = hhT('seasonBanner', { n: level, name: hhT('s' + level) });
+  hh.bannerT = 1.5;
+}
+function hhSave() {
+  if (gameOver || !running) return;
+  var data = {
+    level: level,
+    score: score,
+    seasonTime: seasonTime,
+    coins: hh.coins,
+    spoiled: hh.spoiled,
+    water: hh.water,
+    phase: hh.phase,
+    between: !!hh.between,
+    levels: { water: hh.levels.water, basket: hh.levels.basket, compost: hh.levels.compost },
+    crops: crops.map(function (c) { return { type: c.type, growth: c.growth, ready: !!c.ready }; })
+  };
+  localStorage.setItem('harvestSave', JSON.stringify(data));
+}
+function hhApply(saved) {
+  var i;
+  level = Math.max(1, Math.min(10, saved.level || 1));
+  score = saved.score || 0;
+  seasonTime = saved.seasonTime || 0;
+  hh.coins = saved.coins || 0;
+  hh.spoiled = saved.spoiled || 0;
+  hh.water = saved.water || 0;
+  if (saved.levels) {
+    hh.levels.water = Math.max(0, Math.min(3, saved.levels.water || 0));
+    hh.levels.basket = Math.max(0, Math.min(3, saved.levels.basket || 0));
+    hh.levels.compost = Math.max(0, Math.min(3, saved.levels.compost || 0));
+  }
+  if (saved.crops) {
+    for (i = 0; i < crops.length && i < saved.crops.length; i++) {
+      crops[i].type = saved.crops[i].type || crops[i].type;
+      crops[i].growth = saved.crops[i].growth || 0;
+      crops[i].ready = !!saved.crops[i].ready;
+      hh.wasReady[i] = crops[i].ready;
+    }
+  }
+  hh.phase = saved.phase === 'shop' ? 'shop' : 'grow';
+  hh.between = !!saved.between;
+}
+function hhGrantBasket(c, basePoints) {
+  var bonus = (6 + hh.levels.basket * 5) * level;
+  var gained = 2 + hh.levels.basket;
+  score += bonus;
+  hh.coins += gained;
+  hhFloat(c.x + 18, c.y - Math.min(120, (c.maxH || 100) * 0.7), '+' + ((basePoints || 0) + bonus));
+  hhBurst(c.x + 44, c.y - 46, 7, true);
+  hhFlyCoins(c, 4 + Math.min(2, gained));
+}
+function hhCatchHarvests() {
+  var i, c;
+  for (i = 0; i < crops.length; i++) {
+    c = crops[i];
+    if (hh.wasReady[i] && !c.ready && c.growth < 0.02 && !c.rotted) hhGrantBasket(c, 25 * level);
+    c.rotted = false;
+  }
+}
+function hhGrow(dt) {
+  var mult = hhSeason().mult * (1 + hh.levels.compost * 0.3);
+  var i, c, info, rate, spoilAt;
+  if (hh.water > 0) {
+    hh.water -= dt;
+    if (hh.water < 0) hh.water = 0;
+  }
+  for (i = 0; i < crops.length; i++) {
+    c = crops[i];
+    if (c.rot > 0) c.rot -= dt;
+    info = hhInfo(c);
+    rate = info.rate * mult;
+    if (hh.water > 0) rate *= 1.12;
+    spoilAt = info.spoil + hh.levels.water * 0.1;
+    if (c.ready && hh.water > 0) {
+      c.growth = 1;
+    } else {
+      c.growth += rate * dt;
+      if (c.growth >= 1 && !c.ready) {
+        c.ready = true;
+        playSound(640, 0.04);
+      }
+      if (c.growth > spoilAt) {
+        c.growth = 0;
+        c.ready = false;
+        c.rot = 0.9;
+        c.rotted = true;
+        score = Math.max(0, score - (8 + level * 2));
+        hh.spoiled += 1;
+        hh.coins = Math.max(0, hh.coins - 1);
+        hhBurst(c.x + 22, c.y - 20, 6, false);
+        playSound(96, 0.14);
+        if (hh.spoiled >= 4) {
+          hhLose();
+          return;
+        }
+      }
+    }
+  }
+  for (i = 0; i < crops.length; i++) hh.wasReady[i] = crops[i].ready;
+  seasonTime += dt;
+  if (hh.bannerT > 0) hh.bannerT -= dt;
+  if (seasonTime >= hh.len) hhEndSeason();
+}
+function hhEndSeason() {
+  if (gameOver) return;
+  if (level >= 10) {
+    score += 40 + level * 8;
+    hh.coins += 12;
+    hhWin();
+    return;
+  }
+  score += 12 + level * 6;
+  hh.coins += 8 + level * 2;
+  hh.phase = 'shop';
+  hh.between = true;
+  paused = true;
+  playSound(520, 0.16);
+  hhSave();
+  hhShowShop();
+}
+function hhBurst(x, y, n, gold) {
+  var i;
+  for (i = 0; i < n; i++) {
+    hh.fx.push({ x: x, y: y, vx: (i - n / 2) * 16, vy: -18 - (i % 3) * 10, life: 0.4 + (i % 3) * 0.08, gold: !!gold && i % 2 === 0 });
+  }
+  if (hh.fx.length > 140) hh.fx.splice(0, hh.fx.length - 140);
+}
+function hhFloat(x, y, text) {
+  hh.fx.push({ x: x, y: y, vx: 0, vy: -26, life: 0.8, gold: true, text: text });
+}
+function hhStepFx(dt) {
+  var i, p, b;
+  for (i = hh.fx.length - 1; i >= 0; i--) {
+    p = hh.fx[i];
+    p.life -= dt;
+    p.x += p.vx * dt;
+    p.y += p.vy * dt;
+    p.vy += 24 * dt;
+    if (p.life <= 0) hh.fx.splice(i, 1);
+  }
+  for (i = 0; i < hh.bees.length; i++) {
+    b = hh.bees[i];
+    b.a += dt;
+    b.x += Math.sin(b.a * 0.9) * b.s * dt;
+    b.y += Math.cos(b.a * 0.6) * 12 * dt;
+    if (b.x < 8) b.x = hhSize().w - 10;
+    if (b.x > hhSize().w - 4) b.x = 8;
+    if (b.y < 28) b.y = 28;
+    if (b.y > Math.max(36, hhSize().h * 0.12)) b.y = 24;
+  }
+}
+function hhPluck(freq, when, dur) {
+  var o, o2, g, g2;
+  if (!audioCtx || muted) return;
+  o = audioCtx.createOscillator();
+  o2 = audioCtx.createOscillator();
+  g = audioCtx.createGain();
+  g2 = audioCtx.createGain();
+  o.type = 'triangle';
+  o2.type = 'square';
+  o.frequency.setValueAtTime(freq, when);
+  o2.frequency.setValueAtTime(freq * 2, when);
+  g2.gain.setValueAtTime(0.14, when);
+  g.gain.setValueAtTime(0.0001, when);
+  g.gain.exponentialRampToValueAtTime(0.04, when + 0.02);
+  g.gain.exponentialRampToValueAtTime(0.0001, when + Math.max(0.14, dur));
+  o.connect(g);
+  o2.connect(g2);
+  g2.connect(g);
+  g.connect(audioCtx.destination);
+  o.start(when);
+  o2.start(when);
+  o.stop(when + dur + 0.05);
+  o2.stop(when + dur + 0.05);
+}
+function hhServiceBanjo() {
+  var music = running && !gameOver && !(paused && hh.phase === 'grow');
+  var t, guard, step, note;
+  if (!music || muted) { hh.banjoNext = 0; return; }
+  if (!audioCtx) return;
+  if (audioCtx.state === 'suspended') {
+    try { audioCtx.resume(); } catch (err) { return; }
+  }
+  t = audioCtx.currentTime;
+  if (!hh.banjoNext || hh.banjoNext < t) hh.banjoNext = t + 0.05;
+  guard = 0;
+  while (hh.banjoNext < t + 0.34 && guard < 5) {
+    guard += 1;
+    step = hh.banjoStep % HH_BANJO.length;
+    note = HH_BANJO[step];
+    hh.banjoStep += 1;
+    hhPluck(note[0], hh.banjoNext, 0.18 + note[1] * 0.05);
+    if (step % 8 === 0) hhPluck(110, hh.banjoNext, 0.4);
+    hh.banjoNext += 0.3 * note[1];
+  }
+}
+function hhDrawSky() {
+  var view = hhSize();
+  var w = view.w, h = view.h;
+  var i, b, sky, light;
+  light = document.documentElement.getAttribute('data-theme') === 'light';
+  sky = ctx.createLinearGradient(0, 0, 0, h);
+  sky.addColorStop(0, light ? '#F6E7C2' : '#121610');
+  sky.addColorStop(0.42, light ? '#E7F0D8' : '#1c261c');
+  sky.addColorStop(1, light ? '#C4A36A' : '#14110e');
+  ctx.fillStyle = sky;
+  ctx.fillRect(0, 0, w, h);
+  if (!light) {
+    ctx.fillStyle = '#F3E6C4';
+    for (i = 0; i < 16; i++) ctx.fillRect((i * 47) % w, (i * 29) % (h * 0.28), 2, 2);
+  }
+  ctx.fillStyle = light ? 'rgba(243,230,196,.5)' : '#F3E6C4';
+  ctx.beginPath();
+  ctx.arc(w * 0.16, h * 0.12, light ? 28 : 16, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = light ? '#C19A50' : '#F3E6C4';
+  ctx.beginPath();
+  ctx.arc(w * 0.16, h * 0.12, 16, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = light ? '#9dbe96' : '#243428';
+  ctx.beginPath();
+  ctx.moveTo(0, h * 0.4);
+  ctx.quadraticCurveTo(w * 0.28, h * 0.26, w * 0.55, h * 0.38);
+  ctx.quadraticCurveTo(w * 0.82, h * 0.5, w, h * 0.32);
+  ctx.lineTo(w, h);
+  ctx.lineTo(0, h);
+  ctx.fill();
+  ctx.fillStyle = light ? '#3E6240' : '#1E3320';
+  ctx.beginPath();
+  ctx.moveTo(0, h * 0.62);
+  ctx.quadraticCurveTo(w * 0.24, h * 0.48, w * 0.5, h * 0.58);
+  ctx.quadraticCurveTo(w * 0.78, h * 0.72, w, h * 0.52);
+  ctx.lineTo(w, h);
+  ctx.lineTo(0, h);
+  ctx.fill();
+  for (i = 0; i < hh.bees.length; i++) {
+    b = hh.bees[i];
+    ctx.globalAlpha = 0.45 + 0.4 * (0.5 + 0.5 * Math.sin(b.a * 4));
+    ctx.fillStyle = HH_GOLD;
+    ctx.fillRect(b.x, b.y, 3, 2);
+  }
+  ctx.globalAlpha = 1;
+}
+function hhDrawBarn() {
+  ctx.save();
+  var view = hhSize();
+  var skyH = crops.length ? Math.max(88, crops[0].y - crops[0].maxH - 8) : view.h * 0.2;
+  var scale = Math.max(0.48, Math.min(0.78, (skyH - 12) / 108));
+  ctx.translate(view.w - 118 * scale, 6 + 38 * scale);
+  ctx.scale(scale, scale);
+  x = 0;
+  y = 0;
+  ctx.fillStyle = HH_PINE;
+  ctx.fillRect(x, y, 96, 64);
+  ctx.fillStyle = HH_INK;
+  ctx.beginPath();
+  ctx.moveTo(x - 8, y);
+  ctx.lineTo(x + 48, y - 36);
+  ctx.lineTo(x + 104, y);
+  ctx.fill();
+  ctx.fillStyle = HH_GOLD;
+  ctx.fillRect(x + 36, y + 22, 24, 42);
+  ctx.strokeStyle = HH_INK;
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(x + 48, y + 22);
+  ctx.lineTo(x + 48, y + 64);
+  ctx.moveTo(x + 36, y + 40);
+  ctx.lineTo(x + 60, y + 40);
+  ctx.stroke();
+  if (hh.levels.basket > 0) {
+    ctx.fillStyle = HH_GOLD;
+    ctx.fillRect(x - 28, y + 40, 18 + hh.levels.basket * 4, 14);
+    ctx.fillStyle = HH_INK;
+    ctx.fillRect(x - 24, y + 36, 10, 6);
+  }
+  if (hh.levels.water > 0) {
+    ctx.fillStyle = HH_GOLD;
+    ctx.fillRect(x + 8, y + 48, 8, 16);
+    ctx.beginPath();
+    ctx.arc(x + 12, y + 46, 7, Math.PI, 0);
+    ctx.fill();
+    ctx.fillStyle = HH_INK;
+    ctx.fillRect(x + 11, y + 40, 2, 8);
+  }
+  if (hh.levels.compost > 0) {
+    ctx.fillStyle = HH_PINE;
+    ctx.beginPath();
+    ctx.ellipse(x + 80, y + 70, 16 + hh.levels.compost * 3, 8, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = HH_GOLD;
+    ctx.globalAlpha = 0.8;
+    ctx.fillRect(x + 74, y + 64, 6, 4);
+    ctx.fillRect(x + 84, y + 66, 5, 3);
+    ctx.globalAlpha = 1;
+  }
+  ctx.restore();
+}
+function hhRoundRect(x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+function hhLeaf(x, y, s, flip) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.scale(flip ? -1 : 1, 1);
+  ctx.fillStyle = HH_PINE;
+  ctx.beginPath();
+  ctx.ellipse(s * 0.55, 0, s, s * 0.42, -0.4, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+}
+function hhTomatoBall(x, y, s, ripe) {
+  ctx.fillStyle = ripe ? '#E10600' : '#7FA35A';
+  ctx.beginPath();
+  ctx.arc(x, y, s, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = ripe ? '#FF9B90' : '#E7F0C8';
+  ctx.beginPath();
+  ctx.arc(x - s * 0.32, y - s * 0.32, s * 0.28, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = '#217A32';
+  ctx.beginPath();
+  ctx.moveTo(x, y - s * 0.7);
+  ctx.lineTo(x - s * 0.55, y - s * 1.05);
+  ctx.lineTo(x, y - s * 0.82);
+  ctx.lineTo(x + s * 0.55, y - s * 1.05);
+  ctx.closePath();
+  ctx.fill();
+}
+function hhPepperPod(x, y, s, ripe) {
+  ctx.fillStyle = ripe ? '#D10F2A' : '#8FBF45';
+  ctx.beginPath();
+  ctx.moveTo(x, y);
+  ctx.bezierCurveTo(x + s * 0.85, y + s * 0.15, x + s * 0.7, y + s * 1.35, x, y + s * 1.7);
+  ctx.bezierCurveTo(x - s * 0.7, y + s * 1.35, x - s * 0.85, y + s * 0.15, x, y);
+  ctx.fill();
+  ctx.fillStyle = ripe ? '#FF8A96' : '#E4F2B0';
+  ctx.fillRect(x - s * 0.16, y + s * 0.35, s * 0.22, s * 0.7);
+  ctx.fillStyle = '#217A32';
+  ctx.fillRect(x - 2, y - s * 0.28, 4, s * 0.34);
+}
+function hhBerry(x, y, s, ripe) {
+  ctx.fillStyle = ripe ? '#E10600' : '#F2F2C8';
+  ctx.beginPath();
+  ctx.moveTo(x, y + s);
+  ctx.bezierCurveTo(x - s * 1.2, y + s * 0.15, x - s * 0.7, y - s * 0.85, x, y - s * 0.35);
+  ctx.bezierCurveTo(x + s * 0.7, y - s * 0.85, x + s * 1.2, y + s * 0.15, x, y + s);
+  ctx.fill();
+  ctx.fillStyle = ripe ? '#FFE566' : '#C9C98A';
+  ctx.fillRect(x - s * 0.28, y + s * 0.05, 2, 2);
+  ctx.fillRect(x + s * 0.16, y + s * 0.22, 2, 2);
+  ctx.fillRect(x - s * 0.05, y + s * 0.42, 2, 2);
+  ctx.fillStyle = '#217A32';
+  ctx.beginPath();
+  ctx.moveTo(x, y - s * 0.2);
+  ctx.lineTo(x - s * 0.62, y - s * 0.72);
+  ctx.lineTo(x, y - s * 0.42);
+  ctx.lineTo(x + s * 0.62, y - s * 0.72);
+  ctx.closePath();
+  ctx.fill();
+}
+function hhDrawKind(kind, cx, ground, top, stage) {
+  var h = Math.max(12, ground - top);
+  var ripe = stage >= 4;
+  var fruit = stage >= 3;
+  var leaf = Math.min(16, h * 0.2);
+  if (kind === 'corn') {
+    ctx.fillStyle = '#3C7A34';
+    ctx.fillRect(cx - 3, top + 2, 7, h - 2);
+    hhLeaf(cx, top + h * 0.42, leaf + 4, false);
+    hhLeaf(cx, top + h * 0.62, leaf + 2, true);
+    if (fruit) {
+      var eh = ripe ? Math.min(36, h * 0.5) : Math.min(16, h * 0.26);
+      var ey = top + 8 + eh * 0.45;
+      ctx.fillStyle = '#7CB342';
+      ctx.beginPath();
+      ctx.ellipse(cx + 13, ey, ripe ? 9 : 6, eh * 0.5, 0.45, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = ripe ? '#FFE14A' : '#D5DE78';
+      hhRoundRect(cx + 7, ey - eh * 0.32, ripe ? 12 : 7, eh * 0.7, 4);
+      ctx.fill();
+      ctx.fillStyle = '#3C7A34';
+      ctx.fillRect(cx + 9, ey - eh * 0.48, 5, 7);
+    }
+    return;
+  }
+  if (kind === 'pumpkin') {
+    ctx.strokeStyle = '#3C7A34';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(cx - Math.min(24, h * 0.4), ground - 4);
+    ctx.quadraticCurveTo(cx, ground - h * 0.55, cx + Math.min(22, h * 0.36), ground - 5);
+    ctx.stroke();
+    hhLeaf(cx - 14, ground - 12, 11, true);
+    hhLeaf(cx + 16, ground - 14, 11, false);
+    if (fruit) {
+      var rad = ripe ? Math.min(24, h * 0.4) : 11;
+      var py = ground - rad * 0.72;
+      ctx.fillStyle = ripe ? '#F47B20' : '#C5D36A';
+      ctx.beginPath();
+      ctx.ellipse(cx, py, rad, rad * 0.78, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = ripe ? '#C65312' : '#7C8C3E';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(cx, py - rad * 0.62);
+      ctx.lineTo(cx, py + rad * 0.62);
+      ctx.moveTo(cx - rad * 0.45, py - rad * 0.1);
+      ctx.quadraticCurveTo(cx, py + rad * 0.15, cx + rad * 0.45, py - rad * 0.1);
+      ctx.stroke();
+      ctx.fillStyle = '#3C7A34';
+      ctx.fillRect(cx - 3, py - rad * 0.78 - 7, 6, 9);
+    }
+    return;
+  }
+  if (kind === 'carrot') {
+    var rim = 7;
+    var fern = fruit ? Math.min(ripe ? 34 : 18, h * 0.55) : Math.min(14, h * 0.32);
+    ctx.strokeStyle = '#2F7A34';
+    ctx.lineWidth = ripe ? 3 : 2;
+    ctx.beginPath();
+    ctx.moveTo(cx - 1, ground - rim);
+    ctx.quadraticCurveTo(cx - 10, ground - rim - fern * 0.55, cx - 18, ground - rim - fern);
+    ctx.moveTo(cx, ground - rim + 1);
+    ctx.quadraticCurveTo(cx + 2, ground - rim - fern * 0.75, cx + 1, ground - rim - fern - 6);
+    ctx.moveTo(cx + 1, ground - rim);
+    ctx.quadraticCurveTo(cx + 12, ground - rim - fern * 0.5, cx + 20, ground - rim - fern + 2);
+    ctx.stroke();
+    hhLeaf(cx - 14, ground - rim - fern + 2, ripe ? 9 : 5, true);
+    hhLeaf(cx + 12, ground - rim - fern + 4, ripe ? 9 : 5, false);
+    if (fruit) {
+      var shoulder = ripe ? 13 : 8;
+      var dome = ripe ? 8 : 5;
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(cx - shoulder - 2, ground - rim - dome, shoulder * 2 + 4, dome);
+      ctx.clip();
+      ctx.fillStyle = ripe ? '#FF8C1A' : '#E0C85A';
+      ctx.beginPath();
+      ctx.ellipse(cx, ground - rim + 1, shoulder, dome, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = 'rgba(255,244,214,.9)';
+      ctx.fillRect(cx - 2, ground - rim - dome + 3, 3, 3);
+      ctx.restore();
+    }
+    return;
+  }
+  if (kind === 'strawberry') {
+    hhLeaf(cx, ground - 18, leaf, false);
+    hhLeaf(cx, ground - 18, leaf, true);
+    hhLeaf(cx, ground - 28, leaf * 0.8, false);
+    if (fruit) {
+      var bs = ripe ? Math.min(16, h * 0.3) : 8;
+      hhBerry(cx - 8, ground - 10 - bs, bs, ripe);
+      if (ripe) hhBerry(cx + 12, ground - 8 - bs * 0.8, bs * 0.82, true);
+    }
+    return;
+  }
+  if (kind === 'pepper') {
+    ctx.fillStyle = '#2F6B34';
+    ctx.fillRect(cx - 2, top + h * 0.25, 5, h * 0.75);
+    hhLeaf(cx, top + h * 0.4, leaf, false);
+    hhLeaf(cx, top + h * 0.58, leaf, true);
+    if (fruit) {
+      var ps = ripe ? Math.min(20, h * 0.36) : 10;
+      hhPepperPod(cx - 10, top + 8, ps, ripe);
+      if (ripe) hhPepperPod(cx + 10, top + 14, ps * 0.78, true);
+    }
+    return;
+  }
+  ctx.fillStyle = '#2F6B34';
+  ctx.fillRect(cx - 2, top + h * 0.42, 5, h * 0.58);
+  hhLeaf(cx, top + h * 0.5, leaf + 2, false);
+  hhLeaf(cx, top + h * 0.5, leaf + 2, true);
+  hhLeaf(cx, top + h * 0.68, leaf, false);
+  if (fruit) {
+    var ts = ripe ? Math.min(16, h * 0.28) : 8;
+    hhTomatoBall(cx - ts * 0.15, top + ts + 4, ts, ripe);
+    if (ripe) hhTomatoBall(cx + ts * 0.95, top + ts * 1.85, ts * 0.78, true);
+  }
+}
+function hhDrawDrop(x, y, s) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.fillStyle = '#1F4E68';
+  ctx.beginPath();
+  ctx.moveTo(0, -s);
+  ctx.bezierCurveTo(s, -s * 0.15, s * 0.85, s * 0.9, 0, s);
+  ctx.bezierCurveTo(-s * 0.85, s * 0.9, -s, -s * 0.15, 0, -s);
+  ctx.fill();
+  ctx.fillStyle = '#E7F4FA';
+  ctx.beginPath();
+  ctx.arc(-s * 0.22, -s * 0.05, s * 0.24, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+}
+function hhDrawWiltIcon(x, y) {
+  ctx.fillStyle = '#FFF8EA';
+  ctx.beginPath();
+  ctx.arc(x, y, 13, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.lineWidth = 2;
+  ctx.strokeStyle = HH_INK;
+  ctx.stroke();
+  ctx.strokeStyle = '#8E3B32';
+  ctx.beginPath();
+  ctx.moveTo(x - 6, y - 5);
+  ctx.quadraticCurveTo(x, y + 1, x + 7, y + 6);
+  ctx.moveTo(x - 1, y - 7);
+  ctx.lineTo(x + 3, y + 7);
+  ctx.stroke();
+}
+function hhDrawPlant(c) {
+  var info = hhInfo(c);
+  var g = Math.max(0, c.growth);
+  var shown = Math.min(1, g);
+  var cx = c.x + 44;
+  var ground = c.y;
+  var maxH = c.maxH || 110;
+  var rx = c.bedRx || 54;
+  var ry = Math.max(16, rx * 0.34);
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var bob = reduce ? 0 : Math.sin(hh.walk * 3 + cx * 0.05) * 1.4;
+  var stage = c.rot > 0 ? -1 : (c.ready || shown >= 0.86 ? 4 : shown >= 0.58 ? 3 : shown >= 0.28 ? 2 : shown > 0.03 ? 1 : 0);
+  var hgt = stage < 0 ? maxH * 0.55 : (stage === 0 ? 0 : maxH * [0, 0.28, 0.52, 0.74, 1][stage]);
+  var top = ground - hgt;
+  var i, filled;
+  ctx.fillStyle = '#5C4630';
+  hhRoundRect(cx - rx, ground - ry * 0.15, rx * 2, ry * 1.55, 12);
+  ctx.fill();
+  ctx.lineWidth = 3;
+  ctx.strokeStyle = HH_GOLD;
+  ctx.stroke();
+  ctx.fillStyle = '#6B4E2E';
+  ctx.beginPath();
+  ctx.ellipse(cx, ground + ry * 0.35, rx * 0.86, ry, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = '#C4A36A';
+  ctx.beginPath();
+  ctx.ellipse(cx, ground + ry * 0.15, rx * 0.68, ry * 0.62, 0, 0, Math.PI * 2);
+  ctx.fill();
+  filled = stage < 0 ? 0 : stage;
+  for (i = 0; i < 4; i++) {
+    ctx.fillStyle = i < filled ? HH_PINE : '#FFF8EA';
+    ctx.fillRect(cx - rx + 8 + i * 12, ground + ry * 0.85, 8, 8);
+    ctx.strokeStyle = HH_INK;
+    ctx.lineWidth = 1;
+    ctx.strokeRect(cx - rx + 8 + i * 12, ground + ry * 0.85, 8, 8);
+  }
+  if (hh.water > 0) hhDrawDrop(cx + rx - 8, ground - ry - 6, 9);
+  if (stage === 0) return;
+  if (stage < 0) {
+    ctx.strokeStyle = '#6B4E2E';
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.moveTo(cx, ground);
+    ctx.quadraticCurveTo(cx + 10, top + (ground - top) * 0.45, cx + 4, top + 8);
+    ctx.stroke();
+    hhLeaf(cx + 6, top + 18, 10, false);
+    hhDrawWiltIcon(cx, Math.min(ground - 20, top + 16));
+    return;
+  }
+  hhDrawKind(info.kind, cx, ground, top + bob, stage);
+  if (c.ready) {
+    var pickH = 13;
+    var pickY = Math.round(ground + ry * 1.4 + 2);
+    var viewH = hh.cssH || 520;
+    if (pickY + pickH > viewH - 2) pickY = Math.round(viewH - 2 - pickH);
+    ctx.font = 'bold 10px Georgia, "Iowan Old Style", Palatino, "Palatino Linotype", serif';
+    ctx.textAlign = 'center';
+    var pickLabel = hhT('pick');
+    var pickW = Math.max(36, Math.ceil(ctx.measureText(pickLabel).width + 12));
+    ctx.fillStyle = '#FFF8EA';
+    hhRoundRect(cx - pickW / 2, pickY, pickW, pickH, 4);
+    ctx.fill();
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = HH_PINE;
+    ctx.stroke();
+    ctx.fillStyle = HH_INK;
+    ctx.fillText(pickLabel, cx, pickY + 10);
+    ctx.textAlign = 'left';
+  }
+}
+function hhDrawFx() {
+  var i, p, w;
+  ctx.font = 'bold 14px Georgia, "Iowan Old Style", Palatino, "Palatino Linotype", serif';
+  ctx.textAlign = 'left';
+  for (i = 0; i < hh.fx.length; i++) {
+    p = hh.fx[i];
+    ctx.globalAlpha = Math.max(0, Math.min(1, p.life * 2));
+    if (p.text) {
+      w = ctx.measureText(p.text).width;
+      ctx.fillStyle = '#FFF8EA';
+      hhRoundRect(p.x - 4, p.y - 14, w + 8, 18, 5);
+      ctx.fill();
+      ctx.fillStyle = HH_INK;
+      ctx.fillText(p.text, p.x, p.y);
+    } else {
+      ctx.fillStyle = p.gold ? HH_GOLD : HH_PINE;
+      ctx.fillRect(p.x, p.y, 4, 4);
+    }
+  }
+  ctx.globalAlpha = 1;
+}
+function hhSyncHud() {
+  var hud = document.getElementById('hhHud');
+  var toast = document.getElementById('hhToast');
+  var on = !!(running && !gameOver && canvas.style.display !== 'none');
+  var left = Math.max(0, hh.len - seasonTime);
+  var scoreEl = document.getElementById('hhScoreVal');
+  var coinEl = document.getElementById('hhCoinVal');
+  var seasonEl = document.getElementById('hhSeasonVal');
+  var sunEl = document.getElementById('hhSunVal');
+  var wiltEl = document.getElementById('hhWiltVal');
+  var waterBtn = document.getElementById('hhWaterBtn');
+  document.body.classList.toggle('is-play', on);
+  if (hud) hud.hidden = !on;
+  if (!on) {
+    if (toast) toast.hidden = true;
+    return;
+  }
+  if (scoreEl) scoreEl.textContent = String(score);
+  if (coinEl) coinEl.textContent = String(hh.coins);
+  if (seasonEl) seasonEl.textContent = level + '/10';
+  if (sunEl) sunEl.textContent = left.toFixed(0) + 's';
+  if (wiltEl) wiltEl.textContent = hh.spoiled + '/4';
+  if (waterBtn) waterBtn.classList.toggle('is-on', hh.water > 0);
+  if (toast) {
+    if (hh.bannerT > 0 && hh.banner) {
+      var hudBox = hud ? hud.getBoundingClientRect() : null;
+      toast.hidden = false;
+      toast.textContent = hh.banner;
+      toast.style.opacity = String(hh.bannerT < 0.45 ? Math.max(0, hh.bannerT / 0.45) : 1);
+      if (hudBox) toast.style.top = Math.round(hudBox.bottom + 8) + 'px';
+    } else {
+      toast.hidden = true;
+      toast.style.opacity = '0';
+    }
+  }
+}
+function hhPaint() {
+  var view = hhSize();
+  var veil = crops.length ? Math.max(48, crops[0].y - (crops[0].maxH || 100) - 24) : view.h * 0.16;
+  ctx.setTransform(hh.dpr || 1, 0, 0, hh.dpr || 1, 0, 0);
+  ctx.imageSmoothingEnabled = false;
+  hhDrawSky();
+  ctx.fillStyle = 'rgba(26, 22, 16, 0.30)';
+  ctx.fillRect(0, 0, view.w, Math.min(veil, view.h * 0.28));
+  hhDrawBarn();
+  var i;
+  for (i = 0; i < crops.length; i++) hhDrawPlant(crops[i]);
+  hhDrawFx();
+  hhSyncHud();
+  if (paused && hh.phase === 'grow') {
+    ctx.fillStyle = HH_INK;
+    ctx.globalAlpha = 0.55;
+    ctx.fillRect(0, 0, view.w, view.h);
+    ctx.globalAlpha = 1;
+  }
+}
+function hhRefreshShop() {
+  var el = document.getElementById('hhCoins');
+  var w = document.getElementById('hhBuyWater');
+  var b = document.getElementById('hhBuyBasket');
+  var c = document.getElementById('hhBuyCompost');
+  var n = document.getElementById('hhNext');
+  if (el) el.textContent = String(hh.coins);
+  if (w) w.textContent = hh.levels.water >= 3 ? hhT('waterCanMax') : hhT('waterCan', { n: hh.levels.water + 1, cost: HH_COST.water[hh.levels.water] });
+  if (b) b.textContent = hh.levels.basket >= 3 ? hhT('basketMax') : hhT('basket', { n: hh.levels.basket + 1, cost: HH_COST.basket[hh.levels.basket] });
+  if (c) c.textContent = hh.levels.compost >= 3 ? hhT('compostMax') : hhT('compost', { n: hh.levels.compost + 1, cost: HH_COST.compost[hh.levels.compost] });
+  if (n) n.textContent = !hh.between ? hhT('backRows') : (level >= 10 ? hhT('finishYear') : hhT('plantSeason', { n: level + 1 }));
+}
+function hhShowShop() {
+  hhEnsure();
+  hhRefreshShop();
+  var shop = document.getElementById('hhShop');
+  if (shop) shop.style.display = 'flex';
+}
+function hhHideShop() {
+  var shop = document.getElementById('hhShop');
+  if (shop) shop.style.display = 'none';
+}
+function hhBuy(kind) {
+  var lv = hh.levels[kind];
+  var cost;
+  if (lv >= 3) { playSound(90, 0.05); return; }
+  cost = HH_COST[kind][lv];
+  if (hh.coins < cost) { playSound(90, 0.07); return; }
+  hh.coins -= cost;
+  hh.levels[kind] = lv + 1;
+  playSound(340, 0.1);
+  hhRefreshShop();
+  hhSave();
+}
+function hhNextSeason() {
+  if (!hh.between) {
+    hh.phase = 'grow';
+    paused = false;
+    hhHideShop();
+    return;
+  }
+  hh.between = false;
+  hhHideShop();
+  if (level >= 10) {
+    hhWin();
+    return;
+  }
+  level += 1;
+  seasonTime = 0;
+  hh.spoiled = 0;
+  hh.phase = 'grow';
+  paused = false;
+  hhBanner();
+  playSound(480, 0.1);
+}
+function hhWater() {
+  var extra;
+  if (!running || gameOver) return;
+  if (hh.phase !== 'grow' || paused) return;
+  extra = 2.2 + hh.levels.water * 1.15;
+  hh.water = Math.max(hh.water, extra);
+  hhBurst(hhSize().w * 0.5, hhSize().h * 0.45, 8, true);
+  playSound(560, 0.08);
+}
+function hhPick(index) {
+  var c = crops[index];
+  if (!c || !running || paused || gameOver || hh.phase !== 'grow' || !c.ready) return;
+  score += 25 * level;
+  if (score > high) { high = score; localStorage.setItem('harvestHigh', high); }
+  c.growth = 0;
+  c.ready = false;
+  hh.wasReady[index] = false;
+  hhGrantBasket(c, 25 * level);
+  playSound(400, 0.08);
+}
+function hhEnsure() {
+  var title = document.getElementById('title');
+  var pauseMenu = document.getElementById('pause');
+  var touch = document.getElementById('touchControls');
+  var shop, cont, mute, water, market, quit, how, help, art;
+  if (!document.getElementById('hhHelp')) {
+    help = document.createElement('div');
+    help.id = 'hhHelp';
+    help.className = 'menu';
+    help.style.display = 'none';
+    help.innerHTML = '<div class="sheet">'
+      + '<p class="brand">JW Manor</p>'
+      + '<h2 data-i18n="howTitle">How to play</h2>'
+      + '<p data-i18n="how1"></p>'
+      + '<p data-i18n="how2"></p>'
+      + '<p data-i18n="how3"></p>'
+      + '<p data-i18n="how4"></p>'
+      + '<p data-i18n="noads"></p>'
+      + '<button type="button" class="icon-btn labeled" id="hhHelpBack" data-i18n-aria="back"><span data-i18n="back">Back</span></button>'
+      + '</div>';
+    document.body.appendChild(help);
+    document.getElementById('hhHelpBack').onclick = hhHideHelp;
+  }
+  if (title && !document.getElementById('hhArt')) {
+    art = document.createElement('canvas');
+    art.id = 'hhArt';
+    art.width = 640;
+    art.height = 220;
+    art.setAttribute('aria-hidden', 'true');
+    title.insertBefore(art, title.children[1]);
+    hhPaintBanner(art);
+  }
+  if (!document.getElementById('hhShop')) {
+    shop = document.createElement('div');
+    shop.id = 'hhShop';
+    shop.className = 'menu';
+    shop.style.display = 'none';
+    shop.innerHTML = '<h2 data-i18n="market">Season Market</h2><p><span data-i18n="coins">Coins</span> <span id="hhCoins">0</span></p>'
+      + '<button type="button" class="icon-btn labeled" id="hhBuyWater"></button>'
+      + '<button type="button" class="icon-btn labeled" id="hhBuyBasket"></button>'
+      + '<button type="button" class="icon-btn labeled" id="hhBuyCompost"></button>'
+      + '<button type="button" class="icon-btn labeled" id="hhNext"></button>';
+    document.body.appendChild(shop);
+    document.getElementById('hhBuyWater').onclick = function () { hhBuy('water'); };
+    document.getElementById('hhBuyBasket').onclick = function () { hhBuy('basket'); };
+    document.getElementById('hhBuyCompost').onclick = function () { hhBuy('compost'); };
+    document.getElementById('hhNext').onclick = hhNextSeason;
+  }
+  if (touch && !document.getElementById('hhWaterBtn')) {
+    water = document.createElement('button');
+    water.id = 'hhWaterBtn';
+    water.type = 'button';
+    water.className = 'icon-btn';
+    water.setAttribute('data-i18n-aria', 'water');
+    water.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2.4C12 2.4 5.2 10 5.2 15.1a6.8 6.8 0 0 0 13.6 0C18.8 10 12 2.4 12 2.4z"/></svg>';
+    water.onclick = hhWater;
+    touch.appendChild(water);
+    market = document.createElement('button');
+    market.id = 'hhMarketBtn';
+    market.type = 'button';
+    market.className = 'icon-btn';
+    market.setAttribute('data-i18n-aria', 'market');
+    market.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M6.5 9h11l-.9 11H7.4L6.5 9z"/><path fill="none" stroke="currentColor" stroke-width="2" d="M9 9V7a3 3 0 0 1 6 0v2"/></svg>';
+    market.onclick = function () {
+      if (!running || gameOver || hh.phase !== 'grow') return;
+      paused = true;
+      hh.between = false;
+      hh.phase = 'shop';
+      hhShowShop();
+    };
+    touch.appendChild(market);
+    mute = document.createElement('button');
+    mute.id = 'hhMute';
+    mute.type = 'button';
+    mute.className = 'icon-btn';
+    mute.onclick = hhToggleMute;
+    touch.appendChild(mute);
+  }
+  if (title && !document.getElementById('hhCont')) {
+    cont = document.createElement('button');
+    cont.id = 'hhCont';
+    cont.type = 'button';
+    cont.className = 'icon-btn labeled';
+    cont.setAttribute('data-i18n-aria', 'continue');
+    cont.innerHTML = '<span data-i18n="continue">Continue</span>';
+    cont.onclick = hhContinue;
+    how = title.querySelector('button[onclick*="showHow"]');
+    title.insertBefore(cont, how);
+  }
+  if (title && !document.getElementById('hhMuteTitle')) {
+    mute = document.createElement('button');
+    mute.id = 'hhMuteTitle';
+    mute.type = 'button';
+    mute.className = 'icon-btn labeled';
+    mute.onclick = hhToggleMute;
+    title.appendChild(mute);
+  }
+  if (pauseMenu && !document.getElementById('hhQuit')) {
+    quit = document.createElement('button');
+    quit.id = 'hhQuit';
+    quit.type = 'button';
+    quit.className = 'icon-btn labeled';
+    quit.setAttribute('data-i18n-aria', 'saveTitle');
+    quit.innerHTML = '<span data-i18n="save">Save</span>';
+    quit.onclick = function () {
+      hhSave();
+      document.getElementById('pause').style.display = 'none';
+      hhHideShop();
+      showTitle();
+    };
+    pauseMenu.appendChild(quit);
+  }
+  var rc = document.getElementById('hhCont');
+  if (rc) rc.style.display = localStorage.getItem('harvestSave') ? '' : 'none';
+  hhToggleMute(true);
+  hhRefreshShop();
+}
+function hhToggleMute(paintOnly) {
+  if (paintOnly !== true) {
+    muted = !muted;
+    localStorage.setItem('harvestMute', muted ? '1' : '0');
+    playSound(muted ? 120 : 500, 0.05);
+  }
+  var label = hhT(muted ? 'unmute' : 'mute');
+  var mark = hhSpeaker(!muted);
+  var a = document.getElementById('hhMute');
+  var b = document.getElementById('hhMuteTitle');
+  if (a) { a.setAttribute('aria-label', label); a.innerHTML = mark; }
+  if (b) { b.setAttribute('aria-label', label); b.innerHTML = mark + '<span>' + label + '</span>'; }
+}
+function hhWin() {
+  if (gameOver) return;
+  gameOver = true;
+  running = false;
+  paused = false;
+  hh.phase = 'over';
+  localStorage.removeItem('harvestSave');
+  var h = document.querySelector('#over h2');
+  if (h) h.textContent = hhT('cellarFull');
+  document.getElementById('finalScore').textContent = String(score);
+  hhHideShop();
+  document.getElementById('pause').style.display = 'none';
+  document.getElementById('over').style.display = 'flex';
+  canvas.style.display = 'none';
+  playSound(680, 0.22);
+}
+function hhLose() {
+  if (gameOver) return;
+  gameOver = true;
+  running = false;
+  paused = false;
+  hh.phase = 'over';
+  localStorage.removeItem('harvestSave');
+  var h = document.querySelector('#over h2');
+  if (h) h.textContent = hhT('rowsLost');
+  document.getElementById('finalScore').textContent = String(score);
+  hhHideShop();
+  document.getElementById('pause').style.display = 'none';
+  document.getElementById('over').style.display = 'flex';
+  canvas.style.display = 'none';
+  playSound(80, 0.4);
+}
+function hhContinue() {
+  try { hh.pending = JSON.parse(localStorage.getItem('harvestSave') || 'null'); }
+  catch (err) { hh.pending = null; }
+  if (!hh.pending) return;
+  startGame();
+}
+function hhReport() {
+  return {
+    level: level,
+    score: score,
+    coins: hh.coins,
+    seasonTime: Math.round(seasonTime * 10) / 10,
+    phase: hh.phase,
+    paused: paused,
+    running: running,
+    gameOver: gameOver,
+    muted: muted,
+    spoiled: hh.spoiled,
+    water: Math.round(hh.water * 10) / 10,
+    levels: { water: hh.levels.water, basket: hh.levels.basket, compost: hh.levels.compost },
+    crops: crops.map(function (c) { return { type: c.type, g: Math.round(c.growth * 100) / 100, ready: !!c.ready, x: Math.round(c.x), y: Math.round(c.y) }; }),
+    save: localStorage.getItem('harvestSave') ? 1 : 0,
+    muteFlag: localStorage.getItem('harvestMute') || '0',
+    name: hhSeason().name,
+    mult: hhSeason().mult
+  };
+}
+function hhStep(dt) {
+  if (running && !paused && !gameOver && hh.phase === 'grow') {
+    hhCatchHarvests();
+    hhGrow(dt);
+    hhStepFx(dt);
+    hh.walk += dt;
+  }
+}
+
+var hhPlayOrig = playSound;
+playSound = function (freq, dur) {
+  try {
+    if (muted) return;
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    hhPlayOrig(freq, dur);
+  } catch (err) {}
+};
+var hhPauseOrig = togglePause;
+togglePause = function () {
+  if (!running || gameOver) return;
+  if (hh.phase === 'shop') return;
+  hhPauseOrig();
+};
+var hhShowTitleOrig = showTitle;
+showTitle = function () {
+  var settings = document.getElementById('hhSettings');
+  hhShowTitleOrig();
+  if (settings) settings.style.display = 'none';
+  hh.phase = 'title';
+  running = false;
+  paused = false;
+  hhEnsure();
+  hhSyncHud();
+};
+function hhHideHelp() {
+  var help = document.getElementById('hhHelp');
+  if (help) help.style.display = 'none';
+  if (!running) document.getElementById('title').style.display = 'flex';
+}
+function hhPaintBanner(art) {
+  var g = art.getContext('2d');
+  var w = art.width, h = art.height, sky;
+  sky = g.createLinearGradient(0, 0, 0, h);
+  sky.addColorStop(0, '#F6E7C2');
+  sky.addColorStop(1, '#9dbe96');
+  g.fillStyle = sky;
+  g.fillRect(0, 0, w, h);
+  g.fillStyle = '#C19A50';
+  g.beginPath();
+  g.arc(w * 0.16, h * 0.28, 28, 0, Math.PI * 2);
+  g.fill();
+  g.fillStyle = '#3E6240';
+  g.beginPath();
+  g.moveTo(0, h * 0.62);
+  g.quadraticCurveTo(w * 0.4, h * 0.4, w, h * 0.58);
+  g.lineTo(w, h);
+  g.lineTo(0, h);
+  g.fill();
+  g.fillStyle = '#8E3B32';
+  g.fillRect(w * 0.62, h * 0.34, w * 0.22, h * 0.28);
+  g.fillStyle = '#5C241E';
+  g.beginPath();
+  g.moveTo(w * 0.58, h * 0.38);
+  g.lineTo(w * 0.73, h * 0.18);
+  g.lineTo(w * 0.88, h * 0.38);
+  g.fill();
+  g.fillStyle = '#C4A36A';
+  g.fillRect(0, h * 0.78, w, h * 0.22);
+  g.fillStyle = '#305032';
+  for (var i = 0; i < 6; i++) {
+    g.fillRect(40 + i * 90, h * 0.7, 8, h * 0.16);
+    g.beginPath();
+    g.arc(44 + i * 90, h * 0.66, 14, 0, Math.PI * 2);
+    g.fill();
+    g.fillStyle = '#C19A50';
+    g.beginPath();
+    g.arc(40 + i * 90, h * 0.64, 5, 0, Math.PI * 2);
+    g.fill();
+    g.fillStyle = '#305032';
+  }
+}
+showHow = function () {
+  hhEnsure();
+  document.getElementById('title').style.display = 'none';
+  document.getElementById('scores').style.display = 'none';
+  document.getElementById('hhSettings').style.display = 'none';
+  document.getElementById('hhHelp').style.display = 'flex';
+};
+function hhSpeaker(on) {
+  if (on) return '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 9h4l5-4v14l-5-4H4z"/><path fill="none" stroke="currentColor" stroke-width="2" d="M16 9.2a4 4 0 0 1 0 5.6"/></svg>';
+  return '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 9h4l5-4v14l-5-4H4z"/><path fill="none" stroke="currentColor" stroke-width="2" d="M16 10l5 5M21 10l-5 5"/></svg>';
+}
+function hhFlyCoins(c, n) {
+  var chip = document.getElementById('hhCoinChip');
+  var reduce, rect, s, sx, sy, dest, dx, dy, i, el, live;
+  if (!chip) return;
+  chip.classList.remove('is-pop');
+  void chip.offsetWidth;
+  chip.classList.add('is-pop');
+  reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduce) return;
+  live = document.querySelectorAll('.hh-coin').length;
+  if (live > 16) return;
+  rect = canvas.getBoundingClientRect();
+  s = hhSize();
+  if (!rect.width || !s.w || !s.h) return;
+  sx = rect.left + ((c.x + 44) / s.w) * rect.width;
+  sy = rect.top + ((c.y - 48) / s.h) * rect.height;
+  dest = chip.getBoundingClientRect();
+  dx = dest.left + dest.width / 2 - 8;
+  dy = dest.top + dest.height / 2 - 8;
+  n = Math.max(4, Math.min(6, n || 5));
+  for (i = 0; i < n; i++) {
+    el = document.createElement('div');
+    el.className = 'hh-coin';
+    el.style.left = (sx + (i - (n - 1) / 2) * 12) + 'px';
+    el.style.top = sy + 'px';
+    document.body.appendChild(el);
+    el.animate([
+      { transform: 'translate(0px, 0px) scale(1)', opacity: 1 },
+      { transform: 'translate(' + ((dx - sx) * 0.5) + 'px, ' + ((dy - sy) * 0.25 - 48) + 'px) scale(1.2)', opacity: 1, offset: 0.42 },
+      { transform: 'translate(' + (dx - sx) + 'px, ' + (dy - sy) + 'px) scale(0.55)', opacity: 0.15 }
+    ], { duration: 560, delay: i * 40, easing: 'cubic-bezier(.2,.8,.2,1)', fill: 'forwards' });
+    (function (node, wait) {
+      setTimeout(function () { if (node.parentNode) node.remove(); }, wait);
+    })(el, 680 + i * 40);
+  }
+}
+function hhPointer(clientX, clientY) {
+  var rect, s, x, y, i, c, rx;
+  if (!running || paused || gameOver || hh.phase !== 'grow') return;
+  rect = canvas.getBoundingClientRect();
+  s = hhSize();
+  if (!rect.width || !s.w || !s.h) return;
+  x = (clientX - rect.left) * (s.w / rect.width);
+  y = (clientY - rect.top) * (s.h / rect.height);
+  for (i = crops.length - 1; i >= 0; i--) {
+    c = crops[i];
+    rx = c.bedRx || 50;
+    if (Math.abs(x - (c.x + 44)) <= rx + 6 && y <= c.y + rx * 0.55 && y >= c.y - (c.maxH || 110) - 30) {
+      hhPick(i);
+      return;
+    }
+  }
+}
+drawCrop = function (c) { hhDrawPlant(c); };
+draw = function () { hhPaint(); };
+scaleCanvas = function () {
+  var tools = 76;
+  var hudSpace = 74;
+  var maxW = Math.max(180, window.innerWidth);
+  var maxH = Math.max(220, window.innerHeight - tools - hudSpace);
+  var dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+  hh.cssW = maxW;
+  hh.cssH = maxH;
+  hh.dpr = dpr;
+  canvas.style.transform = 'none';
+  canvas.style.border = '0';
+  canvas.style.maxWidth = 'none';
+  canvas.style.maxHeight = 'none';
+  canvas.style.width = maxW + 'px';
+  canvas.style.height = maxH + 'px';
+  canvas.width = Math.round(maxW * dpr);
+  canvas.height = Math.round(maxH * dpr);
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.imageSmoothingEnabled = false;
+  if (crops && crops.length) hhLayout();
+};
+startGame = function () {
+  var pending = hh.pending;
+  var openShop = false;
+  var settings = document.getElementById('hhSettings');
+  var help = document.getElementById('hhHelp');
+  hh.pending = null;
+  document.getElementById('title').style.display = 'none';
+  document.getElementById('over').style.display = 'none';
+  document.getElementById('scores').style.display = 'none';
+  document.getElementById('pause').style.display = 'none';
+  if (settings) settings.style.display = 'none';
+  if (help) help.style.display = 'none';
+  hhHideShop();
+  document.body.classList.add('is-play');
+  var hud = document.getElementById('hhHud');
+  if (hud) hud.hidden = false;
+  canvas.style.display = 'block';
+  init();
+  hhFresh();
+  scaleCanvas();
+  if (pending) {
+    hhApply(pending);
+    hhLayout();
+    openShop = hh.phase === 'shop';
+  } else {
+    localStorage.removeItem('harvestSave');
+    hhBanner();
+  }
+  hhEnsure();
+  if (openShop) {
+    paused = true;
+    hhShowShop();
+  }
+  playSound(440, 0.1);
+  if (!hh.looping) {
+    hh.looping = true;
+    requestAnimationFrame(update);
+  }
+};
+update = function () {
+  var now = performance.now();
+  var dt = hh.last ? Math.min(0.05, (now - hh.last) / 1000) : 0.016;
+  hh.last = now;
+  if (!dt || dt < 0) dt = 0.016;
+  try { hhServiceBanjo(); } catch (err) {}
+  hhStep(dt);
+  draw();
+  requestAnimationFrame(update);
+};
+window.addEventListener('resize', function () { scaleCanvas(); });
+document.addEventListener('keydown', function (e) {
+  var n = parseInt(e.key, 10);
+  if (n >= 1 && n <= crops.length) hhPick(n - 1);
+});
+document.getElementById('hhSettingsBtn').onclick = function () {
+  document.getElementById('title').style.display = 'none';
+  document.getElementById('scores').style.display = 'none';
+  document.getElementById('hhHelp').style.display = 'none';
+  document.getElementById('hhSettings').style.display = 'flex';
+  if (window.HarvestTheme) HarvestTheme.apply();
+};
+document.getElementById('hhSettingsBack').onclick = function () {
+  document.getElementById('hhSettings').style.display = 'none';
+  if (!running) document.getElementById('title').style.display = 'flex';
+};
+document.querySelectorAll('[data-theme-choice]').forEach(function (b) {
+  b.addEventListener('click', function () { HarvestTheme.set(b.getAttribute('data-theme-choice')); });
+});
+document.addEventListener('pointerdown', function (e) {
+  var b = e.target.closest && e.target.closest('.icon-btn');
+  if (b) b.classList.add('is-down');
+});
+function hhClearPress() {
+  document.querySelectorAll('.icon-btn.is-down').forEach(function (b) { b.classList.remove('is-down'); });
+}
+document.addEventListener('pointerup', hhClearPress);
+document.addEventListener('pointercancel', hhClearPress);
+if (window.HarvestTheme) HarvestTheme.apply();
+hhEnsure();
+window.hhAfterLang = function () {
+  hhRefreshShop();
+  hhToggleMute(true);
+  var scores = document.getElementById('scores');
+  if (scores && scores.style.display === 'flex') showScores();
+};
+document.querySelectorAll('[data-lang-choice]').forEach(function (b) {
+  b.addEventListener('click', function () { HarvestStrings.setLang(b.getAttribute('data-lang-choice')); });
+});
+HarvestStrings.apply();
+</script>
+</body>
+</html>

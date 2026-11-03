@@ -1,0 +1,12 @@
+{
+  "name": "Homestead Siege",
+  "short_name": "Siege",
+  "description": "A family porch-light game from JW Manor. All ages. No ads.",
+  "start_url": "index.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#1A1A1A",
+  "theme_color": "#305032",
+  "lang": "en",
+  "categories": ["games"]
+}

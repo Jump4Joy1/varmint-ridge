@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#305032">
+<title>Privacy — Hoedown Blocks — JW Manor</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect fill='%23305032' width='32' height='32'/%3E%3Crect fill='%23C19A50' x='8' y='14' width='16' height='10'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="css/hoedown.css">
+<script>
+(function () {
+  var K = 'hoedown.theme';
+  var mq = matchMedia('(prefers-color-scheme: dark)');
+  function pref() { try { return localStorage.getItem(K) || 'auto'; } catch (e) { return 'auto'; } }
+  function apply() {
+    var v = pref();
+    var t = v === 'auto' ? (mq.matches ? 'dark' : 'light') : v;
+    document.documentElement.setAttribute('data-theme', t);
+    document.documentElement.setAttribute('data-theme-mode', v);
+  }
+  apply();
+  if (mq.addEventListener) mq.addEventListener('change', apply);
+  function paintChoices() {
+    var mode = document.documentElement.getAttribute('data-theme-mode') || 'auto';
+    document.querySelectorAll('[data-theme-choice]').forEach(function (btn) {
+      btn.setAttribute('aria-pressed', btn.getAttribute('data-theme-choice') === mode ? 'true' : 'false');
+    });
+  }
+  document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('[data-theme-choice]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        try { localStorage.setItem(K, btn.getAttribute('data-theme-choice')); } catch (e) {}
+        apply();
+        paintChoices();
+      });
+    });
+    paintChoices();
+  });
+})();
+</script>
+</head>
+<body class="sheet">
+<div id="app">
+<main>
+  <p class="brand">JW Manor</p>
+  <h1>Hoedown Blocks privacy</h1>
+  <p class="small">Look</p>
+  <div class="theme-row" role="group" aria-label="Theme">
+    <button type="button" class="choice" data-theme-choice="auto">Auto</button>
+    <button type="button" class="choice" data-theme-choice="light">Light</button>
+    <button type="button" class="choice" data-theme-choice="dark">Dark</button>
+  </div>
+  <p>Hoedown Blocks is a homestead puzzle for every age. This notice covers the game as it ships in this build.</p>
+  <h2>Ads</h2>
+  <p>There are no ads. The game does not include an advertising SDK.</p>
+  <h2>Purchases</h2>
+  <p>In-app purchases are turned off. The switch in the game is <strong>IAP_ON = false</strong>. Nothing is for sale, and the game does not ask a store to charge anyone. If a later App Store or Google Play build turns purchases on, they go through that store only, behind a grown-up math check. There is no web checkout.</p>
+  <h2>What stays on the device</h2>
+  <p>The game saves your theme, language, sound choice, level stars, daily streak, and open-hoedown scores in local storage on the device. Initials you type for a high score stay on the device. The game has no accounts. It does not ask for a name, email, photo, contacts, or location.</p>
+  <h2>What leaves the device</h2>
+  <p>This build does not send gameplay, device identifiers, or personal information to JW Manor or anyone else. It does not use analytics, crash reporting, or third-party trackers. It does not ask to track you across apps. It plays offline.</p>
+  <h2>Children</h2>
+  <p>Children can play the whole game. It does not show ads and it does not share personal information. This privacy page is part of the app. A link that left the app would sit behind a grown-up check. This page does not link out.</p>
+  <h2>Contact</h2>
+  <p>Use the support contact on the App Store or Google Play listing for Hoedown Blocks.</p>
+  <p><a href="index.html">Back to Hoedown Blocks</a></p>
+
+  <h2>Privacidad</h2>
+  <p>Hoedown Blocks es un puzzle de la finca para todas las edades. Este aviso cubre el juego tal como está en esta versión.</p>
+  <p><strong>Anuncios.</strong> No hay anuncios. El juego no incluye un SDK de publicidad.</p>
+  <p><strong>Compras.</strong> Las compras dentro de la app están apagadas. El interruptor del juego es <strong>IAP_ON = false</strong>. No hay nada a la venta y el juego no pide a una tienda que cobre. Si una versión posterior de App Store o Google Play enciende las compras, pasan solo por esa tienda, detrás de una cuenta para adultos. No hay cobro por la web.</p>
+  <p><strong>Qué se queda en el aparato.</strong> El juego guarda el tema, el idioma, el sonido, las estrellas de los niveles, la racha del día y los puntajes del hoedown libre en el almacenamiento local. Las iniciales de un puntaje se quedan en el aparato. No hay cuentas. No pide nombre, correo, fotos, contactos ni ubicación.</p>
+  <p><strong>Qué sale del aparato.</strong> Esta versión no envía la partida, identificadores del aparato ni datos personales a JW Manor ni a nadie. No usa analítica, informes de fallos ni rastreadores. No pide permiso para seguirte entre apps. Funciona sin conexión.</p>
+  <p><strong>Niños.</strong> Los niños pueden jugar todo el juego. No muestra anuncios y no comparte datos personales. Esta página es parte de la app y no enlaza hacia afuera.</p>
+  <p><strong>Contacto.</strong> Usa el contacto de ayuda en la ficha de App Store o Google Play de Hoedown Blocks.</p>
+  <p><a href="index.html">Volver a Hoedown Blocks</a></p>
+</main>
+</div>
+</body>
+</html>

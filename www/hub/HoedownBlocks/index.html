@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#305032">
+<meta name="description" content="Hoedown Blocks is a family puzzle from JW Manor. All ages. No ads.">
+<title>Hoedown Blocks — JW Manor</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect fill='%23305032' width='32' height='32'/%3E%3Crect fill='%23C19A50' x='8' y='14' width='16' height='10'/%3E%3C/svg%3E">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="css/hoedown.css">
+<script>
+/* Theme follows the device, and a saved choice sticks. */
+(function () {
+  var K = 'hoedown.theme';
+  var mq = matchMedia('(prefers-color-scheme: dark)');
+  function pref() {
+    try { return localStorage.getItem(K) || 'auto'; } catch (e) { return 'auto'; }
+  }
+  function apply() {
+    var v = pref();
+    var t = v === 'auto' ? (mq.matches ? 'dark' : 'light') : v;
+    document.documentElement.setAttribute('data-theme', t);
+    document.documentElement.setAttribute('data-theme-mode', v);
+    var meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute('content', t === 'dark' ? '#1A1A1A' : '#F3EEDF');
+    document.dispatchEvent(new CustomEvent('hoedown-theme', { detail: { mode: v, theme: t } }));
+  }
+  apply();
+  if (mq.addEventListener) mq.addEventListener('change', apply);
+  window.HoedownTheme = {
+    set: function (mode) {
+      try { localStorage.setItem(K, mode); } catch (err) {}
+      apply();
+    },
+    mode: pref
+  };
+})();
+</script>
+</head>
+<body>
+<div id="app">
+  <section id="screen-title" class="screen on">
+    <div class="topbar">
+      <div>
+        <div class="brand">JW Manor</div>
+        <h1 data-i18n="title">Hoedown Blocks</h1>
+      </div>
+    </div>
+    <canvas id="titleArt" width="720" height="400" aria-hidden="true"></canvas>
+    <p class="tag" data-i18n="tagline"></p>
+    <p class="hub-row"><a class="hub-link" href="../index.html" data-i18n="allGames">All games</a></p>
+    <p id="starLine" class="fine"></p>
+    <div class="tools">
+      <button type="button" id="langBtn">Español</button>
+      <button type="button" id="soundBtn" data-i18n="soundOn">Sound</button>
+    </div>
+    <div class="menu-grid">
+      <button type="button" id="btnPlay" class="wide" data-i18n="play">Play</button>
+      <button type="button" id="btnLevels" data-i18n="levels">Levels</button>
+      <button type="button" id="btnDaily" data-i18n="daily">Daily Puzzle</button>
+      <button type="button" id="btnEndless" data-i18n="endless">Open Hoedown</button>
+      <button type="button" id="btnHow" data-i18n="how">How to Play</button>
+      <button type="button" id="btnSettings" data-i18n="settings">Settings</button>
+      <button type="button" id="btnScores" data-i18n="scores">High Scores</button>
+      <button type="button" id="btnStore" data-i18n="store">Store</button>
+      <a id="btnPrivacy" class="linkish" href="privacy.html" data-i18n="privacy">Privacy</a>
+    </div>
+    <p class="fine" data-i18n="noads"></p>
+  </section>
+
+  <section id="screen-settings" class="screen">
+    <div class="topbar">
+      <h2 data-i18n="settings">Settings</h2>
+      <button type="button" id="settingsBack" data-i18n="back">Back</button>
+    </div>
+    <p class="small" data-i18n="themeLead">Look</p>
+    <div class="theme-row" role="group" aria-label="Theme">
+      <button type="button" class="choice" id="themeAuto" data-theme-choice="auto" data-i18n="themeAuto">Auto</button>
+      <button type="button" class="choice" id="themeLight" data-theme-choice="light" data-i18n="themeLight">Light</button>
+      <button type="button" class="choice" id="themeDark" data-theme-choice="dark" data-i18n="themeDark">Dark</button>
+    </div>
+    <p class="fine" data-i18n="noads"></p>
+  </section>
+
+  <section id="screen-levels" class="screen">
+    <div class="topbar">
+      <h2 data-i18n="levels">Levels</h2>
+      <button type="button" id="levelsBack" data-i18n="back">Back</button>
+    </div>
+    <div id="levelList"></div>
+  </section>
+
+  <section id="screen-how" class="screen">
+    <div class="topbar">
+      <h2 data-i18n="how">How to Play</h2>
+      <button type="button" id="howBack" data-i18n="back">Back</button>
+    </div>
+    <p data-i18n="howLead"></p>
+    <p class="small" data-i18n="how1"></p>
+    <p class="small" data-i18n="how2"></p>
+    <p class="small" data-i18n="how3"></p>
+    <p class="small" data-i18n="how4"></p>
+    <p class="small" data-i18n="how5"></p>
+  </section>
+
+  <section id="screen-daily" class="screen">
+    <div class="topbar">
+      <h2 data-i18n="daily">Daily Puzzle</h2>
+      <button type="button" id="dailyBack" data-i18n="back">Back</button>
+    </div>
+    <p id="dailyLead" class="small"></p>
+    <p class="small" data-i18n="dailySame"></p>
+    <p id="dailyStreak" class="small"></p>
+    <p id="dailyBest" class="small"></p>
+    <button type="button" id="btnDailyStart" data-i18n="dailyStart">Start today’s well</button>
+  </section>
+
+  <section id="screen-scores" class="screen">
+    <div class="topbar">
+      <h2 data-i18n="highScores">Top scores</h2>
+      <button type="button" id="scoresBack" data-i18n="back">Back</button>
+    </div>
+    <div id="scoreList"></div>
+  </section>
+
+  <section id="screen-store" class="screen">
+    <div class="topbar">
+      <h2 data-i18n="store">Store</h2>
+      <button type="button" id="storeBack" data-i18n="back">Back</button>
+    </div>
+    <div id="gate">
+      <p class="small" data-i18n="gateLead"></p>
+      <p id="gateQ" class="q"></p>
+      <div class="row">
+        <input id="gateA" inputmode="numeric" maxlength="4" autocomplete="off" aria-label="Answer">
+        <button type="button" id="gateGo" data-i18n="ok">OK</button>
+      </div>
+      <p id="gateMsg" class="small"></p>
+    </div>
+    <div id="storeItems" hidden></div>
+  </section>
+
+  <section id="screen-play" class="screen">
+    <div id="hud">
+      <button type="button" id="pauseBtn" data-i18n-aria="pause">II</button>
+      <div id="goalText"></div>
+      <div id="scoreText"></div>
+      <button type="button" id="hudMute" data-i18n="soundOn">Sound</button>
+    </div>
+    <div id="boardWrap">
+      <canvas id="board" width="316" height="576"></canvas>
+    </div>
+    <div id="previews">
+      <div class="pv"><span data-i18n="next">Next</span><canvas id="next" width="88" height="56"></canvas></div>
+      <div class="pv"><span data-i18n="hold">Hold</span><canvas id="hold" width="88" height="56"></canvas></div>
+      <div class="pv stat-card" id="statCard">
+        <div><span data-i18n="levelShort">Level</span><b id="statLevel">1</b></div>
+        <div><span data-i18n="linesShort">Lines</span><b id="statLines">0</b></div>
+        <div><span data-i18n="bestShort">Best</span><b id="statBest">0</b></div>
+        <div id="statPiecesRow" hidden><span data-i18n="piecesShort">Pieces</span><b id="statPieces">0</b></div>
+      </div>
+    </div>
+    <div id="pad">
+      <button type="button" class="icon-btn" id="leftBtn" data-i18n-aria="left"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 5 L7 12 L14 19" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button type="button" class="icon-btn" id="rotBtn" data-i18n-aria="rotate"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12 a7 7 0 1 1 -2-5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M19 4 V9 H14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button type="button" class="icon-btn" id="rightBtn" data-i18n-aria="right"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 5 L17 12 L10 19" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button type="button" class="icon-btn" id="softBtn" data-i18n-aria="soft"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9 L12 15 L18 9" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button type="button" class="icon-btn" id="hardBtn" data-i18n-aria="drop"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4 V14" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><path d="M7 11 L12 16 L17 11" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 19 H19" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg></button>
+      <button type="button" class="icon-btn" id="holdBtn" data-i18n-aria="hold"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="8" height="8" rx="1.5" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M13 8 H17 a3 3 0 0 1 0 6 H11" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M14 11 L11 14 L14 17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    </div>
+  </section>
+
+  <div id="ov-intro" class="overlay" role="dialog">
+    <div class="panel intro-card">
+      <p class="brand">JW Manor</p>
+      <h2 id="introTitle"></h2>
+      <p id="introName" class="tag"></p>
+      <p id="introGoal" class="small"></p>
+      <button type="button" id="introGo" data-i18n="introGo">Start</button>
+    </div>
+  </div>
+  <div id="ov-pause" class="overlay" role="dialog">
+    <div class="panel">
+      <h2 data-i18n="paused">Paused</h2>
+      <div class="stack">
+        <button type="button" id="resumeBtn" data-i18n="resume">Resume</button>
+        <button type="button" id="restartBtn" data-i18n="restart">Restart</button>
+        <button type="button" id="pauseMenu" data-i18n="menu">Menu</button>
+      </div>
+    </div>
+  </div>
+  <div id="ov-win" class="overlay" role="dialog">
+    <div class="panel">
+      <h2 id="winTitle"></h2>
+      <canvas id="winBird" width="160" height="88" aria-hidden="true"></canvas>
+      <div id="winStars" class="stars"></div>
+      <p id="winText" class="small"></p>
+      <div class="stack">
+        <button type="button" id="winNext" data-i18n="nextLevel">Next level</button>
+        <button type="button" id="winRetry" data-i18n="tryAgain">Try again</button>
+        <button type="button" id="winMenu" data-i18n="menu">Menu</button>
+      </div>
+    </div>
+  </div>
+  <div id="ov-lose" class="overlay" role="dialog">
+    <div class="panel">
+      <h2 id="loseTitle"></h2>
+      <p id="loseText" class="small"></p>
+      <div id="saveRow">
+        <label class="small" for="initials" data-i18n="initials">Initials</label>
+        <div class="row">
+          <input id="initials" maxlength="3" autocomplete="off" aria-label="Initials">
+          <button type="button" id="saveScore" data-i18n="save">Save</button>
+        </div>
+      </div>
+      <div class="stack">
+        <button type="button" id="loseRetry" data-i18n="tryAgain">Try again</button>
+        <button type="button" id="loseMenu" data-i18n="menu">Menu</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="js/strings.js"></script>
+<script src="js/levels.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/art.js"></script>
+<script src="js/iap.js"></script>
+<script src="js/game.js"></script>
+</body>
+</html>

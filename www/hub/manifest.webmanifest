@@ -1,0 +1,11 @@
+{
+  "name": "JW Manor Homestead Games",
+  "short_name": "Manor Games",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#1A1A1A",
+  "theme_color": "#305032",
+  "lang": "en",
+  "icons": []
+}

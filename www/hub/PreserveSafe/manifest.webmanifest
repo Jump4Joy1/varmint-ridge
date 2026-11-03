@@ -1,0 +1,12 @@
+{
+  "name": "Preserve Safe",
+  "short_name": "Preserve",
+  "description": "A JW Manor field log of published canning numbers. All ages. No ads.",
+  "start_url": "index.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F3EEDF",
+  "theme_color": "#305032",
+  "lang": "en",
+  "categories": ["utilities"]
+}
