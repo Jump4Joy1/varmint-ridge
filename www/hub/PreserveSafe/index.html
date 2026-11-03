@@ -1,0 +1,1762 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#305032">
+<title>Preserve Safe</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect fill='%23305032' width='16' height='16'/%3E%3C/svg%3E">
+<link rel="manifest" href="manifest.webmanifest">
+<script id="themeTheme">/* theme: prefers-color-scheme, or a Settings choice saved in localStorage */
+(function(){var K='preservesafe.theme',mq=matchMedia('(prefers-color-scheme: dark)');
+function get(){try{return localStorage.getItem(K)||'auto'}catch(e){return 'auto'}}
+function apply(){var v=get(),t=v==='auto'?(mq.matches?'dark':'light'):v;document.documentElement.setAttribute('data-theme',t)}
+function set(mode){try{localStorage.setItem(K,mode)}catch(e){}apply()}
+window.PreserveTheme={get:get,set:set,apply:apply};
+apply();mq.addEventListener('change',apply)})();
+</script>
+<script src="strings.js"></script>
+<style>
+:root {
+  --ink: #1A1A1A;
+  --forest: #305032;
+  --forest-deep: #1c3120;
+  --gold: #C19A50;
+  --gold-deep: #8d6d2e;
+  --paper: #e4e2d2;
+  --sheet: #f3f1e4;
+  --clay: #d9c2a6;
+  --clay-deep: #b08968;
+  --line: rgba(26,26,26,.14);
+  --danger: #1A1A1A;
+  --ok: #305032;
+  --shadow: 0 10px 30px rgba(26,26,26,.08);
+  --radius: 16px;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  background:
+    radial-gradient(1200px 500px at 10% -10%, rgba(193,154,80,.18), transparent 50%),
+    repeating-linear-gradient(0deg, transparent, transparent 27px, rgba(48,80,50,.045) 28px),
+    var(--paper);
+  color: var(--ink);
+  font-family: Georgia, "Iowan Old Style", Palatino, "Palatino Linotype", serif;
+  font-size: 17px;
+  line-height: 1.45;
+  min-height: 100vh;
+}
+button, input, select, textarea { font-family: inherit; font-size: 16px; color: var(--ink); }
+button { cursor: pointer; }
+#app { max-width: 980px; margin: 0 auto; padding: 18px 16px 108px; }
+.mast {
+  background: var(--forest-deep);
+  color: var(--sheet);
+  border-radius: 22px;
+  padding: 18px 18px 14px;
+  box-shadow: var(--shadow);
+  position: relative;
+  overflow: hidden;
+}
+.mast:before {
+  content: "";
+  position: absolute; left: 0; right: 0; top: 0; height: 6px;
+  background: linear-gradient(90deg, var(--gold), #e6d3a1, var(--gold));
+}
+a.hub-link { color: var(--gold); font-size: 15px; display: inline-block; margin-top: 10px; }
+.kicker {
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  font-size: 11px;
+  color: var(--gold);
+  margin: 4px 0 6px;
+}
+.mast h1 { font-size: 34px; line-height: 1; margin: 0 0 6px; font-weight: 600; }
+.mast p { margin: 0; max-width: 62ch; color: #efe7d4; }
+.elev-chip {
+  display: inline-flex; gap: 8px; align-items: center;
+  margin-top: 12px; background: rgba(243,241,228,.1);
+  border: 1px solid rgba(193,154,80,.7);
+  border-radius: 999px; padding: 6px 12px; color: var(--sheet); font-size: 14px;
+}
+.nav {
+  display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0;
+}
+.nav button, .chip, .btn, .btn-gold, .btn-quiet, .btn-ink {
+  border-radius: 999px; border: 1px solid var(--forest);
+  background: var(--sheet); color: var(--forest);
+  padding: 10px 14px; min-height: 44px;
+}
+.nav button[aria-current="page"] { background: var(--forest); color: var(--sheet); }
+.chip { padding: 8px 12px; min-height: 40px; }
+.chip[aria-pressed="true"] { background: var(--gold); border-color: var(--gold-deep); color: var(--ink); }
+.btn { background: var(--forest); color: var(--sheet); border-color: var(--forest); }
+.btn-gold { background: var(--gold); border-color: var(--gold-deep); color: var(--ink); font-weight: 650; }
+.btn-quiet { background: transparent; }
+.btn-ink { background: var(--ink); color: var(--sheet); border-color: var(--ink); }
+.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.stack { display: grid; gap: 12px; }
+.card, .tip, .stop, .rulebox {
+  background: var(--sheet);
+  border-radius: var(--radius);
+  padding: 14px 14px 12px;
+  box-shadow: var(--shadow);
+  border: 1px solid rgba(48,80,50,.12);
+}
+.card h2, .card h3 { margin: 0 0 6px; line-height: 1.2; }
+.card h2 { font-size: 26px; }
+.meta { color: var(--forest); font-size: 14px; letter-spacing: .04em; text-transform: uppercase; }
+.clay {
+  background: linear-gradient(180deg, #ead7c2, var(--clay));
+  border-radius: 12px; padding: 10px 12px; margin: 8px 0;
+}
+.tip { border-left: 5px solid var(--gold); }
+.stop { background: var(--ink); color: var(--sheet); border-left: 5px solid var(--gold); }
+.stop strong { color: var(--gold); }
+.small { font-size: 14.5px; }
+.source {
+  font-size: 13.5px; color: #243326; background: #e7efe4;
+  border-radius: 12px; padding: 8px 10px; margin-top: 8px;
+}
+label { display: block; font-size: 14px; margin-bottom: 4px; }
+input[type="text"], input[type="number"], input[type="date"], input[type="search"], select, textarea {
+  width: 100%; max-width: 100%;
+  background: #fffdf6; border: 1px solid var(--clay-deep);
+  border-radius: 12px; padding: 10px 12px; min-height: 44px;
+}
+textarea { min-height: 88px; }
+.grid-2 { display: grid; grid-template-columns: 1fr; gap: 10px; }
+@media (min-width: 720px) {
+  .grid-2 { grid-template-columns: 1fr 1fr; }
+  .mast h1 { font-size: 44px; }
+}
+table { width: 100%; border-collapse: collapse; font-size: 15.5px; }
+th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: 13px; letter-spacing: .06em; text-transform: uppercase; color: var(--forest); }
+tr.due td { background: #f6e7c8; }
+tr.over td { background: #1A1A1A; color: var(--sheet); }
+.badge {
+  display: inline-block; border-radius: 999px; padding: 2px 8px;
+  background: var(--forest); color: var(--sheet); font-size: 12px; letter-spacing: .04em;
+}
+.badge.gold { background: var(--gold); color: var(--ink); }
+.badge.warn { background: var(--ink); color: var(--gold); }
+hr.rule { border: 0; border-top: 2px solid var(--gold); margin: 12px 0; }
+.check { display: flex; gap: 10px; align-items: flex-start; padding: 8px 0; border-bottom: 1px solid var(--line); }
+.check input { width: 22px; height: 22px; margin-top: 2px; accent-color: var(--forest); }
+.bottom-nav {
+  position: fixed; left: 0; right: 0; bottom: 0;
+  display: flex; justify-content: space-around; gap: 4px;
+  background: var(--forest-deep); padding: 6px 6px calc(6px + env(safe-area-inset-bottom));
+  z-index: 5;
+}
+.bottom-nav button {
+  flex: 1; background: transparent; color: #efe7d4; border: 0;
+  border-radius: 12px; min-height: 52px; font-size: 12px; letter-spacing: .04em;
+}
+.bottom-nav button[aria-current="page"] { background: var(--gold); color: var(--ink); }
+#labels { display: none; }
+.label-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.jar-label {
+  border: 2px solid var(--ink); border-radius: 8px; padding: 8px;
+  break-inside: avoid; background: white; color: black;
+}
+.jar-label b { font-size: 16px; }
+@media print {
+  body { background: white; }
+  .bottom-nav, .mast, .nav, .noprint { display: none !important; }
+  #app { max-width: none; padding: 0; }
+  #labels { display: block; }
+  .screen-only { display: none !important; }
+}
+.hidden { display: none !important; }
+.count-dot {
+  background: var(--gold); color: var(--ink); border-radius: 999px;
+  padding: 0 6px; margin-left: 4px; font-size: 12px;
+}
+@media (min-width: 860px) {
+  .bottom-nav { display: none; }
+  #app { padding-bottom: 28px; }
+}
+
+/* light/dark */
+html[data-theme=dark]{--ink:#ece6d4;--forest:#9cc79a;--forest-deep:#0f1c12;--gold:#d4b06a;--gold-deep:#b89248;--paper:#121712;--sheet:#1d251e;--clay:#4a3b2b;--clay-deep:#8a6c4e;--line:rgba(236,230,212,.16);--danger:#ece6d4;--ok:#9cc79a;--shadow:0 10px 30px rgba(0,0,0,.4);color-scheme:dark}
+html[data-theme=dark] .mast{color:#f3f1e4}html[data-theme=dark] .elev-chip{color:#f3f1e4}
+html[data-theme=dark] .btn,html[data-theme=dark] .nav button[aria-current="page"]{color:#0f1c12}
+html[data-theme=dark] .chip[aria-pressed="true"],html[data-theme=dark] .bottom-nav button[aria-current="page"]{color:#1A1A1A}
+html[data-theme=dark] input[type="text"],html[data-theme=dark] input[type="number"],html[data-theme=dark] input[type="date"],html[data-theme=dark] input[type="search"],html[data-theme=dark] select,html[data-theme=dark] textarea{background:#151b16;color:#ece6d4}
+html[data-theme=dark] .clay{background:linear-gradient(180deg,#3a2e22,#4a3b2b);color:#ece6d4}
+html[data-theme=dark] .source{background:#1f2e22;color:#d6e6d3}
+html[data-theme=dark] .stop{background:#0b0f0b;color:#f3f1e4}
+html[data-theme=dark] tr.due td{background:#3d311b;color:#ece6d4}html[data-theme=dark] tr.over td{background:#000;color:#f3f1e4}
+html[data-theme=dark] .card{border-color:rgba(236,230,212,.12)}
+.stat-row{display:flex;gap:6px;margin-top:12px;flex-wrap:wrap}
+.stat-chip{flex:1 1 72px;min-width:68px;background:#FFF8EA;color:#1A1A1A;border:2px solid #C19A50;box-shadow:inset 0 0 0 2px #305032;border-radius:12px;padding:4px 8px 6px}
+.stat-chip span{display:block;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#305032;font-weight:700;line-height:1.15}
+.stat-chip b{display:block;margin-top:2px;font-size:16px;line-height:1.1;color:#1A1A1A;font-variant-numeric:tabular-nums}
+html[data-theme=dark] .stat-chip{background:#1A1A1A}
+html[data-theme=dark] .stat-chip span,html[data-theme=dark] .stat-chip b{color:#F3E6C4}
+.stat-chip.is-pop{animation:psPop .35s ease}
+@keyframes psPop{40%{transform:scale(1.06)}}
+.nav button.nav-ico,.bottom-nav button.nav-ico{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:2px solid #C19A50;border-radius:14px;background:#FFF8EA;color:#1A1A1A;box-shadow:inset 0 0 0 2px #305032;min-height:48px}
+.nav button.nav-ico svg,.bottom-nav button.nav-ico svg{width:18px;height:18px;display:block}
+.nav button.nav-ico[aria-current="page"]{background:#305032;color:#F3E6C4}
+.bottom-nav button.nav-ico{flex-direction:column;gap:1px;min-height:56px;padding:4px 2px;background:#142016;color:#F3E6C4;font-size:10px;letter-spacing:.02em;box-shadow:inset 0 0 0 2px #1A1A1A}
+.bottom-nav button.nav-ico[aria-current="page"]{background:#C19A50;color:#1A1A1A}
+.ps-seal{position:fixed;z-index:40;width:14px;height:18px;border-radius:3px 3px 7px 7px;background:linear-gradient(#f3e6c4,#C19A50);border:2px solid #1A1A1A;pointer-events:none}
+#psNotice{position:fixed;inset:0;z-index:60;background:rgba(26,26,26,.72);display:flex;align-items:center;justify-content:center;padding:16px}
+#psNotice[hidden]{display:none !important}
+#psNotice .sheet{background:#FFF8EA;color:#1A1A1A;border:3px solid #C19A50;border-radius:16px;padding:16px 18px;width:min(92vw,380px)}
+#psNotice button{min-height:48px;border-radius:12px;border:3px solid #C19A50;background:#305032;color:#F3E6C4;padding:8px 16px}
+@media (prefers-reduced-motion:reduce){.stat-chip.is-pop{animation:none}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="labels"></div>
+<script>
+const psT = PreserveStrings.t;
+function psHas(key) { return Object.prototype.hasOwnProperty.call(PreserveStrings.STR.en, key); }
+function psOr(key, fallback) { return psHas(key) ? psT(key) : fallback; }
+function psName(r) { return r ? psOr("r_" + r.id, r.name) : ""; }
+function psGroup(g) { return psOr("g_" + g, g); }
+function psMethod(m) { return psOr("m_" + m, m); }
+function psCheckGroup(g) { return psOr("cg_" + g, g); }
+function psPackWord(p) {
+  if (p === "Hot") return psT("packHot");
+  if (p === "Raw") return psT("packRaw");
+  return p || "";
+}
+function psPackChip(p) {
+  if (PreserveStrings.lang() === "es") return psPackWord(p);
+  return p ? (p + " pack") : "";
+}
+function psJar(j) {
+  if (j === "Pint") return psT("jarPint");
+  if (j === "Quart") return psT("jarQuart");
+  return j || "";
+}
+function psHead(s) {
+  const map = { "1 inch": "hs1", "1-1/4 inch": "hs114", "1/2 inch": "hs12", "1/2 inch when canned": "hs12can", "1/4 inch": "hs14", "See note": "hsSee" };
+  return map[s] ? psT(map[s]) : (s || "");
+}
+function psBand(label) {
+  const map = {
+    "0–1,000 ft": "b0_1000",
+    "1,001–3,000 ft": "b1001_3000",
+    "3,001–6,000 ft": "b3001_6000",
+    "Above 6,000 ft": "bAbove6000",
+    "1,001–6,000 ft": "b1001_6000",
+    "0–2,000 ft": "b0_2000",
+    "2,001–4,000 ft": "b2001_4000",
+    "4,001–6,000 ft": "b4001_6000",
+    "6,001–8,000 ft": "b6001_8000",
+    "Above 1,000 ft": "bAbove1000"
+  };
+  return map[label] ? psT(map[label]) : (label || "");
+}
+const B4 = [
+  { maxFt: 1000, label: "0–1,000 ft" },
+  { maxFt: 3000, label: "1,001–3,000 ft" },
+  { maxFt: 6000, label: "3,001–6,000 ft" },
+  { maxFt: null, label: "Above 6,000 ft" }
+];
+const YEAR = "Best quality within 1 year in a cool, dark, dry place, about 50–70°F. That date is quality, not a free pass for a jar with a bad seal, and not a reason to eat food that looks or smells spoiled. NCHFP: properly canned food keeps optimum eating quality at least 1 year when stored that way, and home-canned food should be used within a year for best quality.";
+const LOW_ACID_PSI = "Weighted gauge: 10 lb at 0–1,000 ft, and the 15 lb weight above 1,000 ft. Dial gauge: 11 lb at 0–2,000 ft, 12 lb at 2,001–4,000, 13 lb at 4,001–6,000, 14 lb at 6,001–8,000. These USDA/NCHFP tables do not list a dial pressure above 8,000 ft. There is no boiling-water process.";
+
+const RECIPES = [
+  {
+    id: "snap-beans",
+    name: "Snap and Italian beans, pieces (green or wax)",
+    method: "pressure", group: "Vegetable", schedule: "low-acid",
+    headspace: "1 inch",
+    packs: ["Hot", "Raw"],
+    jars: [{ size: "Pint", minutes: 20 }, { size: "Quart", minutes: 25 }],
+    prep: [
+      "Wash. Trim ends. Cut into 1-inch pieces. Discard diseased or rusty pods.",
+      "Hot pack: cover with boiling water and boil 5 minutes. Fill jars loosely. Cover with the hot cooking liquid.",
+      "Raw pack: pack raw beans tightly. Cover with boiling water.",
+      "Salt is optional and is not what makes this safe: 1/2 teaspoon canning salt per pint, or 1 teaspoon per quart."
+    ],
+    never: ["Do not process plain green or wax beans in a boiling-water canner.", "Do not add fat, flour, rice, noodles, or thickeners."],
+    yield: "About 14 pounds per 7-quart canner load; about 9 pounds per 9-pint load; about 2 pounds per quart.",
+    source: "NCHFP, Beans, Snap and Italian — Pieces, Green and Wax, printing the USDA Complete Guide dial-gauge and weighted-gauge tables (page checked 2026). https://nchfp.uga.edu/how/can/canning-vegetables-and-vegetable-products/beans-snap-and-italian-pieces-green-and-wax/ — Same minutes are on the NCHFP pressure-canning summary for judges, August 2003, which cites USDA Complete Guide to Home Canning, AIB No. 539."
+  },
+  {
+    id: "carrots",
+    name: "Carrots, sliced or diced",
+    method: "pressure", group: "Vegetable", schedule: "low-acid",
+    headspace: "1 inch",
+    packs: ["Hot", "Raw"],
+    jars: [{ size: "Pint", minutes: 25 }, { size: "Quart", minutes: 30 }],
+    prep: [
+      "Wash, peel, and rewash. Slice or dice.",
+      "Hot or raw pack as the USDA carrot directions describe. Cover with boiling liquid, 1-inch headspace.",
+      "Salt is optional: the NCHFP page says 1 teaspoon per quart if you want it. Salt is flavor, not safety."
+    ],
+    never: ["No boiling-water process.", "Do not mash or puree carrots into this process."],
+    yield: "About 17-1/2 pounds without tops per 7-quart load; about 11 pounds per 9-pint load; about 2-1/2 pounds per quart.",
+    source: "NCHFP, Carrots — Sliced or Diced (page checked 2026). https://nchfp.uga.edu/how/can/canning-vegetables-and-vegetable-products/carrots-sliced-or-diced/ — Minutes match the NCHFP judge summary (August 2003) of USDA Complete Guide to Home Canning, AIB No. 539."
+  },
+  {
+    id: "beets",
+    name: "Beets, whole, cubed, or sliced",
+    method: "pressure", group: "Vegetable", schedule: "low-acid",
+    headspace: "1 inch",
+    packs: ["Hot"],
+    jars: [{ size: "Pint", minutes: 30 }, { size: "Quart", minutes: 35 }],
+    prep: [
+      "Hot pack only in this table.",
+      "Trim tops, leaving an inch of stem and the root, so color stays in the beet while they cook. Cook until skins slip, then peel, and cut as you like.",
+      "Pack and cover with hot liquid, 1-inch headspace. Salt, if you use it, is flavor only."
+    ],
+    never: ["No boiling-water process.", "Do not can pickled beets on this time. Pickles are a different, acidified recipe."],
+    yield: "See USDA Guide 4 for raw pounds per canner load.",
+    source: "NCHFP pressure-canning summary for judges, August 2003, Beets — whole, cubed, or sliced: hot pack, pints 30 minutes, quarts 35 minutes, low-acid pressures. The sheet cites USDA Complete Guide to Home Canning, AIB No. 539."
+  },
+  {
+    id: "corn-kernel",
+    name: "Whole kernel corn",
+    method: "pressure", group: "Vegetable", schedule: "low-acid",
+    headspace: "1 inch",
+    packs: ["Hot", "Raw"],
+    jars: [{ size: "Pint", minutes: 55 }, { size: "Quart", minutes: 85 }],
+    prep: [
+      "Husk, silk, and wash. Blanch ears, then cut kernels from the cob at about two-thirds the depth of the kernel. Do not scrape the cob.",
+      "Hot or raw pack per Guide 4. The long time is the process. Do not shorten it because the corn looked tender."
+    ],
+    never: ["No boiling-water process.", "Do not use this time for cream-style corn.", "Do not add milk, cream, flour, or butter."],
+    yield: "See USDA Guide 4. Quarts take much longer than pints: 85 minutes versus 55.",
+    source: "NCHFP pressure-canning summary for judges, August 2003, Corn — whole kernel: hot and raw, pints 55 minutes, quarts 85 minutes. Cites USDA Complete Guide to Home Canning, AIB No. 539."
+  },
+  {
+    id: "corn-cream",
+    name: "Cream-style corn",
+    method: "pressure", group: "Vegetable", schedule: "low-acid",
+    headspace: "1 inch",
+    packs: ["Hot"],
+    jars: [{ size: "Pint", minutes: 85 }],
+    blocked: ["Quart"],
+    prep: [
+      "Hot pack. Pints only.",
+      "Cut kernel tips, then scrape the cob for the milky juice. This pack is dense, which is why the pint time is 85 minutes and quarts are not allowed."
+    ],
+    never: ["Quarts are not recommended. Do not fill a quart and hope.", "No boiling-water process.", "Do not add real cream, milk, flour, or starch."],
+    yield: "Pints only.",
+    source: "NCHFP pressure-canning summary for judges, August 2003, Corn — cream style: hot pack, pints 85 minutes. Quarts: not recommended. Cites USDA Complete Guide to Home Canning, AIB No. 539."
+  },
+  {
+    id: "peas",
+    name: "Green or English peas, shelled",
+    method: "pressure", group: "Vegetable", schedule: "low-acid",
+    headspace: "1 inch",
+    packs: ["Hot", "Raw"],
+    jars: [{ size: "Pint", minutes: 40 }, { size: "Quart", minutes: 40 }],
+    prep: ["Shell and wash. Hot or raw pack per Guide 4, 1-inch headspace.", "Pints and quarts use the same 40 minutes. Do not invent a shorter pint time."],
+    never: ["No boiling-water process.", "Do not use this time for dried peas. Those are a different card."],
+    yield: "See USDA Guide 4.",
+    source: "NCHFP pressure-canning summary for judges, August 2003, Peas, green or English — shelled: hot and raw, pints 40 minutes, quarts 40 minutes. Cites USDA Complete Guide to Home Canning, AIB No. 539."
+  },
+  {
+    id: "lima",
+    name: "Fresh lima beans, shelled",
+    method: "pressure", group: "Vegetable", schedule: "low-acid",
+    headspace: "See note",
+    packs: ["Hot", "Raw"],
+    jars: [{ size: "Pint", minutes: 40 }, { size: "Quart", minutes: 50 }],
+    prep: [
+      "Shell, wash, and pack hot or raw per Guide 4.",
+      "Headspace is not one number. Small beans: 1 inch in pints and 1-1/2 inches in quarts. Large beans: 1 inch in pints and 1-1/4 inches in quarts."
+    ],
+    never: ["No boiling-water process.", "Do not use the snap-bean time (20/25) for limas."],
+    yield: "See USDA Guide 4.",
+    source: "NCHFP pressure-canning summary for judges, August 2003, Beans, fresh lima — shelled: hot and raw, pints 40 minutes, quarts 50 minutes, with the small-bean and large-bean headspace note printed on that sheet. Cites USDA Complete Guide to Home Canning, AIB No. 539."
+  },
+  {
+    id: "okra",
+    name: "Okra",
+    method: "pressure", group: "Vegetable", schedule: "low-acid",
+    headspace: "1 inch",
+    packs: ["Hot"],
+    jars: [{ size: "Pint", minutes: 25 }, { size: "Quart", minutes: 40 }],
+    prep: ["Hot pack. Wash, leave small pods whole or cut larger pods, and follow Guide 4 so the pods do not float up out of the liquid."],
+    never: ["No boiling-water process for plain okra.", "Fried or breaded okra is not this recipe."],
+    yield: "See USDA Guide 4.",
+    source: "NCHFP pressure-canning summary for judges, August 2003, Okra: hot pack, pints 25 minutes, quarts 40 minutes. Cites USDA Complete Guide to Home Canning, AIB No. 539."
+  },
+  {
+    id: "asparagus",
+    name: "Asparagus, spears or pieces",
+    method: "pressure", group: "Vegetable", schedule: "low-acid",
+    headspace: "1 inch",
+    packs: ["Hot", "Raw"],
+    jars: [{ size: "Pint", minutes: 30 }, { size: "Quart", minutes: 40 }],
+    prep: ["Wash, trim tough ends, cut spears or 1-inch pieces. Hot or raw pack, 1-inch headspace, per Guide 4."],
+    never: ["No boiling-water process."],
+    yield: "See USDA Guide 4.",
+    source: "NCHFP pressure-canning summary for judges, August 2003, Asparagus — spears or pieces: hot and raw, pints 30 minutes, quarts 40 minutes. Cites USDA Complete Guide to Home Canning, AIB No. 539."
+  },
+  {
+    id: "potatoes-white",
+    name: "White potatoes, cubed or whole",
+    method: "pressure", group: "Vegetable", schedule: "low-acid",
+    headspace: "1 inch",
+    packs: ["Hot"],
+    jars: [{ size: "Pint", minutes: 35 }, { size: "Quart", minutes: 40 }],
+    prep: ["Hot pack of peeled cubes or small whole potatoes, 1-inch headspace, per Guide 4. Cover with boiling water."],
+    never: ["Do not can mashed, whipped, or pureed potatoes.", "Do not add butter, milk, cream, flour, or cheese.", "No boiling-water process."],
+    yield: "See USDA Guide 4.",
+    source: "NCHFP pressure-canning summary for judges, August 2003, Potatoes, white — cubed or whole: hot pack, pints 35 minutes, quarts 40 minutes. Cites USDA Complete Guide to Home Canning, AIB No. 539."
+  },
+  {
+    id: "potatoes-sweet",
+    name: "Sweet potatoes, pieces or whole",
+    method: "pressure", group: "Vegetable", schedule: "low-acid",
+    headspace: "1 inch",
+    packs: ["Hot"],
+    jars: [{ size: "Pint", minutes: 65 }, { size: "Quart", minutes: 90 }],
+    prep: ["Hot pack of pieces or whole sweet potatoes per Guide 4. The time is long because the pieces are dense."],
+    never: ["Do not mash or puree.", "No boiling-water process.", "Do not use the white-potato time."],
+    yield: "See USDA Guide 4.",
+    source: "NCHFP pressure-canning summary for judges, August 2003, Potatoes, sweet — pieces or whole: hot pack, pints 65 minutes, quarts 90 minutes. Cites USDA Complete Guide to Home Canning, AIB No. 539."
+  },
+  {
+    id: "squash-cubed",
+    name: "Pumpkin or winter squash, cubed",
+    method: "pressure", group: "Vegetable", schedule: "low-acid",
+    headspace: "1 inch",
+    packs: ["Hot"],
+    jars: [{ size: "Pint", minutes: 55 }, { size: "Quart", minutes: 90 }],
+    prep: ["Hot pack of 1-inch cubes only, per Guide 4. Peel, seed, cube, and cook the cubes before packing."],
+    never: ["USDA has no safe home process for mashed or pureed pumpkin or winter squash. Do not can pie filling, butter, or puree.", "No boiling-water process."],
+    yield: "Cubes only. See USDA Guide 4.",
+    source: "NCHFP pressure-canning summary for judges, August 2003, Pumpkins and winter squash — cubed, and Squash, winter — cubed: hot pack, pints 55 minutes, quarts 90 minutes. Cites USDA Complete Guide to Home Canning, AIB No. 539."
+  },
+  {
+    id: "dried-beans",
+    name: "Dried beans or peas, shelled, fully rehydrated",
+    method: "pressure", group: "Vegetable", schedule: "low-acid",
+    headspace: "1 inch",
+    packs: ["Hot"],
+    jars: [{ size: "Pint", minutes: 75 }, { size: "Quart", minutes: 90 }],
+    prep: [
+      "Hot pack only in this table.",
+      "Sort and wash. Use either an overnight soak or the quick soak in Guide 4 (boil 2 minutes, remove from heat, soak 1 hour). Drain.",
+      "Cover with fresh water and boil 30 minutes so the beans are fully rehydrated. Then pack hot, cover with boiling liquid, 1-inch headspace.",
+      "The 75 and 90 minute times assume that full rehydration. Dry centers will not heat the way the test did."
+    ],
+    never: ["Do not can beans that were only rinsed.", "No boiling-water process.", "Do not thicken, and do not add fat or meat unless you are on a tested recipe that already includes them."],
+    yield: "See USDA Guide 4.",
+    source: "NCHFP pressure-canning summary for judges, August 2003, Beans or peas — shelled and dried: hot pack, pints 75 minutes, quarts 90 minutes. Cites USDA Complete Guide to Home Canning, AIB No. 539. Rehydration steps are the Guide 4 dried-bean procedure that belongs to this time."
+  },
+  {
+    id: "greens",
+    name: "Spinach and other greens",
+    method: "pressure", group: "Vegetable", schedule: "low-acid",
+    headspace: "1 inch",
+    packs: ["Hot"],
+    jars: [{ size: "Pint", minutes: 70 }, { size: "Quart", minutes: 90 }],
+    prep: [
+      "Hot pack. Blanch and pack loosely per Guide 4. Greens are dense. A tight pack changes how heat moves through the jar.",
+      "The table's 70 and 90 minutes are for that loose USDA pack, not for a jar rammed full."
+    ],
+    never: ["No boiling-water process.", "Do not add cream or cheese."],
+    yield: "See USDA Guide 4.",
+    source: "NCHFP pressure-canning summary for judges, August 2003, Spinach and other greens: hot pack, pints 70 minutes, quarts 90 minutes. Cites USDA Complete Guide to Home Canning, AIB No. 539."
+  },
+  {
+    id: "peppers",
+    name: "Peppers, plain",
+    method: "pressure", group: "Vegetable", schedule: "low-acid",
+    headspace: "1 inch",
+    packs: ["Hot"],
+    jars: [{ size: "Half-pint", minutes: 35 }, { size: "Pint", minutes: 35 }],
+    blocked: ["Quart"],
+    prep: ["Hot pack of plain peppers, half-pints or pints, per Guide 4. Peel as that direction says."],
+    never: ["Quarts are not recommended.", "This is not salsa. Do not add onions, corn, or beans and keep this time.", "No boiling-water process for plain peppers."],
+    yield: "Half-pints and pints only.",
+    source: "NCHFP pressure-canning summary for judges, August 2003, Peppers: hot pack, half-pints 35 minutes, pints 35 minutes. Quarts: not recommended. Cites USDA Complete Guide to Home Canning, AIB No. 539."
+  },
+  {
+    id: "soup",
+    name: "Soups (USDA soup mix rules)",
+    method: "pressure", group: "Soup", schedule: "low-acid",
+    headspace: "1 inch",
+    packs: ["Hot"],
+    jars: [{ size: "Pint", minutes: 60 }, { size: "Quart", minutes: 75 }],
+    seafoodMinutes: 100,
+    prep: [
+      "Hot pack only. This is the USDA soup process, not a family soup.",
+      "Dried beans or peas in the soup must be fully rehydrated first.",
+      "Fill jars only halfway with the solid mixture, then add the boiling liquid, leaving 1-inch headspace. NCHFP states that half-full solid fill.",
+      "If the soup contains seafood, both jar sizes are 100 minutes, not 60 or 75."
+    ],
+    never: [
+      "Do not add noodles, rice, flour, cream, milk, or other thickeners. They change heat penetration and are not in this process.",
+      "No boiling-water process.",
+      "Do not fill the jar with solids past halfway."
+    ],
+    yield: "Your choice of tested vegetables and a liquid that covers them, under the rules above.",
+    source: "NCHFP: soup in a dial-gauge canner, hot pack, pints 60 minutes and quarts 75 minutes at 11, 12, 13, 14 lb by elevation; weighted gauge 10 lb at 0–1,000 ft and 15 lb above 1,000 ft. Process 100 minutes if the soup contains seafood. https://nchfp.uga.edu/blog/if-you-havent-stored-your-pressure-canner-for-the-season — The same 60 / 75 / 100 figures are on the NCHFP judge summary (August 2003), citing USDA Complete Guide to Home Canning, AIB No. 539."
+  },
+  {
+    id: "chicken-boneless",
+    name: "Chicken or rabbit, without bones",
+    method: "pressure", group: "Meat", schedule: "low-acid",
+    headspace: "1-1/4 inch",
+    packs: ["Hot", "Raw"],
+    jars: [{ size: "Pint", minutes: 75 }, { size: "Quart", minutes: 90 }],
+    prep: ["Hot or raw pack without bones, 1-1/4 inch headspace, per USDA Guide 5. Keep the meat cold until you pack it."],
+    never: ["No boiling-water process.", "Do not add flour, pasta, rice, or gravy thickener.", "Do not use the with-bones time for boneless meat."],
+    yield: "See USDA Guide 5.",
+    source: "NCHFP pressure-canning summary for judges, August 2003, Chicken or rabbit — without bones: hot and raw, pints 75 minutes, quarts 90 minutes, 1-1/4 inch headspace. Cites USDA Complete Guide to Home Canning, AIB No. 539."
+  },
+  {
+    id: "chicken-bone",
+    name: "Chicken or rabbit, with bones",
+    method: "pressure", group: "Meat", schedule: "low-acid",
+    headspace: "1-1/4 inch",
+    packs: ["Hot", "Raw"],
+    jars: [{ size: "Pint", minutes: 65 }, { size: "Quart", minutes: 75 }],
+    prep: ["Hot or raw pack with bones left in, 1-1/4 inch headspace, per USDA Guide 5."],
+    never: ["No boiling-water process.", "Do not use this shorter time for boneless meat."],
+    yield: "See USDA Guide 5.",
+    source: "NCHFP pressure-canning summary for judges, August 2003, Chicken or rabbit — with bones: hot and raw, pints 65 minutes, quarts 75 minutes, 1-1/4 inch headspace. Cites USDA Complete Guide to Home Canning, AIB No. 539."
+  },
+  {
+    id: "ground-meat",
+    name: "Ground or chopped meat",
+    method: "pressure", group: "Meat", schedule: "low-acid",
+    headspace: "1 inch",
+    packs: ["Hot"],
+    jars: [{ size: "Pint", minutes: 75 }, { size: "Quart", minutes: 90 }],
+    prep: [
+      "Hot pack. Use freshly ground meat from a healthy animal, kept cold. Brown it if the Guide's ground-meat direction for your pack says so, and drain excess fat.",
+      "Cover with boiling broth, tomato juice, or water. 1-inch headspace. Follow Guide 5 for the exact pack. The time here is not optional."
+    ],
+    never: ["No boiling-water process.", "Do not add breadcrumbs, oats, egg, flour, or sauce thickeners.", "Do not can a meatloaf mix on this time."],
+    yield: "See USDA Guide 5.",
+    source: "NCHFP pressure-canning summary for judges, August 2003, Ground or chopped meat: hot pack, pints 75 minutes, quarts 90 minutes, 1-inch headspace. Cites USDA Complete Guide to Home Canning, AIB No. 539."
+  },
+  {
+    id: "meat-chunks",
+    name: "Strips, cubes, or chunks of meat",
+    method: "pressure", group: "Meat", schedule: "low-acid",
+    headspace: "1 inch",
+    packs: ["Hot", "Raw"],
+    jars: [{ size: "Pint", minutes: 75 }, { size: "Quart", minutes: 90 }],
+    prep: ["Bear, beef, lamb, pork, veal, venison, and similar red-meat strips, cubes, or chunks, hot or raw, per Guide 5. 1-inch headspace."],
+    never: ["No boiling-water process.", "Do not coat in flour or fat before jarring.", "Do not can ham the way you cure a country ham. This is fresh-meat pieces."],
+    yield: "See USDA Guide 5.",
+    source: "NCHFP pressure-canning summary for judges, August 2003, Strips, cubes, or chunks of meat: hot and raw, pints 75 minutes, quarts 90 minutes. Cites USDA Complete Guide to Home Canning, AIB No. 539."
+  },
+  {
+    id: "stock",
+    name: "Meat stock (broth)",
+    method: "pressure", group: "Meat", schedule: "low-acid",
+    headspace: "1 inch",
+    packs: ["Hot"],
+    jars: [{ size: "Pint", minutes: 20 }, { size: "Quart", minutes: 25 }],
+    prep: ["Hot pack of stock or broth you made by the Guide 5 stock method. Skim fat. 1-inch headspace. A jar of broth is a short process. A jar of meat pieces is not."],
+    never: ["No boiling-water process.", "Do not use the stock time for soup with vegetable or meat solids. Use the soup card.", "Do not add noodles or thickeners."],
+    yield: "See USDA Guide 5.",
+    source: "NCHFP pressure-canning summary for judges, August 2003, Meat stock (broth): hot pack, pints 20 minutes, quarts 25 minutes. Cites USDA Complete Guide to Home Canning, AIB No. 539."
+  },
+  {
+    id: "fish",
+    name: "Fish, raw, pints",
+    method: "pressure", group: "Seafood", schedule: "low-acid",
+    headspace: "1 inch",
+    packs: ["Raw"],
+    jars: [{ size: "Pint", minutes: 100 }],
+    blocked: ["Quart"],
+    prep: [
+      "Raw pack. Pints only. 100 minutes. The packing, thawing, and any brine step live in USDA seafood directions. Read them before you start. This card is the time and the jar size, not the whole method."
+    ],
+    never: ["Quarts are not recommended for the seafoods on that judge sheet, including fish.", "No boiling-water process.", "Do not smoke it and then use this raw-fish time. Smoked fish is a different process (pints, 110 minutes on the same sheet) and has its own directions."],
+    yield: "Pints only.",
+    source: "NCHFP pressure-canning summary for judges, August 2003, Fish: raw pack, pints 100 minutes, 1-inch headspace. The sheet says there are no recommended times for jars larger than pints for those seafoods. Cites USDA Complete Guide to Home Canning, AIB No. 539."
+  },
+  {
+    id: "peaches",
+    name: "Peaches and nectarines",
+    method: "boiling", group: "Fruit",
+    headspace: "1/2 inch",
+    bands: B4,
+    packs: {
+      Hot: { Pint: [20, 25, 30, 35], Quart: [25, 30, 35, 40] },
+      Raw: { Pint: [25, 30, 35, 40], Quart: [30, 35, 40, 45] }
+    },
+    pressureOptions: [
+      { name: "Optional pressure process", minutes: { Pint: 10, Quart: 10 }, style: "acid", note: "Hot and raw, pints or quarts, 10 minutes. This is the acid-fruit pressure schedule, not the vegetable schedule." }
+    ],
+    prep: [
+      "Wash, peel, and cut. Treat against darkening if you want the color. Pack hot or raw in water, apple juice, or a sugar syrup from the Guide. Headspace 1/2 inch.",
+      "NCHFP's own worked example: hot-pack quarts at 2,500 ft are 30 minutes in a boiling-water canner. This app uses that same table."
+    ],
+    never: ["Do not use a vegetable pressure (10 or 11 lb for a long time) and also cut the minutes. Pick one published option.", "Do not add thickeners."],
+    yield: "See USDA Guide 2 for pounds per canner load.",
+    source: "NCHFP, Selecting the Correct Processing Time, peach boiling-water table and dial-gauge example (checked 2026): hot pints 20, hot quarts 25, raw pints 25, raw quarts 30 at 0–1,000 ft, then the printed altitude columns. https://nchfp.uga.edu/how/can/general-canning-information/selecting-the-correct-processing-time/ — The same boiling-water numbers, and the optional 10-minute pressure process (weighted 5 lb / 10 lb, dial 6, 7, 8, 9 lb), are on the NCHFP fruit summary for judges, August 2003, citing USDA Complete Guide to Home Canning, AIB No. 539."
+  },
+  {
+    id: "applesauce",
+    name: "Applesauce",
+    method: "boiling", group: "Fruit",
+    headspace: "1/2 inch",
+    bands: B4,
+    packs: { Hot: { Pint: [15, 20, 20, 25], Quart: [20, 25, 30, 35] } },
+    pressureOptions: [
+      { name: "Optional pressure process", minutes: { Pint: 8, Quart: 10 }, style: "acid", note: "Hot pack. Pints 8 minutes, quarts 10 minutes. Acid-fruit pressures, not the green-bean pressures." }
+    ],
+    prep: [
+      "Hot pack only in this table. Sauce the apples as Guide 2 describes. Headspace 1/2 inch.",
+      "Read the row, do not add a flat 5 minutes yourself. Pint times are 15, then 20, then 20 again, then 25. The middle two columns are the same on purpose."
+    ],
+    never: ["Do not assume every altitude step adds 5 minutes. This food does not.", "Pumpkin butter and apple butter are not applesauce."],
+    yield: "See USDA Guide 2.",
+    source: "NCHFP fruit summary for judges, August 2003, Applesauce, boiling water, hot pack, 1/2 inch: pints 15 / 20 / 20 / 25 and quarts 20 / 25 / 30 / 35 across 0–1,000, 1,001–3,000, 3,001–6,000, and above 6,000 ft. Optional pressure: pints 8 minutes, quarts 10 minutes, weighted 5 lb then 10 lb, dial 6, 7, 8, 9 lb. Cites USDA Complete Guide to Home Canning, AIB No. 539."
+  },
+  {
+    id: "apples-sliced",
+    name: "Apples, sliced",
+    method: "boiling", group: "Fruit",
+    headspace: "1/2 inch",
+    bands: B4,
+    packs: { Hot: { Pint: [20, 25, 30, 35], Quart: [20, 25, 30, 35] } },
+    pressureOptions: [
+      { name: "Optional pressure process", minutes: { Pint: 8, Quart: 8 }, style: "acid", note: "Hot pack, pints or quarts, 8 minutes, acid-fruit pressures." }
+    ],
+    prep: ["Hot pack of slices, 1/2 inch headspace, per Guide 2. Pints and quarts share one boiling-water time at each elevation."],
+    never: ["Do not raw-pack on this card. The table used here is hot pack."],
+    yield: "See USDA Guide 2.",
+    source: "NCHFP fruit summary for judges, August 2003, Apples — sliced, boiling water, hot pack, 1/2 inch: pints and quarts 20 / 25 / 30 / 35 minutes. Optional pressure: 8 minutes for pints or quarts. Cites USDA Complete Guide to Home Canning, AIB No. 539."
+  },
+  {
+    id: "berries",
+    name: "Berries, whole",
+    method: "boiling", group: "Fruit",
+    headspace: "1/2 inch",
+    bands: B4,
+    packs: {
+      Hot: { Pint: [15, 20, 20, 25], Quart: [15, 25, 30, 35] },
+      Raw: { Pint: [15, 20, 20, 25], Quart: [20, 25, 30, 35] }
+    },
+    prep: ["Whole berries, hot or raw, 1/2 inch headspace, per Guide 2. Hot and raw differ for quarts. Do not swap them."],
+    never: ["A berry jam or syrup is not whole berries in water or syrup.", "Do not add cornstarch."],
+    yield: "See USDA Guide 2.",
+    source: "NCHFP fruit summary for judges, August 2003, Berries — whole, boiling water, 1/2 inch. Hot: pints 15/20/20/25, quarts 15/25/30/35. Raw: pints 15/20/20/25, quarts 20/25/30/35. Cites USDA Complete Guide to Home Canning, AIB No. 539."
+  },
+  {
+    id: "cherries",
+    name: "Cherries, whole",
+    method: "boiling", group: "Fruit",
+    headspace: "1/2 inch",
+    bands: B4,
+    packs: {
+      Hot: { Pint: [15, 20, 20, 25], Quart: [20, 25, 30, 35] },
+      Raw: { Pint: [25, 30, 35, 40], Quart: [25, 30, 35, 40] }
+    },
+    prep: ["Whole cherries, hot or raw, 1/2 inch headspace, per Guide 2. Raw pack is longer. Pits may be left in or taken out as the Guide allows; follow that prep, not a guess."],
+    never: ["Do not use the hot-pack minutes for a raw pack."],
+    yield: "See USDA Guide 2.",
+    source: "NCHFP fruit summary for judges, August 2003, Cherries — whole, boiling water, 1/2 inch. Hot: pints 15/20/20/25, quarts 20/25/30/35. Raw: pints and quarts 25/30/35/40. Cites USDA Complete Guide to Home Canning, AIB No. 539."
+  },
+  {
+    id: "pears",
+    name: "Pears",
+    method: "boiling", group: "Fruit",
+    headspace: "1/2 inch",
+    bands: B4,
+    packs: { Hot: { Pint: [20, 25, 30, 35], Quart: [25, 30, 35, 40] } },
+    pressureOptions: [
+      { name: "Optional pressure process", minutes: { Pint: 10, Quart: 10 }, style: "acid", note: "Hot pack, pints or quarts, 10 minutes, acid-fruit pressures." }
+    ],
+    prep: ["Hot pack, peeled and cored as Guide 2 describes, 1/2 inch headspace."],
+    never: ["This card is hot pack. Do not assume a raw pack uses the same minutes."],
+    yield: "See USDA Guide 2.",
+    source: "NCHFP fruit summary for judges, August 2003, Pears, boiling water, hot pack, 1/2 inch: pints 20/25/30/35, quarts 25/30/35/40. Optional pressure: 10 minutes. Cites USDA Complete Guide to Home Canning, AIB No. 539."
+  },
+  {
+    id: "plums",
+    name: "Plums",
+    method: "boiling", group: "Fruit",
+    headspace: "1/2 inch",
+    bands: B4,
+    packs: {
+      Hot: { Pint: [20, 25, 30, 35], Quart: [25, 30, 35, 40] },
+      Raw: { Pint: [20, 25, 30, 35], Quart: [25, 30, 35, 40] }
+    },
+    prep: ["Hot or raw. On this table the two packs print the same minutes. Headspace 1/2 inch. Follow Guide 2 for pricking skins if that is in the plum directions you are using."],
+    never: ["A plum jam is not this process."],
+    yield: "See USDA Guide 2.",
+    source: "NCHFP fruit summary for judges, August 2003, Plums, boiling water, 1/2 inch: hot and raw both list pints 20/25/30/35 and quarts 25/30/35/40. Cites USDA Complete Guide to Home Canning, AIB No. 539."
+  },
+  {
+    id: "pineapple",
+    name: "Pineapple",
+    method: "boiling", group: "Fruit",
+    headspace: "1/2 inch",
+    bands: B4,
+    packs: { Hot: { Pint: [15, 20, 20, 25], Quart: [20, 25, 30, 35] } },
+    prep: ["Hot pack, 1/2 inch headspace, per Guide 2. Peel and core. Pint times hold at 20 minutes from 1,001 ft through 6,000 ft."],
+    never: ["Do not add a flat 5 minutes at every band. The pint row does not work that way."],
+    yield: "See USDA Guide 2.",
+    source: "NCHFP fruit summary for judges, August 2003, Pineapple, boiling water, hot pack, 1/2 inch: pints 15/20/20/25, quarts 20/25/30/35. Cites USDA Complete Guide to Home Canning, AIB No. 539."
+  },
+  {
+    id: "rhubarb",
+    name: "Rhubarb, stewed",
+    method: "boiling", group: "Fruit",
+    headspace: "1/2 inch",
+    bands: B4,
+    packs: { Hot: { Pint: [15, 20, 20, 25], Quart: [15, 20, 20, 25] } },
+    pressureOptions: [
+      { name: "Optional pressure process", minutes: { Pint: 8, Quart: 8 }, style: "acid", note: "Hot pack, pints or quarts, 8 minutes, acid-fruit pressures." }
+    ],
+    prep: ["Stewed rhubarb, hot pack, 1/2 inch headspace, per Guide 2. Pints and quarts share the boiling-water time. Leaves are not food. Use the stalks only."],
+    never: ["Do not can rhubarb leaves.", "Do not treat this like a low-acid vegetable."],
+    yield: "See USDA Guide 2.",
+    source: "NCHFP fruit summary for judges, August 2003, Rhubarb — stewed, boiling water, hot pack, 1/2 inch: pints and quarts 15/20/20/25. Optional pressure: 8 minutes. Cites USDA Complete Guide to Home Canning, AIB No. 539."
+  },
+  {
+    id: "apple-juice",
+    name: "Apple juice",
+    method: "boiling", group: "Juice",
+    headspace: "1/4 inch",
+    bands: B4,
+    packs: { Hot: { Pint: [5, 10, 10, 15], Quart: [5, 10, 10, 15], "Half-gallon": [10, 15, 15, 20] } },
+    prep: [
+      "Hot pack, 1/4 inch headspace. Heat the juice as Guide 2 describes.",
+      "At 0–1,000 ft, pints and quarts are 5 minutes. That is under 10 minutes, so sterilize the empty jars before filling. NCHFP: sterilization is required when a boiling-water process is under 10 minutes. At elevations where this juice's own table reaches 10 minutes or more, sterilization is not required."
+    ],
+    never: ["Do not skip jar sterilization on a 5-minute process.", "Cider you did not heat and pack by the Guide is not this process."],
+    yield: "Pints, quarts, or half-gallons, each with its own row.",
+    source: "NCHFP fruit summary for judges, August 2003, Apple juice, hot pack, 1/4 inch: pints and quarts 5/10/10/15; half-gallons 10/15/15/20. Cites USDA Complete Guide to Home Canning, AIB No. 539. Jar-sterilization rule: NCHFP General Canning FAQs."
+  },
+  {
+    id: "grape-juice",
+    name: "Grape juice",
+    method: "boiling", group: "Juice",
+    headspace: "1/4 inch",
+    bands: B4,
+    packs: { Hot: { Pint: [5, 10, 10, 15], Quart: [5, 10, 10, 15], "Half-gallon": [10, 15, 15, 20] } },
+    prep: ["Hot pack, 1/4 inch headspace, per Guide 2. Same sterilization rule as apple juice: sterilize jars when the process you will use is under 10 minutes."],
+    never: ["Do not use a wine recipe's yeast and call it canned juice.", "Do not skip sterilization on a 5-minute process."],
+    yield: "Pints, quarts, or half-gallons.",
+    source: "NCHFP fruit summary for judges, August 2003, Grape juice, hot pack, 1/4 inch: pints and quarts 5/10/10/15; half-gallons 10/15/15/20. Cites USDA Complete Guide to Home Canning, AIB No. 539."
+  },
+  {
+    id: "tom-crushed",
+    name: "Crushed tomatoes",
+    method: "boiling", group: "Tomato", tomato: true,
+    headspace: "1/2 inch",
+    bands: B4,
+    packs: { Hot: { Pint: [35, 40, 45, 50], Quart: [45, 50, 55, 60] } },
+    pressureOptions: "tomato-standard",
+    prep: [
+      "Hot pack only. Crush and heat per the USDA crushed-tomato directions. Headspace 1/2 inch.",
+      "Put the acid in the jar before the tomatoes. Bottled lemon or lime juice: 1 tablespoon per pint, 2 tablespoons per quart. Or citric acid: 1/4 teaspoon per pint, 1/2 teaspoon per quart. Or 5% vinegar: 2 tablespoons per pint, 4 tablespoons per quart. Sugar may be added for taste. The acid may not be reduced.",
+      "The boiling-water time is void if the acid is missing. Pressure canning these tomatoes still needs the same acid. The pressure options are not a low-acid (green bean) process."
+    ],
+    never: ["Do not omit the acid.", "Do not add celery, peppers, onion, or oil and keep this time. That is a different recipe, or it is untested.", "Do not use fresh-squeezed lemon juice. The direction says bottled."],
+    yield: "See USDA Guide 3.",
+    source: "Boiling-water minutes: NCHFP tomato summary for judges, August 2003, Crushed tomatoes, hot pack, 1/2 inch: pints 35/40/45/50, quarts 45/50/55/60. Pressure options on that sheet, pints and quarts: 20 minutes at acid-fruit pressures (weighted 5 then 10 lb; dial 6, 7, 8, 9); or 15 minutes at low-acid pressures (weighted 10 then 15; dial 11, 12, 13, 14); or 10 minutes at 15 lb weighted only (dial not recommended). Acid amounts: NCHFP Tomato acidification directions, https://nchfp.uga.edu/how/can/how-do-i-can-tomatoes/tomato-acidification-directions/ — Sheet cites USDA Complete Guide to Home Canning, AIB No. 539."
+  },
+  {
+    id: "tom-juice",
+    name: "Tomato juice",
+    method: "boiling", group: "Tomato", tomato: true,
+    headspace: "1/2 inch",
+    bands: B4,
+    packs: { Hot: { Pint: [35, 40, 45, 50], Quart: [40, 45, 50, 55] } },
+    pressureOptions: "tomato-standard",
+    prep: [
+      "Hot pack. Headspace 1/2 inch. Acid in every jar, same amounts as crushed tomatoes, before or with the juice.",
+      "Juice is not crushed tomatoes. The quart boiling-water time is 40 minutes at 0–1,000 ft, not 45."
+    ],
+    never: ["Do not omit the acid, including when you use a pressure option.", "Do not add low-acid vegetables unless you switch to the tested tomato-vegetable juice recipe in the Guide."],
+    yield: "See USDA Guide 3.",
+    source: "NCHFP tomato summary for judges, August 2003, Tomato juice, hot pack, 1/2 inch: pints 35/40/45/50, quarts 40/45/50/55 in boiling water. Same three pressure options as crushed tomatoes on that sheet. Acid: NCHFP tomato acidification directions. Cites USDA Complete Guide to Home Canning, AIB No. 539."
+  },
+  {
+    id: "tom-water",
+    name: "Whole or halved tomatoes, packed in water",
+    method: "boiling", group: "Tomato", tomato: true,
+    headspace: "1/2 inch",
+    bands: B4,
+    packs: {
+      Hot: { Pint: [40, 45, 50, 55], Quart: [45, 50, 55, 60] },
+      Raw: { Pint: [40, 45, 50, 55], Quart: [45, 50, 55, 60] }
+    },
+    prep: [
+      "Packed in water, hot or raw. On this table both packs print the same minutes. Headspace 1/2 inch.",
+      "Acid in every jar, same bottled lemon juice, citric acid, or 5% vinegar amounts as crushed tomatoes.",
+      "Packed in tomato juice, or raw with no added liquid, is a different card (85 minutes at 0–1,000 ft). Do not use this water-pack time for those packs."
+    ],
+    never: ["Do not omit the acid.", "Do not use this time for tomatoes packed in juice or with no liquid."],
+    yield: "See USDA Guide 3.",
+    source: "NCHFP tomato summary for judges, August 2003, Whole or halved packed in water, hot and raw, 1/2 inch: pints 40/45/50/55, quarts 45/50/55/60. Acid footnote on that sheet. Cites USDA Complete Guide to Home Canning, AIB No. 539."
+  },
+  {
+    id: "tom-juice-pack",
+    name: "Whole or halved tomatoes, packed in tomato juice",
+    method: "boiling", group: "Tomato", tomato: true,
+    headspace: "1/2 inch",
+    bands: B4,
+    packs: {
+      Hot: { Pint: [85, 90, 95, 100], Quart: [85, 90, 95, 100] },
+      Raw: { Pint: [85, 90, 95, 100], Quart: [85, 90, 95, 100] }
+    },
+    prep: [
+      "Packed in tomato juice, hot or raw. Pints and quarts are both 85 minutes at 0–1,000 ft. Headspace 1/2 inch.",
+      "Acid still goes in every jar. The juice pack does not replace the measured acid."
+    ],
+    never: ["Do not use the 40-minute water-pack time for a juice pack.", "Do not omit the acid."],
+    yield: "See USDA Guide 3.",
+    source: "NCHFP tomato summary for judges, August 2003, Whole or halved packed in tomato juice, hot and raw, 1/2 inch: pints and quarts 85/90/95/100. Acid footnote on that sheet. Cites USDA Complete Guide to Home Canning, AIB No. 539."
+  },
+  {
+    id: "tom-raw-dry",
+    name: "Whole or halved tomatoes, raw pack, no added liquid",
+    method: "boiling", group: "Tomato", tomato: true,
+    headspace: "1/2 inch",
+    bands: B4,
+    packs: { Raw: { Pint: [85, 90, 95, 100], Quart: [85, 90, 95, 100] } },
+    prep: ["Raw pack with no added liquid. Press tomatoes in as the Guide describes until spaces fill with juice. Headspace 1/2 inch. Acid in every jar. Pints and quarts are 85 minutes at 0–1,000 ft."],
+    never: ["Do not use the water-pack time.", "There is no hot pack on this card."],
+    yield: "See USDA Guide 3.",
+    source: "NCHFP tomato summary for judges, August 2003, Whole or halved packed raw without liquid, 1/2 inch: pints and quarts 85/90/95/100. Acid footnote on that sheet. Cites USDA Complete Guide to Home Canning, AIB No. 539."
+  },
+  {
+    id: "tom-sauce",
+    name: "Standard tomato sauce (USDA recipe only)",
+    method: "boiling", group: "Tomato", tomato: true,
+    headspace: "1/4 inch",
+    bands: B4,
+    packs: { Hot: { Pint: [35, 40, 45, 50], Quart: [40, 45, 50, 55] } },
+    prep: [
+      "This time belongs only to the USDA Standard Tomato Sauce recipe in the Complete Guide. Headspace on the summary sheet is 1/4 inch. Hot pack. Acid in every jar.",
+      "If your sauce is not that recipe, stop. Marinara, meat sauce, and a thickened sauce are not this card."
+    ],
+    never: ["Do not add meat, oil, flour, or extra vegetables.", "Do not omit the acid.", "Do not use this time for any sauce that is not the USDA standard sauce."],
+    yield: "The yield printed with the USDA standard sauce recipe, not a guess.",
+    source: "NCHFP tomato summary for judges, August 2003, Standard tomato sauce, hot pack, 1/4 inch: pints 35/40/45/50, quarts 40/45/50/55. The sheet says these times are only for the recipes in the USDA Complete Guide. Acid footnote on that sheet. Cites AIB No. 539."
+  },
+  {
+    id: "salsa-chile",
+    name: "Tomato and green chile salsa",
+    method: "boiling", group: "Salsa",
+    headspace: "1/2 inch",
+    bands: [
+      { maxFt: 1000, label: "0–1,000 ft" },
+      { maxFt: 6000, label: "1,001–6,000 ft" },
+      { maxFt: null, label: "Above 6,000 ft" }
+    ],
+    packs: { Hot: { Pint: [15, 20, 25] } },
+    blocked: ["Quart"],
+    formula: [
+      "3 cups peeled, cored, chopped tomatoes",
+      "3 cups seeded, chopped long green chiles",
+      "3/4 cup chopped onions",
+      "1 jalapeño pepper, seeded and finely chopped",
+      "6 cloves garlic, finely chopped",
+      "1-1/2 cups vinegar (5 percent)",
+      "1/2 teaspoon ground cumin",
+      "2 teaspoons oregano leaves",
+      "1-1/2 teaspoons salt",
+      "Yield about 3 pints"
+    ],
+    prep: [
+      "Combine all ingredients. Heat, stirring often, until the mixture boils. Simmer 20 minutes, stirring now and then. That simmer is cooking, not the canner time.",
+      "Ladle hot into clean hot pint jars. Headspace 1/2 inch. Remove bubbles. Wipe rims. Apply lids.",
+      "Then process the minutes in the table for your elevation. At 0–1,000 ft that is 15 minutes, not the 20-minute simmer."
+    ],
+    never: [
+      "NCHFP: the only changes you can safely make are to substitute bottled lemon juice for the vinegar, and to change the amount of salt and herbs.",
+      "Do not add more chile, onion, or tomato. Do not reduce the vinegar. Do not use a quart jar. This table is pints."
+    ],
+    yield: "About 3 pints.",
+    source: "NCHFP, Tomato and Green Chile Salsa (page checked 2026). Pints, hot pack, 1/2 inch: 15 minutes at 0–1,000 ft, 20 minutes at 1,001–6,000 ft, 25 minutes above 6,000 ft. https://nchfp.uga.edu/how/can/canning-salsa/tomato-and-green-chile-salsa"
+  },
+  {
+    id: "sauerkraut",
+    name: "Sauerkraut",
+    method: "ferment", group: "Ferment",
+    headspace: "1/2 inch when canned",
+    bands: B4,
+    packs: {
+      Hot: { Pint: [10, 15, 15, 20], Quart: [15, 20, 20, 25] },
+      Raw: { Pint: [20, 25, 30, 35], Quart: [25, 30, 35, 40] }
+    },
+    prep: [
+      "The NCHFP page header lists 25 pounds of cabbage and 3/4 cup canning or pickling salt, yield about 9 quarts.",
+      "The procedure on that same page says: work with about 5 pounds at a time, shred to about a quarter-inch, and add 3 tablespoons of canning or pickling salt per 5 pounds. Mix, and pack until juice covers the cabbage.",
+      "Those two salt lines are both printed on the page and they do not equal the same scoop. Do not let this app blend them. Read the current page and follow it.",
+      "If juice does not cover the cabbage, add boiled and cooled brine: 1-1/2 tablespoons salt per quart of water.",
+      "At 70–75°F, kraut is fully fermented in about 3 to 4 weeks. At 60–65°F, 5 to 6 weeks. Below 60°F it may not ferment. Above 75°F it may go soft.",
+      "Canning is optional after the ferment. Hot pack and raw pack use different boiling-water times. Headspace when canning is the pack you choose from the Guide. This card uses the published process table."
+    ],
+    never: [
+      "Do not cut the salt. NCHFP: salt in sauerkraut is flavor and safety. Do not try a low-salt kraut from this recipe.",
+      "Do not use flake salt. Do not use salt with anti-caking additives that cloud brine. Use canning or pickling salt.",
+      "Do not can the kraut until fermentation is finished (bubbling stops, if you used a brine bag and did not open the crock)."
+    ],
+    yield: "About 9 quarts from 25 pounds, as the NCHFP page states.",
+    qualityNote: "If you can the finished kraut, best quality on the shelf is within 1 year (NCHFP home-canned guidance). If you only refrigerate the crock, set your own use-first date. This app will not invent a refrigerator month-count.",
+    source: "NCHFP, Sauerkraut, adapted from USDA Complete Guide to Home Canning, AIB No. 539, revised 2015. Ferment temperatures, salt lines, brine (1-1/2 tablespoons per quart of water), and the boiling-water table: hot pints 10/15/15/20, hot quarts 15/20/20/25, raw pints 20/25/30/35, raw quarts 25/30/35/40. https://nchfp.uga.edu/how/ferment/sauerkraut/"
+  },
+  {
+    id: "freeze-blanch",
+    name: "Blanch, then freeze vegetables",
+    method: "freeze", group: "Freezer",
+    blanch: [
+      ["Asparagus, small stalk", "2 min water"],
+      ["Asparagus, medium stalk", "3 min water"],
+      ["Asparagus, large stalk", "4 min water"],
+      ["Snap, green, or wax beans", "3 min water"],
+      ["Lima, butter, or pinto, small", "2 min water"],
+      ["Lima, butter, or pinto, medium", "3 min water"],
+      ["Lima, butter, or pinto, large", "4 min water"],
+      ["Broccoli flowerets, 1-1/2 inch", "3 min water, or 5 min steam"],
+      ["Brussels sprouts, small", "3 min"],
+      ["Brussels sprouts, medium", "4 min"],
+      ["Brussels sprouts, large", "5 min"],
+      ["Cabbage, shredded", "1-1/2 min"],
+      ["Carrots, small whole", "5 min"],
+      ["Carrots, diced, sliced, or strips", "2 min"],
+      ["Cauliflower flowerets, 1 inch", "3 min"],
+      ["Celery", "3 min"],
+      ["Corn on the cob, small ears", "7 min"],
+      ["Corn on the cob, medium ears", "9 min"],
+      ["Corn on the cob, large ears", "11 min"],
+      ["Corn, whole kernel or cream style (blanch the ear first)", "4 min"],
+      ["Eggplant", "4 min"],
+      ["Collard greens", "3 min"],
+      ["Other greens, including spinach", "2 min"],
+      ["Okra, small pods", "3 min"],
+      ["Okra, large pods", "4 min"],
+      ["Peas, edible pod", "1-1/2 to 3 min"],
+      ["Peas, field (blackeye)", "2 min"],
+      ["Peas, green", "1-1/2 min"],
+      ["Sweet peppers, halves", "3 min"],
+      ["Sweet peppers, strips or rings", "2 min"],
+      ["Irish (new) potatoes", "3 to 5 min"],
+      ["Beets", "Cook. The table does not give a short blanch."],
+      ["Pumpkin", "Cook. The table does not give a short blanch."]
+    ],
+    prep: [
+      "Boil water. Blanch the full time for that vegetable. Cool at once in ice water for about as long as you blanched. Drain. Pack. Freeze.",
+      "Under-blanching turns enzymes up and is worse than skipping the blanch. Over-blanching cooks the vegetable and dulls it.",
+      "Hold the freezer at 0°F. USDA freezing guidance: food held continuously at 0°F stays safe. Quality is what fades. The pantry date on a freezer row is a quality reminder you set. It is not a safety expiration."
+    ],
+    never: ["Do not blanch in a shallow pot that stops boiling when the vegetables go in. Use enough water to keep a boil.", "These times are not canning times."],
+    yield: "Pack the amount you will eat in one go.",
+    qualityNote: "No USDA safety date. Suggested pantry reminder, if you want one: 8 months, labeled as quality only, and only while the food stayed at 0°F.",
+    source: "NCHFP, Blanching Times. https://nchfp.uga.edu/how/freeze/freeze-general-information/blanching-times — Under-blanching warning: NCHFP freezing resources. Freezer temperature for best quality: 0°F, stated by NCHFP. Safety of food held at 0°F: USDA freezing guidance (frozen food held at 0°F remains safe; quality declines)."
+  },
+  {
+    id: "dry-general",
+    name: "Dehydrate fruit and vegetables",
+    method: "dehydrate", group: "Dry",
+    prep: [
+      "A home dehydrator is built to dry food fast at 140°F. That is the NCHFP temperature for the appliance class, and it is the temperature NCHFP uses for fruit leather.",
+      "Dried fruit should land near 20 percent moisture. Pieces do not finish equally. Condition them: cool, pack loosely in plastic or glass, seal, and wait 7 to 10 days. Shake daily. If moisture beads inside, put the fruit back on the dryer.",
+      "Vegetables are dry when they are brittle enough that a piece snaps, unless the UGA drying publication names a different endpoint for that vegetable. If you are not looking at that endpoint, do not guess a minute count. This card does not invent hours.",
+      "Storage, NCHFP: most dried fruits keep 1 year at 60°F, or 6 months at 80°F. Vegetables have about half the shelf life of fruits. Moldy dried food is discarded, not trimmed."
+    ],
+    never: ["Do not store fruit the same day it leaves the dehydrator, before conditioning, and then wonder why one jar molded.", "Do not sun-dry vegetables or meat. See the sun-drying card."],
+    yield: "Depends on the water in the fresh food.",
+    qualityMonths: 12,
+    qualityNote: "Default reminder is 12 months, the NCHFP fruit figure at 60°F. If the pantry is near 80°F, shorten fruit to 6 months. For vegetables, use about half: 6 months cool, or 3 months warm.",
+    source: "NCHFP, Food Dehydrators: dry foods fast at 140°F. https://nchfp.uga.edu/how/dry/food-dehydrators — Conditioning 7 to 10 days, fruit moisture about 20 percent, storage 1 year at 60°F or 6 months at 80°F, vegetables about half that: NCHFP, Packaging and Storing Dried Foods. https://nchfp.uga.edu/how/dry/packaging-and-storing-dried-foods/"
+  },
+  {
+    id: "fruit-leather",
+    name: "Fruit leather",
+    method: "dehydrate", group: "Dry",
+    prep: [
+      "Spread puree about 1/8 inch thick. Leave a margin so you can peel it up.",
+      "Dry at 140°F. NCHFP's fruit-leather note gives a wide example, about 4 to 10 hours, because fruit and humidity change the clock. Test the leather, do not trust a single hour.",
+      "It is dry when it peels cleanly and a light touch leaves no indentation. It may still feel a little tacky. Too much water left in it molds in the jar."
+    ],
+    never: ["Do not pour the puree to the edge of the tray.", "Do not package leather that still dents."],
+    yield: "Thin sheets from the puree you started with.",
+    qualityMonths: 12,
+    qualityNote: "Treat storage like other dried fruit: 1 year at 60°F or 6 months at 80°F (NCHFP dried-food storage).",
+    source: "NCHFP, fruit leather guidance: best drying temperature 140°F; example times 4–10 hours; dry enough that it peels and leaves no indentation. https://nchfp.uga.edu/blog/inside-family-time-for-winter-fruit-roll-ups — Storage window: NCHFP Packaging and Storing Dried Foods."
+  },
+  {
+    id: "jerky",
+    name: "Meat or poultry jerky",
+    method: "dehydrate", group: "Dry",
+    prep: [
+      "Defrost in the refrigerator, not on the counter. Marinate in the refrigerator. Do not reuse marinade.",
+      "Heat meat to 160°F and poultry to 165°F, measured with a metal stem thermometer in several strips, before the dehydrator. USDA wants that wet-heat step because a dehydrator often never reaches those temperatures on its own.",
+      "Then dry at a steady 130–140°F until a test piece cracks but does not break when bent. Drying can take a long time (FSIS notes 10–24 hours when the meat was not heated in the marinade). Meat heated in marinade dries faster.",
+      "This is not the 140°F fruit setting alone, and it is not sun drying."
+    ],
+    never: ["Do not dry meat or poultry without the 160°F or 165°F step first.", "Do not sun-dry meat.", "Do not reuse the marinade.", "A crack-but-not-break test is the doneness test FSIS prints. Do not stop while the piece still bends like leather that will not crack."],
+    yield: "Strips from the lean meat you sliced.",
+    qualityNote: "FSIS does not give a calendar shelf life on the page this card uses. Set your own use-first date. Keep the jerky dry. Refrigerate or freeze it for the longer hold. If you would not trust it, throw it out.",
+    source: "USDA FSIS, Jerky and Food Safety, and the FSIS Q&A updated February 2025: 160°F meat, 165°F poultry, before drying; dehydrator held at 130–140°F; doneness is a crack without a break. https://www.fsis.usda.gov/food-safety/safe-food-handling-and-preparation/meat-fish/jerky"
+  },
+  {
+    id: "sun-dry",
+    name: "Sun-dry fruit (not vegetables, not meat)",
+    method: "dehydrate", group: "Dry",
+    prep: [
+      "Fruits can be dried outdoors when the day is hot, dry, and breezy. NCHFP: a minimum of 85°F, higher is better, and humidity below 60 percent. It takes several days. Bring the fruit under cover at night.",
+      "East Texas humidity often misses that 60 percent mark. If the air is wet, use a dehydrator at 140°F instead of the picnic table.",
+      "Vegetables, except vine-dried beans, are not recommended for outdoor drying. Meat is not recommended outdoors. Both belong indoors where the heat is controlled."
+    ],
+    never: ["Do not sun-dry meat.", "Do not sun-dry vegetables other than beans left to dry on the vine.", "Do not leave fruit out in a humid night."],
+    yield: "Depends on the fruit and the weather.",
+    qualityMonths: 12,
+    qualityNote: "Once it is fully dry and conditioned, store it like other dried fruit: 1 year at 60°F or 6 months at 80°F.",
+    source: "NCHFP, Sun Drying. https://nchfp.uga.edu/how/dry/sun-drying/ — Storage after drying: NCHFP Packaging and Storing Dried Foods."
+  },
+  {
+    id: "dried-greens",
+    name: "Dried greens",
+    method: "dehydrate", group: "Dry",
+    prep: [
+      "Blanch before drying. Cabbage: water blanch 1-1/2 to 2 minutes, or steam 2-1/2 to 3 minutes, until wilted.",
+      "Other greens: water blanch 1-1/2 minutes, or steam 2 to 2-1/2 minutes, until wilted.",
+      "Then dry indoors. The NCHFP dehydrator temperature is 140°F. The greens article points to the University of Georgia drying publication for the rest of the method. Use that publication for tray load and the final dryness test rather than a made-up hour count."
+    ],
+    never: ["Do not skip the blanch and expect the color and safety notes in that article to apply.", "Do not sun-dry these."],
+    yield: "A small jar. Greens shrink.",
+    qualityMonths: 6,
+    qualityNote: "Vegetables have about half the shelf life of dried fruit (NCHFP). Fruit is 1 year at 60°F, so the reminder here defaults to 6 months. Shorten it if the jars sit in a warm room.",
+    source: "NCHFP, Got the Wintertime Greens? Blanch times for drying cabbage and other greens. https://nchfp.uga.edu/blog/got-the-wintertime-greens — Dehydrator 140°F: NCHFP Food Dehydrators. Half shelf life: NCHFP Packaging and Storing Dried Foods."
+  }
+];
+
+const TOMATO_PRESSURE = [
+  {
+    name: "20 minutes, lower pressure",
+    minutes: { Pint: 20, Quart: 20 },
+    style: "acid",
+    note: "Weighted gauge 5 lb at 0–1,000 ft and 10 lb above 1,000 ft. Dial gauge 6, 7, 8, 9 lb through 8,000 ft. Acid still goes in the jar."
+  },
+  {
+    name: "15 minutes, higher pressure",
+    minutes: { Pint: 15, Quart: 15 },
+    style: "low-acid",
+    note: "Weighted gauge 10 lb at 0–1,000 ft and 15 lb above 1,000 ft. Dial gauge 11, 12, 13, 14 lb through 8,000 ft. This is still an acidified tomato process. Acid still goes in the jar."
+  },
+  {
+    name: "10 minutes, 15 lb weight only",
+    minutes: { Pint: 10, Quart: 10 },
+    style: "weighted-15",
+    note: "Weighted gauge only: 15 lb at 0–1,000 ft and 15 lb above 1,000 ft. The USDA table says dial gauge is not recommended for this 10-minute option. Acid still goes in the jar."
+  }
+];
+
+const ACID_PSI = {
+  weighted(ft) {
+    if (ft == null || ft < 0) return { ok: false, reason: psT("elevFirst") };
+    if (ft <= 1000) return { ok: true, psi: 5, label: psBand("0–1,000 ft"), how: psT("useWeight", { n: 5 }) };
+    return { ok: true, psi: 10, label: psBand("Above 1,000 ft"), how: psT("use10noMid") };
+  },
+  dial(ft) {
+    if (ft == null || ft < 0) return { ok: false, reason: psT("elevFirst") };
+    const rows = [[2000, 6, "0–2,000 ft"], [4000, 7, "2,001–4,000 ft"], [6000, 8, "4,001–6,000 ft"], [8000, 9, "6,001–8,000 ft"]];
+    if (ft > 8000) return { ok: false, reason: psT("acidDialStop") };
+    for (const [max, psi, label] of rows) if (ft <= max) return { ok: true, psi, label: psBand(label), how: psT("holdDial", { n: psi }) };
+    return { ok: false, reason: psT("elevMissing") };
+  }
+};
+
+function lowAcidWeighted(ft) {
+  if (ft == null || ft < 0) return { ok: false, reason: psT("elevFirst") };
+  if (ft <= 1000) return { ok: true, psi: 10, label: psBand("0–1,000 ft"), how: psT("useWeight", { n: 10 }) };
+  return { ok: true, psi: 15, label: psBand("Above 1,000 ft"), how: psT("use15jump") };
+}
+function lowAcidDial(ft) {
+  if (ft == null || ft < 0) return { ok: false, reason: psT("elevFirst") };
+  const rows = [[2000, 11, "0–2,000 ft"], [4000, 12, "2,001–4,000 ft"], [6000, 13, "4,001–6,000 ft"], [8000, 14, "6,001–8,000 ft"]];
+  if (ft > 8000) return { ok: false, reason: psT("lowDialStop") };
+  for (const [max, psi, label] of rows) if (ft <= max) return { ok: true, psi, label: psBand(label), how: psT("holdDial", { n: psi }) };
+  return { ok: false, reason: psT("elevMissing") };
+}
+function bandIndex(ft, bands) {
+  for (let i = 0; i < bands.length; i++) {
+    if (bands[i].maxFt == null || ft <= bands[i].maxFt) return i;
+  }
+  return bands.length - 1;
+}
+function boilAt(recipe, pack, jar, ft) {
+  const row = recipe.packs && recipe.packs[pack] && recipe.packs[pack][jar];
+  if (!row) return { ok: false, reason: psT("notInPack", { jar: psJar(jar), pack: PreserveStrings.lang() === "es" ? psPackWord(pack).toLowerCase() : pack.toLowerCase() }) };
+  if (ft == null) return { ok: false, reason: psT("setElevColumn", { n: row[0] }) };
+  const i = bandIndex(ft, recipe.bands);
+  return { ok: true, minutes: row[i], label: recipe.bands[i].label, index: i };
+}
+function pressureFor(style, ft, gauge) {
+  if (style === "weighted-15") {
+    if (gauge === "dial") return { ok: false, reason: psT("dialNot10") };
+    if (ft == null) return { ok: false, reason: psT("setElev") };
+    return { ok: true, psi: 15, label: psBand(ft <= 1000 ? "0–1,000 ft" : "Above 1,000 ft"), how: psT("useWeight", { n: 15 }) };
+  }
+  if (style === "acid") return gauge === "dial" ? ACID_PSI.dial(ft) : ACID_PSI.weighted(ft);
+  return gauge === "dial" ? lowAcidDial(ft) : lowAcidWeighted(ft);
+}
+function recipeById(id) { return RECIPES.find(r => r.id === id); }
+function addMonths(iso, months) {
+  if (!iso || months == null) return "";
+  const [y, m, d] = iso.split("-").map(Number);
+  const dt = new Date(y, m - 1, d);
+  dt.setMonth(dt.getMonth() + months);
+  const mm = String(dt.getMonth() + 1).padStart(2, "0");
+  const dd = String(dt.getDate()).padStart(2, "0");
+  return dt.getFullYear() + "-" + mm + "-" + dd;
+}
+function todayISO() {
+  const d = new Date();
+  return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+}
+function esc(s) {
+  return String(s == null ? "" : s)
+    .replace(/&/g, "&" + "amp;")
+    .replace(/</g, "&" + "lt;")
+    .replace(/>/g, "&" + "gt;")
+    .replace(/"/g, "&" + "quot;")
+    .replace(/'/g, "&" + "#39;");
+}
+function uid() { return Math.random().toString(36).slice(2, 10); }
+
+const CHECKS = [
+  { id: "tested", group: "Before", methods: ["pressure", "boiling", "ferment"], text: "This batch is a tested recipe from USDA or NCHFP. Not a family story, not a blog, not open-kettle, not the oven, not the dishwasher." },
+  { id: "elev", group: "Before", methods: ["pressure", "boiling"], text: "Elevation in this app is set, and the minute or pressure you will use is the column for that elevation. You did not add your own 5 minutes on top of a column that already includes altitude." },
+  { id: "lowacid", group: "Before", methods: ["pressure"], text: "If the food is a plain vegetable, meat, stock, soup, or fish, it goes in a pressure canner. There is no boiling-water shortcut." },
+  { id: "acid", group: "Before", methods: ["boiling", "pressure"], text: "Tomatoes: bottled lemon or lime juice, citric acid, or 5% vinegar is already in the empty jar, at the NCHFP amount. Fresh-squeezed lemon does not count. The acid is not reduced for taste." },
+  { id: "formula", group: "Before", methods: ["boiling", "ferment"], text: "Salsa: vinegar or bottled lemon juice stays at the recipe amount, and chile, onion, and tomato amounts are not increased. Kraut: salt is not cut. NCHFP says salt in kraut is part of safety." },
+  { id: "jars", group: "Before", methods: ["pressure", "boiling"], text: "Jars are free of chips and cracks. Rings are sound. Flat lids are new. If the boiling-water time you will use is under 10 minutes, the jars were sterilized. At 10 minutes or more, or in a pressure canner, clean jars are enough (NCHFP FAQ)." },
+  { id: "dialtest", group: "Before", methods: ["pressure"], text: "If this is a dial gauge, it has been checked for accuracy. USDA expects a dial gauge to be tested, because a wrong dial under-processes the jar. A weighted gauge does not get that annual dial test, but you still have to use the right weight." },
+  { id: "head", group: "Before", methods: ["pressure", "boiling"], text: "Headspace matches the card. Bubbles are freed. Rims are wiped. Lids are on to the manufacturer's tightness, not cranked with a tool." },
+  { id: "water", group: "Boiling-water canner", methods: ["boiling"], text: "Water covers the lids by 1 to 2 inches. Use 2 inches if the process is over 30 minutes (NCHFP, Using Boiling Water Canners, updated 2025)." },
+  { id: "boilclock", group: "Boiling-water canner", methods: ["boiling"], text: "The clock starts when the water is at a full rolling boil, not when the jars first go in. If the boil stops, you bring it back and start the clock over." },
+  { id: "vent", group: "Pressure canner", methods: ["pressure"], text: "Steam vented in a steady stream for 10 minutes before the weight went on or the petcock was closed (USDA / NCHFP pressure-canner procedure). Trapped air makes the canner cooler than the gauge claims." },
+  { id: "psi", group: "Pressure canner", methods: ["pressure"], text: "The clock starts only when the pressure for your elevation is reached. Weighted gauge: the correct weight (10 or 15, or 5 or 10 on an acid fruit), rocking the way the manufacturer describes. Dial: the needle held at the table's pounds. If pressure drops below the target, you recover it and start the clock over." },
+  { id: "nocrash", group: "Pressure canner", methods: ["pressure"], text: "Heat is off at the end. The canner cools by itself. No cold water. No weight pulled early. When the dial is at zero, wait about 10 more minutes, then open the lid away from your face." },
+  { id: "wait5", group: "Cooling", methods: ["boiling"], text: "After the boiling-water time, heat off, lid off, jars rest 5 minutes in the canner before lifting. NCHFP (2025) says that wait is for handling, not an extra safety process, when the time was a USDA or University of Georgia time." },
+  { id: "cool", group: "Cooling", methods: ["pressure", "boiling"], text: "Jars cool upright 12 to 24 hours, not in a draft, not with the rings tightened again, not stacked." },
+  { id: "seals", group: "Cooling", methods: ["pressure", "boiling"], text: "Every seal is checked. Unsealed jars found within 24 hours, from a tested recipe: refrigerate and use within a week, freeze with 1 inch of headspace, or reprocess only as a hot pack if a tested hot-pack process exists. If the recipe was not tested, the jars are discarded, sealed or not (NCHFP FAQ)." },
+  { id: "store", group: "Storage", methods: ["pressure", "boiling", "ferment"], text: "Rings come off for storage. Jars are labeled with food, date, and lot. The shelf is cool, dark, and dry, about 50–70°F. Best quality is within 1 year (NCHFP)." },
+  { id: "notaste", group: "When to throw it out", methods: ["pressure", "boiling", "ferment", "dehydrate", "freeze"], text: "You do not taste a suspect jar to decide if it is safe." },
+  { id: "signs", group: "When to throw it out", methods: ["pressure", "boiling"], text: "Bulging lid, leak, spurt on opening, broken seal, mold, odd odor, or rising bubbles: treat low-acid food, including tomatoes, as if botulinum toxin could be there (NCHFP)." },
+  { id: "sealedbag", group: "When to throw it out", methods: ["pressure", "boiling"], text: "Still-sealed suspect jars go into a heavy garbage bag, then the trash or a landfill. They are not opened to 'check.'" },
+  { id: "detox", group: "When to throw it out", methods: ["pressure", "boiling"], text: "Unsealed, open, or leaking suspect jars are detoxified: gloves on; jars and lids on their sides in an 8-quart or larger pot; water at least 1 inch over them; no splashing; lid on; boil 30 minutes; cool; discard containers, lids, and food (NCHFP)." },
+  { id: "bleach", group: "When to throw it out", methods: ["pressure", "boiling"], text: "Anything the suspect food touched is cleaned with a fresh mix of 1 part unscented household bleach (5 to 6 percent sodium hypochlorite) to 5 parts clean water. Gloves stay on. The toxin can enter through a break in the skin (NCHFP)." },
+  { id: "mold", group: "When to throw it out", methods: ["pressure", "boiling", "dehydrate"], text: "Mold is not scraped off. Mold in a canned acid food can raise the pH (NCHFP FAQ). Moldy dried food is thrown out (NCHFP dried-food storage)." },
+  { id: "dry140", group: "Drying", methods: ["dehydrate"], text: "Fruit and vegetables in the dehydrator are at 140°F (NCHFP). Jerky was heated to 160°F (meat) or 165°F (poultry) before drying, then held at 130–140°F until a piece cracks but does not break (USDA FSIS)." },
+  { id: "condition", group: "Drying", methods: ["dehydrate"], text: "Dried fruit is conditioned 7 to 10 days. If the jar sweats, it goes back on the dryer (NCHFP)." },
+  { id: "sunno", group: "Drying", methods: ["dehydrate"], text: "Vegetables and meat are not sun-dried. Outdoor fruit drying needs at least 85°F and humidity under 60 percent, and the trays come in at night (NCHFP)." },
+  { id: "blanchfull", group: "Freezing", methods: ["freeze"], text: "The blanch ran the full NCHFP time, and the vegetables went straight into ice water. Under-blanching is worse than no blanch." },
+  { id: "freezer0", group: "Freezing", methods: ["freeze"], text: "The freezer is at 0°F. The pantry date is a quality reminder. Food that stayed at 0°F does not become unsafe on that date." },
+  { id: "krauttemp", group: "Fermenting", methods: ["ferment"], text: "Kraut temperature is in range: about 3 to 4 weeks at 70–75°F, or 5 to 6 weeks at 60–65°F. Below 60°F it may not ferment. Above 75°F it may soften (NCHFP)." },
+  { id: "underbrine", group: "Fermenting", methods: ["ferment"], text: "Cabbage stays under brine. If the cabbage juice was short, the added brine was 1-1/2 tablespoons canning salt per quart of water (NCHFP)." }
+];
+
+const STORE = "preserveSafe.v1";
+let state;
+function blankState() {
+  return { ft: null, gauge: "weighted", batches: [], pantry: [], checks: {}, seq: 1, view: "recipes", q: "", filter: "all", recipeId: null, pack: null, jar: null, opt: 0, batchId: null, pantryId: null, checkFilter: "all" };
+}
+function load() {
+  try {
+    const raw = JSON.parse(localStorage.getItem(STORE) || "null");
+    if (!raw || typeof raw !== "object") return blankState();
+    const s = Object.assign(blankState(), raw);
+    if (!Array.isArray(s.batches)) s.batches = [];
+    if (!Array.isArray(s.pantry)) s.pantry = [];
+    if (!s.checks || typeof s.checks !== "object") s.checks = {};
+    return s;
+  } catch (e) { return blankState(); }
+}
+function save() { localStorage.setItem(STORE, JSON.stringify(state)); }
+function addDays(iso, days) {
+  const [y, m, d] = iso.split("-").map(Number);
+  const dt = new Date(y, m - 1, d);
+  dt.setDate(dt.getDate() + days);
+  const mm = String(dt.getMonth() + 1).padStart(2, "0");
+  const dd = String(dt.getDate()).padStart(2, "0");
+  return dt.getFullYear() + "-" + mm + "-" + dd;
+}
+function dueClass(iso) {
+  if (!iso) return "";
+  const t = todayISO();
+  if (iso < t) return "over";
+  const soon = addDays(t, 30);
+  if (iso <= soon) return "due";
+  return "";
+}
+function fifoItems() {
+  return state.pantry.filter(p => !p.archived && p.jars > 0).slice().sort((a, b) => {
+    if (!a.bestBy && !b.bestBy) return 0;
+    if (!a.bestBy) return 1;
+    if (!b.bestBy) return -1;
+    return a.bestBy < b.bestBy ? -1 : a.bestBy > b.bestBy ? 1 : 0;
+  });
+}
+function reminderCount() {
+  const t = todayISO();
+  const soon = addDays(t, 30);
+  return fifoItems().filter(p => p.bestBy && p.bestBy <= soon).length;
+}
+
+function ico(name) {
+  const paths = {
+    recipes: '<path fill="currentColor" d="M6 3h9l4 4v14H6z"/>',
+    altitude: '<path fill="currentColor" d="M2 19l6-9 4 5 3-4 7 8z"/>',
+    batches: '<rect x="4" y="3" width="16" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path stroke="currentColor" stroke-width="2" d="M8 8h8M8 12h8M8 16h5"/>',
+    pantry: '<path fill="currentColor" d="M8 2h8v4H8zM6 7h12l-1 14H7z"/>',
+    check: '<circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="2"/><path fill="none" stroke="currentColor" stroke-width="2" d="M8 12l2.5 2.5L16 9"/>',
+    sources: '<circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="2"/><path fill="currentColor" d="M11 10h2v7h-2zm0-3h2v2h-2z"/>',
+    settings: '<circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="2"/><path fill="none" stroke="currentColor" stroke-width="2" d="M12 3v3M12 18v3M3 12h3M18 12h3"/>'
+  };
+  return '<svg viewBox="0 0 24 24" aria-hidden="true">' + (paths[name] || paths.settings) + '</svg>';
+}
+function statChip(id, label, value) {
+  return '<div class="stat-chip" id="' + id + '"><span>' + label + '</span><b>' + value + '</b></div>';
+}
+function mast() {
+  const ft = state.ft == null ? psT("notSet") : psT("ftUnit", { n: state.ft });
+  const n = reminderCount();
+  const done = CHECKS.filter(c => state.checks[c.id]).length;
+  return '<header class="mast"><div class="kicker">' + esc(psT("kicker")) + '</div><h1>' + esc(psT("title")) + '</h1><p>' + esc(psT("intro")) + '</p><a class="hub-link" href="../index.html">' + esc(psT("allGames")) + '</a><div class="stat-row">'
+    + statChip("psElevChip", esc(psT("chipElev")), esc(ft))
+    + statChip("psUseChip", esc(psT("chipUse")), String(n))
+    + statChip("psBatchChip", esc(psT("chipBatches")), String(state.batches.length))
+    + statChip("psCheckChip", esc(psT("chipChecks")), done + "/" + CHECKS.length)
+    + '</div></header>';
+}
+function navButton(id, label, shortLabel, icon, on) {
+  return '<button type="button" class="nav-ico" data-act="view" data-view="' + id + '" aria-label="' + label + '" aria-current="' + (on ? "page" : "false") + '">' + ico(icon) + '<span>' + shortLabel + '</span></button>';
+}
+function topNav() {
+  const items = [
+    ["recipes", psT("navRecipes"), psT("navRecipes"), "recipes"],
+    ["altitude", psT("navAltitude"), psT("navAltitude"), "altitude"],
+    ["batches", psT("navBatches"), psT("navBatches"), "batches"],
+    ["pantry", psT("navPantry"), psT("navPantry"), "pantry"],
+    ["check", psT("navCheck"), psT("navCheck"), "check"],
+    ["sources", psT("navSources"), psT("navSources"), "sources"],
+    ["settings", psT("navSettings"), psT("navSettings"), "settings"]
+  ];
+  return '<nav class="nav noprint">' + items.map(([id, label, shortLabel, icon]) => {
+    const on = state.view === id || (id === "recipes" && state.view === "recipe") || (id === "batches" && state.view === "batch") || (id === "pantry" && state.view === "pantry-form");
+    return navButton(id, label, shortLabel, icon, on);
+  }).join("") + '</nav>';
+}
+function bottomNav() {
+  const items = [
+    ["recipes", psT("navRecipes"), psT("navRecipes"), "recipes"],
+    ["altitude", psT("navAltitude"), psT("shortFeet"), "altitude"],
+    ["batches", psT("navBatches"), psT("shortLots"), "batches"],
+    ["pantry", psT("navPantry"), psT("shortJars"), "pantry"],
+    ["check", psT("navCheck"), psT("shortCheck"), "check"],
+    ["settings", psT("navSettings"), psT("shortSet"), "settings"]
+  ];
+  return '<nav class="bottom-nav noprint">' + items.map(([id, label, shortLabel, icon]) => {
+    const on = state.view === id || (id === "recipes" && state.view === "recipe") || (id === "batches" && state.view === "batch") || (id === "pantry" && state.view === "pantry-form");
+    const extra = id === "pantry" && reminderCount() ? '<span class="count-dot">' + reminderCount() + '</span>' : '';
+    return '<button type="button" class="nav-ico" data-act="view" data-view="' + id + '" aria-label="' + label + '" aria-current="' + (on ? "page" : "false") + '">' + ico(icon) + '<span>' + shortLabel + '</span>' + extra + '</button>';
+  }).join("") + '</nav>';
+}
+
+function viewRecipes() {
+  const chips = [["all", psT("filterAll")], ["pressure", psT("filterPressure")], ["boiling", psT("filterBoiling")], ["dehydrate", psT("filterDehydrate")], ["freeze", psT("filterFreeze")], ["ferment", psT("filterFerment")]];
+  const q = state.q.trim().toLowerCase();
+  const list = RECIPES.filter(r => (state.filter === "all" || r.method === state.filter) && (!q || (r.name + " " + psName(r) + " " + r.group + " " + psGroup(r.group) + " " + (r.never || []).join(" ")).toLowerCase().includes(q)));
+  const cards = list.map(r => '<article class="card"><div class="meta">' + esc(psGroup(r.group)) + ' · ' + esc(psMethod(r.method)) + '</div><h2>' + esc(psName(r)) + '</h2><p class="small">' + esc((r.never && r.never[0]) || "") + '</p><button class="btn" type="button" data-act="open" data-id="' + r.id + '">'+ esc(psT("openProcess")) + '</button></article>').join("");
+  return '<div class="row noprint" style="margin-bottom:10px">' + chips.map(([id, label]) => '<button type="button" class="chip" data-act="filter" data-filter="' + id + '" aria-pressed="' + (state.filter === id) + '">' + esc(label) + '</button>').join("") + '</div><label for="q">' + esc(psT("search")) + '</label><input id="q" type="search" value="' + esc(state.q) + '" placeholder="' + esc(psT("searchPh")) + '"><div class="stack" style="margin-top:12px">' + (cards || '<p>' + esc(psT("nothingMatches")) + '</p>') + '</div>';
+}
+
+function viewRecipe() {
+  const r = recipeById(state.recipeId);
+  if (!r) return '<p>' + esc(psT("missingRecipe")) + '</p>';
+  let packList, jarList;
+  if (Array.isArray(r.packs)) { packList = r.packs; jarList = (r.jars || []).map(j => j.size); }
+  else if (r.packs) { packList = Object.keys(r.packs); jarList = []; packList.forEach(p => Object.keys(r.packs[p]).forEach(s => { if (!jarList.includes(s)) jarList.push(s); })); }
+  else { packList = []; jarList = []; }
+  if (!state.pack || !packList.includes(state.pack)) state.pack = packList[0] || null;
+  if (!state.jar || !jarList.includes(state.jar)) state.jar = jarList[0] || null;
+  const ftNote = state.ft == null ? '<div class="stop"><strong>' + esc(psT("elevNotSet")) + '</strong> ' + esc(psT("elevNotSetBody")) + '</div>' : '';
+  let process = '';
+  if (r.method === "pressure" && r.schedule === "low-acid") {
+    const jar = (r.jars || []).find(j => j.size === state.jar);
+    const g = state.gauge === "dial" ? lowAcidDial(state.ft) : lowAcidWeighted(state.ft);
+    const blocked = (r.blocked || []).includes(state.jar);
+    const jarWord = psJar(state.jar) || (PreserveStrings.lang() === "es" ? "Ese frasco" : "That jar");
+    if (blocked || !jar) process = '<div class="stop"><strong>' + esc(psT("jarNotRecommended", { jar: jarWord })) + '</strong> ' + esc(psT("jarNotBody")) + '</div>';
+    else if (!g.ok) process = '<div class="stop"><strong>' + esc(psT("noPressure")) + '</strong> ' + esc(g.reason) + '</div>';
+    else if (state.ft == null) process = '';
+    else {
+      let seafood = '';
+      if (r.seafoodMinutes && state.jar) seafood = '<p><strong>' + esc(psT("seafoodSoup")) + '</strong> ' + esc(psT("seafoodSoupBody", { sea: r.seafoodMinutes, jar: jar.minutes })) + '</p>';
+      const gaugeWord = state.gauge === "dial" ? psT("gaugeDial") : psT("gaugeWeighted");
+      process = '<div class="clay"><div class="meta">' + esc(psT("yourProcess")) + '</div><p style="margin:6px 0"><strong>' + esc(psT("minutesAt", { min: jar.minutes })) + '</strong> ' + esc(psT("atLb", { psi: g.psi })) + ' (' + esc(g.label) + ', ' + esc(gaugeWord) + ').</p><p class="small" style="margin:0">' + esc(g.how) + '</p>' + seafood + '<p class="small">' + esc(psT("timeNote")) + ' ' + esc(psT("lowAcidPsi")) + '</p></div>';
+    }
+  }
+  if (r.bands && r.packs && !Array.isArray(r.packs)) {
+    const b = state.ft == null ? null : boilAt(r, state.pack, state.jar, state.ft);
+    if (state.ft != null) {
+      if (!b.ok) process += '<div class="stop"><strong>' + esc(psT("notInTable")) + '</strong> ' + esc(b.reason) + '</div>';
+      else {
+        const packWord = PreserveStrings.lang() === "es" ? psPackWord(state.pack).toLowerCase() : state.pack;
+        process += '<div class="clay"><div class="meta">' + esc(psT("boilMeta")) + '</div><p style="margin:6px 0"><strong>' + esc(psT("boilLine", { min: b.minutes, pack: packWord, jar: psJar(state.jar), label: psBand(b.label) })) + '</strong></p><p class="small" style="margin:0">' + esc(psT("notFlat")) + '</p></div>';
+      }
+      if (b.ok && b.minutes < 10) process += '<div class="tip"><strong>' + esc(psT("under10")) + '</strong> ' + esc(psT("under10Body")) + '</div>';
+    }
+  }
+  const options = r.pressureOptions === "tomato-standard" ? TOMATO_PRESSURE : (r.pressureOptions || null);
+  if (options && state.ft != null) {
+    if (state.opt >= options.length) state.opt = 0;
+    const rows = options.map((op, i) => {
+      const mins = op.minutes[state.jar];
+      const g = pressureFor(op.style, state.ft, state.gauge);
+      let optName = op.name;
+      let optNote = op.note || "";
+      if (r.pressureOptions === "tomato-standard") {
+        optName = psT("tomOpt" + i);
+        optNote = psT("tomNote" + i);
+      } else if (op.name === "Optional pressure process") {
+        optName = psT("optPressure");
+        optNote = psOr("pn_" + r.id, op.note || "");
+      }
+      const line = mins == null ? psT("jarNotInOption") : (!g.ok ? g.reason : psT("minutesAtHow", { min: mins, psi: g.psi, how: g.how }));
+      return '<label class="check"><input type="radio" name="opt" data-act="opt" data-opt="' + i + '" ' + (state.opt === i ? "checked" : "") + '> <span><strong>' + esc(optName) + '.</strong> ' + esc(line) + ' ' + esc(optNote) + '</span></label>';
+    }).join("");
+    process += '<div class="card"><h3>' + esc(psT("pickPressure")) + '</h3><p class="small">' + esc(psT("pressureSubs")) + '</p>' + rows + '</div>';
+  }
+  const chooser = (packList.length || jarList.length) ? '<div class="row noprint">' + packList.map(p => '<button type="button" class="chip" data-act="pack" data-pack="' + esc(p) + '" aria-pressed="' + (state.pack === p) + '">' + esc(psPackChip(p)) + '</button>').join("") + jarList.map(j => '<button type="button" class="chip" data-act="jar" data-jar="' + esc(j) + '" aria-pressed="' + (state.jar === j) + '">' + esc(psJar(j)) + '</button>').join("") + '</div>' : '';
+  const formula = r.formula ? '<div class="card"><h3>' + esc(psT("testedAmounts")) + '</h3><ul>' + r.formula.map(x => '<li>' + esc(x) + '</li>').join("") + '</ul></div>' : '';
+  const blanch = r.blanch ? '<div class="card"><table><thead><tr><th>' + esc(psT("vegHeader")) + '</th><th>' + esc(psT("blanchHeader")) + '</th></tr></thead><tbody>' + r.blanch.map(row => '<tr><td>' + esc(row[0]) + '</td><td>' + esc(row[1]) + '</td></tr>').join("") + '</tbody></table></div>' : '';
+  const prep = (r.prep || []).map(p => '<p>' + esc(p) + '</p>').join("");
+  const never = (r.never || []).map(p => '<li>' + esc(p) + '</li>').join("");
+  const quality = r.qualityNote || (r.method === "pressure" || r.method === "boiling" ? psT("year") : "");
+  return '<button type="button" class="btn-quiet noprint" data-act="view" data-view="recipes">' + esc(psT("backRecipes")) + '</button><article class="card"><div class="meta">' + esc(psGroup(r.group)) + '</div><h2>' + esc(psName(r)) + '</h2>' + (r.headspace ? '<p><strong>' + esc(psT("headspace")) + '</strong> ' + esc(psHead(r.headspace)) + '</p>' : '') + chooser + ftNote + process + '</article>' + formula + blanch + '<article class="card"><h3>' + esc(psT("howPrepared")) + '</h3><p class="small">' + esc(psT("sourceKeep")) + '</p>' + prep + (r.yield ? '<p><strong>' + esc(psT("quantity")) + '</strong> ' + esc(r.yield) + '</p>' : '') + '</article><article class="stop"><strong>' + esc(psT("doNot")) + '</strong><ul>' + never + '</ul></article>' + (quality ? '<article class="tip"><strong>' + esc(psT("qualityLead")) + '</strong> ' + esc(quality) + '</article>' : '') + '<article class="card"><h3>' + esc(psT("handling")) + '</h3>' + sharedSteps(r) + '<div class="row noprint"><button type="button" class="btn-gold" data-act="log" data-id="' + r.id + '">' + esc(psT("logBatch")) + '</button><button type="button" class="btn" data-act="pantry-from" data-id="' + r.id + '">' + esc(psT("addPantry")) + '</button></div></article><p class="source"><strong>' + esc(psT("sourceLead")) + '</strong> ' + esc(r.source) + '</p>';
+}
+function sharedSteps(r) {
+  const boil = '<p>' + esc(psT("stepBoiling")) + '</p>';
+  if (r.method === "pressure") return '<p>' + esc(psT("stepPressure")) + '</p>';
+  if (r.method === "boiling") return boil;
+  if (r.method === "freeze") return '<p>' + esc(psT("stepFreeze")) + '</p>';
+  if (r.method === "dehydrate") return '<p>' + esc(psT("stepDry")) + '</p>';
+  return '<p>' + esc(psT("stepFerment")) + '</p>' + (r.bands ? boil : "");
+}
+
+function viewAltitude() {
+  const ft = state.ft;
+  const peach = ft == null ? null : boilAt(recipeById("peaches"), "Hot", "Quart", ft);
+  const beans = recipeById("snap-beans");
+  const beanJar = beans.jars.find(j => j.size === "Quart");
+  const g = ft == null ? null : (state.gauge === "dial" ? lowAcidDial(ft) : lowAcidWeighted(ft));
+  const sauce = ft == null ? null : boilAt(recipeById("applesauce"), "Hot", "Pint", ft);
+  const presets = [["0", 0], ["340", 340], ["1000", 1000], ["2500", 2500], ["4500", 4500], ["7000", 7000], ["9000", 9000]];
+  const examples = ft == null ? '<p>' + esc(psT("enterFeet")) + '</p>' : (
+    '<div class="clay"><strong>' + esc(psT("exPeach")) + '</strong> ' + esc(psT("exPeachBody", { min: peach.minutes, label: psBand(peach.label) })) + '</div>'
+    + '<div class="clay"><strong>' + esc(psT("exSauce")) + '</strong> ' + esc(psT("exSauceBody", { min: sauce.minutes, label: psBand(sauce.label) })) + '</div>'
+    + '<div class="clay"><strong>' + esc(psT("exBeans")) + '</strong> ' + esc(g.ok ? psT("minutesAtHow", { min: beanJar.minutes, psi: g.psi, how: g.how }) : g.reason) + ' ' + esc(psT("exBeansBody")) + '</div>'
+  );
+  return '<article class="card"><h2>' + esc(psT("altTitle")) + '</h2><p>' + esc(psT("altLead")) + '</p><div class="grid-2"><div><label for="ft">' + esc(psT("elevFeet")) + '</label><input id="ft" type="number" min="0" max="14000" step="10" value="' + (ft == null ? "" : ft) + '"></div><div><label for="gauge">' + esc(psT("gaugeLabel")) + '</label><select id="gauge"><option value="weighted"' + (state.gauge === "weighted" ? " selected" : "") + '>' + esc(psT("gaugeWeightedOpt")) + '</option><option value="dial"' + (state.gauge === "dial" ? " selected" : "") + '>' + esc(psT("gaugeDialOpt")) + '</option></select></div></div><div class="row" style="margin-top:8px">' + presets.map(([lab, n]) => '<button type="button" class="chip" data-act="preset" data-ft="' + n + '">' + esc(n === 340 ? psT("longview") : lab) + '</button>').join("") + '</div></article>'
+    + '<article class="card"><h3>' + esc(psT("examples")) + '</h3>' + examples + '</article><article class="tip"><strong>' + esc(psT("weightedVsDial")) + '</strong> ' + esc(psT("weightedVsDialBody")) + '</article>'
+    + '<article class="card"><h3>' + esc(psT("bandsTitle")) + '</h3><p class="small">' + esc(psT("bandsBody")) + '</p><p class="source">' + esc(psT("bandsSource")) + '</p></article>';
+}
+
+function lotCode(recipeId, date) {
+  const d = (date || todayISO()).replace(/-/g, "");
+  const n = String(state.seq).padStart(3, "0");
+  return (recipeId || "LOT").slice(0, 4).toUpperCase() + "-" + d + "-" + n;
+}
+function psOptName(r, op, index) {
+  if (!op) return "";
+  if (r && r.pressureOptions === "tomato-standard") return psT("tomOpt" + index);
+  if (op.name === "Optional pressure process") return psT("optPressure");
+  return op.name;
+}
+function processSnapshot(r) {
+  if (!r) return { minutes: "", psi: "", detail: "" };
+  if (r.method === "pressure" && r.schedule === "low-acid") {
+    const jar = (r.jars || []).find(j => j.size === state.jar) || r.jars[0];
+    const g = state.gauge === "dial" ? lowAcidDial(state.ft) : lowAcidWeighted(state.ft);
+    return { minutes: jar ? jar.minutes : "", psi: g.ok ? g.psi : "", detail: g.ok ? g.how : g.reason, pack: state.pack || (Array.isArray(r.packs) ? r.packs[0] : ""), jar: jar ? jar.size : "" };
+  }
+  if (r.bands && r.packs && !Array.isArray(r.packs)) {
+    const pack = state.pack || Object.keys(r.packs)[0];
+    const jar = state.jar || Object.keys(r.packs[pack])[0];
+    const b = state.ft == null ? null : boilAt(r, pack, jar, state.ft);
+    let psi = "", detail = b && b.ok ? psBand(b.label) : psT("elevNotRecorded");
+    const options = r.pressureOptions === "tomato-standard" ? TOMATO_PRESSURE : r.pressureOptions;
+    if (options && options[state.opt] && state.ft != null) {
+      const op = options[state.opt];
+      const g = pressureFor(op.style, state.ft, state.gauge);
+      return { minutes: op.minutes[jar] || "", psi: g.ok ? g.psi : "", detail: (psOptName(r, op, state.opt) + ". " + (g.ok ? g.how : g.reason)), pack, jar };
+    }
+    return { minutes: b && b.ok ? b.minutes : "", psi, detail, pack, jar };
+  }
+  return { minutes: "", psi: "", detail: psMethod(r.method), pack: "", jar: "" };
+}
+
+function viewBatchForm() {
+  const existing = state.batches.find(b => b.id === state.batchId);
+  const r = recipeById((existing && existing.recipeId) || state.recipeId);
+  const snap = existing ? existing : null;
+  const pre = snap || processSnapshot(r);
+  const date = (snap && snap.date) || todayISO();
+  const lot = (snap && snap.lot) || lotCode(r ? r.id : "lot", date);
+  const opts = RECIPES.map(x => '<option value="' + x.id + '"' + (r && r.id === x.id ? " selected" : "") + '>' + esc(psName(x)) + '</option>').join("");
+  return '<article class="card"><h2>' + esc(snap ? psT("editBatch") : psT("logBatch")) + '</h2><form data-act="save-batch"><input type="hidden" name="id" value="' + esc(snap ? snap.id : "") + '"><div class="grid-2"><div><label>' + esc(psT("dateMade")) + '</label><input name="date" type="date" required value="' + esc(date) + '"></div><div><label>' + esc(psT("lotLabel")) + '</label><input name="lot" required value="' + esc(lot) + '"></div><div><label>' + esc(psT("recipe")) + '</label><select name="recipeId">' + opts + '</select></div><div><label>' + esc(psT("methodNote")) + '</label><input name="method" value="' + esc((snap && snap.method) || (r ? r.method : "")) + '"></div><div><label>' + esc(psT("pack")) + '</label><input name="pack" value="' + esc(pre.pack || "") + '"></div><div><label>' + esc(psT("jarSize")) + '</label><input name="jar" value="' + esc(pre.jar || "") + '"></div><div><label>' + esc(psT("jarsFilled")) + '</label><input name="jars" type="number" min="0" value="' + esc(snap ? snap.jars : 7) + '"></div><div><label>' + esc(psT("jarsSealed")) + '</label><input name="sealed" type="number" min="0" value="' + esc(snap ? snap.sealed : 7) + '"></div><div><label>' + esc(psT("minutesUsed")) + '</label><input name="minutes" value="' + esc(pre.minutes) + '"></div><div><label>' + esc(psT("pressureLb")) + '</label><input name="psi" value="' + esc(pre.psi) + '"></div><div><label>' + esc(psT("whereSit")) + '</label><input name="place" value="' + esc(snap ? snap.place : psT("placePantry")) + '"></div><div><label>' + esc(psT("elevRecorded")) + '</label><input name="ft" value="' + esc(snap && snap.ft != null ? snap.ft : (state.ft == null ? "" : state.ft)) + '"></div></div><label>' + esc(psT("notes")) + '</label><textarea name="notes">' + esc(snap ? snap.notes : (pre.detail || "")) + '</textarea><label class="check"><input type="checkbox" name="toPantry" ' + (snap ? "" : "checked") + '> <span>' + esc(psT("alsoPantry")) + '</span></label><div class="row"><button class="btn-gold" type="submit">' + esc(psT("saveBatch")) + '</button><button class="btn-quiet" type="button" data-act="view" data-view="batches">' + esc(psT("cancel")) + '</button></div></form></article>';
+}
+function batchShownName(b) {
+  const rec = b && b.recipeId ? recipeById(b.recipeId) : null;
+  return rec ? psName(rec) : (b ? b.name : "");
+}
+function viewBatches() {
+  const rows = state.batches.slice().sort((a, b) => (a.date < b.date ? 1 : -1));
+  const body = rows.map(b => '<tr><td>' + esc(b.date) + '</td><td><strong>' + esc(b.lot) + '</strong><br>' + esc(batchShownName(b)) + '</td><td>' + esc(psT("sealedOf", { sealed: b.sealed, jars: b.jars })) + '<br>' + esc(b.psi ? psT("minAtLb", { min: b.minutes, psi: b.psi }) : psT("minOnly", { min: b.minutes })) + '</td><td class="noprint"><button type="button" data-act="edit-batch" data-id="' + b.id + '">' + esc(psT("edit")) + '</button> <button type="button" data-act="del-batch" data-id="' + b.id + '">' + esc(psT("delete")) + '</button> <button type="button" data-act="label-batch" data-id="' + b.id + '">' + esc(psT("labels")) + '</button></td></tr>').join("");
+  return '<div class="row noprint"><button class="btn-gold" type="button" data-act="new-batch">' + esc(psT("logBatch")) + '</button><button class="btn" type="button" data-act="export">' + esc(psT("downloadBackup")) + '</button><label class="btn" style="display:inline-block">' + esc(psT("restoreBackup")) + '<input id="restore" type="file" accept="application/json" class="hidden"></label></div><article class="card"><h2>' + esc(psT("batchLog")) + '</h2>' + (rows.length ? '<table><thead><tr><th>' + esc(psT("thDate")) + '</th><th>' + esc(psT("thLot")) + '</th><th>' + esc(psT("thProcess")) + '</th><th></th></tr></thead><tbody>' + body + '</tbody></table>' : '<p>' + esc(psT("noBatches")) + '</p>') + '</article>';
+}
+
+function qualityDefault(r, date) {
+  if (!r) return "";
+  if (r.qualityMonths) return addMonths(date, r.qualityMonths);
+  if (r.method === "pressure" || r.method === "boiling") return addMonths(date, 12);
+  if (r.method === "freeze") return addMonths(date, 8);
+  return "";
+}
+function viewPantryForm() {
+  const existing = state.pantry.find(p => p.id === state.pantryId);
+  const r = recipeById((existing && existing.recipeId) || state.recipeId);
+  const date = (existing && existing.made) || todayISO();
+  const best = existing ? existing.bestBy : qualityDefault(r, date);
+  const recipeId = (existing && existing.recipeId) || (r ? r.id : "");
+  const foodName = existing ? existing.name : (r ? psName(r) : "");
+  return '<article class="card"><h2>' + esc(existing ? psT("editPantry") : psT("addPantry")) + '</h2><form data-act="save-pantry"><input type="hidden" name="id" value="' + esc(existing ? existing.id : "") + '"><input type="hidden" name="recipeId" value="' + esc(recipeId) + '"><div class="grid-2"><div><label>' + esc(psT("food")) + '</label><input name="name" required value="' + esc(foodName) + '"></div><div><label>' + esc(psT("lot")) + '</label><input name="lot" value="' + esc(existing ? existing.lot : lotCode(r ? r.id : "pan", date)) + '"></div><div><label>' + esc(psT("datePreserved")) + '</label><input name="made" type="date" value="' + esc(date) + '"></div><div><label>' + esc(psT("bestBy")) + '</label><input name="bestBy" type="date" value="' + esc(best) + '"></div><div><label>' + esc(psT("jarsLeft")) + '</label><input name="jars" type="number" min="0" value="' + esc(existing ? existing.jars : 1) + '"></div><div><label>' + esc(psT("place")) + '</label><input name="place" value="' + esc(existing ? existing.place : psT("placePantry")) + '"></div></div><label>' + esc(psT("notes")) + '</label><textarea name="notes">' + esc(existing ? existing.notes : (r && r.qualityNote ? r.qualityNote : psT("year"))) + '</textarea><p class="small">' + esc(psT("fifoHelp")) + '</p><div class="row"><button class="btn-gold" type="submit">' + esc(psT("save")) + '</button><button class="btn-quiet" type="button" data-act="view" data-view="pantry">' + esc(psT("cancel")) + '</button></div></form></article>';
+}
+function pantryShownName(p) {
+  const rec = p && p.recipeId ? recipeById(p.recipeId) : null;
+  return rec ? psName(rec) : (p ? p.name : "");
+}
+function viewPantry() {
+  const items = fifoItems();
+  const soonN = reminderCount();
+  const rows = items.map(p => {
+    const cls = dueClass(p.bestBy);
+    const tag = cls === "over" ? psT("pastQuality") : cls === "due" ? psT("useSoon") : "";
+    return '<tr class="' + cls + '"><td>' + esc(p.bestBy || "—") + (tag ? '<br><span class="badge ' + (cls === "over" ? "warn" : "gold") + '">' + esc(tag) + '</span>' : '') + '</td><td><strong>' + esc(pantryShownName(p)) + '</strong><br>' + esc(p.lot) + ' · ' + esc(p.place || "") + '</td><td>' + esc(p.jars) + '</td><td class="noprint"><button type="button" data-act="use-one" data-id="' + p.id + '">' + esc(psT("use1")) + '</button> <button type="button" data-act="edit-pantry" data-id="' + p.id + '">' + esc(psT("edit")) + '</button></td></tr>';
+  }).join("");
+  const soon = soonN ? '<article class="stop"><strong>' + esc(soonN === 1 ? psT("lotIs", { n: soonN }) : psT("lotsAre", { n: soonN })) + ' ' + esc(psT("qualityWindow")) + '</strong> ' + esc(psT("qualityWindowBody")) + '</article>' : '<article class="tip">' + esc(psT("nothingSoon")) + '</article>';
+  return '<div class="row noprint"><button class="btn-gold" type="button" data-act="new-pantry">' + esc(psT("addFood")) + '</button><button class="btn" type="button" data-act="print-pantry">' + esc(psT("printLabels")) + '</button></div>' + soon + '<article class="card"><h2>' + esc(psT("pantryTitle")) + '</h2>' + (items.length ? '<table><thead><tr><th>' + esc(psT("thBest")) + '</th><th>' + esc(psT("thFood")) + '</th><th>' + esc(psT("thLeft")) + '</th><th></th></tr></thead><tbody>' + rows + '</tbody></table>' : '<p>' + esc(psT("pantryEmpty")) + '</p>') + '</article>';
+}
+
+function viewCheck() {
+  const filters = [["all", psT("filterAll")], ["pressure", psT("filterPressure")], ["boiling", psT("filterBoiling")], ["dehydrate", psT("filterDry")], ["freeze", psT("filterFreeze")], ["ferment", psT("filterFerment")]];
+  const items = CHECKS.filter(c => state.checkFilter === "all" || c.methods.includes(state.checkFilter));
+  let last = "";
+  const body = items.map(c => {
+    const head = c.group !== last ? '<h3>' + esc(psCheckGroup(c.group)) + '</h3>' : "";
+    last = c.group;
+    return head + '<label class="check"><input type="checkbox" data-act="check" data-id="' + c.id + '"' + (state.checks[c.id] ? " checked" : "") + '><span>' + esc(psT("ck_" + c.id)) + '</span></label>';
+  }).join("");
+  const done = CHECKS.filter(c => state.checks[c.id]).length;
+  return '<article class="card"><h2>' + esc(psT("checkTitle")) + '</h2><p>' + esc(psT("checkCount", { done: done, total: CHECKS.length })) + '</p><div class="row">' + filters.map(([id, label]) => '<button type="button" class="chip" data-act="check-filter" data-filter="' + id + '" aria-pressed="' + (state.checkFilter === id) + '">' + esc(label) + '</button>').join("") + '<button type="button" class="btn-ink" data-act="reset-checks">' + esc(psT("reset")) + '</button></div>' + body + '</article>';
+}
+function viewSources() {
+  const items = ["src1", "src2", "src3", "src4", "src5", "src6", "src7", "src8"].map(k => "<li>" + esc(psT(k)) + "</li>").join("");
+  return '<article class="card"><h2>' + esc(psT("sourcesTitle")) + '</h2><p>' + esc(psT("sourcesLead")) + '</p><div class="stop"><strong>' + esc(psT("sourcesStop")) + '</strong> ' + esc(psT("sourcesStopBody")) + '</div><ul>' + items + '</ul><p class="small">' + esc(psT("sourcesOut")) + '</p></article><article class="tip"><strong>' + esc(psT("steamTitle")) + '</strong> ' + esc(psT("steamBody")) + '</article>';
+}
+
+function viewSettings() {
+  const mode = window.PreserveTheme ? PreserveTheme.get() : "auto";
+  const lang = PreserveStrings.lang();
+  const choices = [["auto", psT("themeAuto")], ["light", psT("themeLight")], ["dark", psT("themeDark")]];
+  const langs = [["en", psT("langEn")], ["es", psT("langEs")]];
+  return '<article class="card"><h2>' + esc(psT("settingsTitle")) + '</h2><p>' + esc(psT("settingsLead")) + '</p><div class="row" role="group" aria-label="' + esc(psT("theme")) + '">' + choices.map(([id, label]) => '<button type="button" class="chip" data-act="theme" data-mode="' + id + '" aria-pressed="' + (mode === id) + '">' + esc(label) + '</button>').join("") + '</div><p>' + esc(psT("language")) + '</p><div class="row" role="group" aria-label="' + esc(psT("language")) + '">' + langs.map(([id, label]) => '<button type="button" class="chip" data-act="lang" data-lang="' + id + '" aria-pressed="' + (lang === id) + '">' + esc(label) + '</button>').join("") + '</div><p class="small">' + esc(psT("settingsFine")) + '</p></article>';
+}
+function render() {
+  if (window.PreserveStrings) PreserveStrings.apply();
+  const app = document.getElementById("app");
+  if (!app) return;
+  const focus = document.activeElement;
+  const focusId = focus && focus.id;
+  const pos = focus && focus.selectionStart;
+  let main = "";
+  if (state.view === "recipes") main = viewRecipes();
+  else if (state.view === "recipe") main = viewRecipe();
+  else if (state.view === "altitude") main = viewAltitude();
+  else if (state.view === "batches") main = viewBatches();
+  else if (state.view === "batch") main = viewBatchForm();
+  else if (state.view === "pantry") main = viewPantry();
+  else if (state.view === "pantry-form") main = viewPantryForm();
+  else if (state.view === "check") main = viewCheck();
+  else if (state.view === "sources") main = viewSources();
+  else if (state.view === "settings") main = viewSettings();
+  app.innerHTML = mast() + topNav() + '<main class="stack screen-only">' + main + '</main>' + bottomNav();
+  if (focusId) {
+    const el = document.getElementById(focusId);
+    if (el) {
+      el.focus();
+      if (typeof pos === "number" && el.setSelectionRange) { try { el.setSelectionRange(pos, pos); } catch (e) {} }
+    }
+  }
+}
+
+function go(view) { state.view = view; save(); render(); }
+function onClick(e) {
+  const t = e.target.closest("[data-act]");
+  if (!t) return;
+  const act = t.dataset.act;
+  if (act === "view") go(t.dataset.view);
+  else if (act === "filter") { state.filter = t.dataset.filter; save(); render(); }
+  else if (act === "open") { state.recipeId = t.dataset.id; state.pack = null; state.jar = null; state.opt = 0; go("recipe"); }
+  else if (act === "pack") { state.pack = t.dataset.pack; render(); }
+  else if (act === "jar") { state.jar = t.dataset.jar; render(); }
+  else if (act === "preset") { state.ft = Number(t.dataset.ft); save(); render(); }
+  else if (act === "log" || act === "new-batch") {
+    if (act === "log") state.recipeId = t.dataset.id;
+    state.batchId = null; go("batch");
+  }
+  else if (act === "edit-batch") { state.batchId = t.dataset.id; go("batch"); }
+  else if (act === "del-batch") {
+    const b = state.batches.find(x => x.id === t.dataset.id);
+    if (b && confirm(psT("deleteLot", { lot: b.lot }))) {
+      state.batches = state.batches.filter(x => x.id !== b.id); save(); render();
+    }
+  }
+  else if (act === "label-batch") printLabels(state.batches.filter(b => b.id === t.dataset.id).map(batchToLabel));
+  else if (act === "export") exportBackup();
+  else if (act === "pantry-from" || act === "new-pantry") {
+    if (act === "pantry-from") state.recipeId = t.dataset.id;
+    state.pantryId = null; go("pantry-form");
+  }
+  else if (act === "edit-pantry") { state.pantryId = t.dataset.id; go("pantry-form"); }
+  else if (act === "use-one") {
+    const p = state.pantry.find(x => x.id === t.dataset.id);
+    if (!p) return;
+    p.jars = Math.max(0, Number(p.jars) - 1);
+    if (p.jars === 0) p.archived = true;
+    save(); render();
+  }
+  else if (act === "print-pantry") printLabels(fifoItems().map(p => ({ title: p.name, lot: p.lot, date: p.made, best: p.bestBy, place: p.place })));
+  else if (act === "check-filter") { state.checkFilter = t.dataset.filter; render(); }
+  else if (act === "reset-checks") { if (confirm(psT("clearChecks"))) { state.checks = {}; save(); render(); } }
+  else if (act === "theme") { if (window.PreserveTheme) PreserveTheme.set(t.dataset.mode); render(); }
+  else if (act === "lang") { PreserveStrings.setLang(t.dataset.lang); render(); }
+}
+function onChange(e) {
+  if (e.target.id === "gauge") { state.gauge = e.target.value; save(); render(); }
+  if (e.target.id === "restore") importBackup(e.target.files[0]);
+  if (e.target.dataset.act === "check") { state.checks[e.target.dataset.id] = e.target.checked; save(); render(); }
+  if (e.target.dataset.act === "opt") { state.opt = Number(e.target.dataset.opt); save(); render(); }
+}
+function onInput(e) {
+  if (e.target.id === "q") { state.q = e.target.value; save(); render(); }
+  if (e.target.id === "ft") {
+    const v = e.target.value;
+    state.ft = v === "" ? null : Math.max(0, Math.min(14000, Number(v)));
+    save(); render();
+  }
+}
+function onSubmit(e) {
+  const form = e.target;
+  if (!(form instanceof HTMLFormElement)) return;
+  e.preventDefault();
+  const data = Object.fromEntries(new FormData(form).entries());
+  if (form.dataset.act === "save-batch") {
+    const r = recipeById(data.recipeId);
+    const row = {
+      id: data.id || uid(), date: data.date, lot: data.lot.trim(), recipeId: data.recipeId,
+      name: r ? r.name : data.recipeId, method: data.method, pack: data.pack, jar: data.jar,
+      jars: Number(data.jars || 0), sealed: Number(data.sealed || 0), minutes: data.minutes, psi: data.psi,
+      place: data.place, ft: data.ft === "" ? null : Number(data.ft), notes: data.notes, gauge: state.gauge
+    };
+    const idx = state.batches.findIndex(b => b.id === row.id);
+    if (idx >= 0) state.batches[idx] = row;
+    else { state.batches.push(row); state.seq += 1; }
+    if (form.elements.toPantry && form.elements.toPantry.checked) {
+      const made = row.date;
+      state.pantry.push({
+        id: uid(), name: row.name, lot: row.lot, made, bestBy: qualityDefault(r, made),
+        jars: row.sealed, place: row.place, notes: row.notes, recipeId: row.recipeId, archived: row.sealed <= 0
+      });
+    }
+    psFly(form.querySelector("button[type=submit]"), "psBatchChip");
+    save(); go("batches");
+  }
+  if (form.dataset.act === "save-pantry") {
+    const row = {
+      id: data.id || uid(),       name: data.name.trim(), lot: data.lot.trim(), made: data.made, bestBy: data.bestBy,
+      jars: Number(data.jars || 0), place: data.place, notes: data.notes, recipeId: data.recipeId || "", archived: Number(data.jars || 0) <= 0
+    };
+    const idx = state.pantry.findIndex(p => p.id === row.id);
+    if (idx >= 0) state.pantry[idx] = Object.assign(state.pantry[idx], row);
+    else state.pantry.push(row);
+    if (!data.id) state.seq += 1;
+    psFly(form.querySelector("button[type=submit]"), "psUseChip");
+    save(); go("pantry");
+  }
+}
+function batchToLabel(b) {
+  return { title: b.name, lot: b.lot, date: b.date, best: qualityDefault(recipeById(b.recipeId), b.date), place: b.place, extra: (b.minutes ? b.minutes + " min" : "") + (b.psi ? " @ " + b.psi + " lb" : "") + (b.ft != null ? " · " + b.ft + " ft" : "") };
+}
+function printLabels(items) {
+  const root = document.getElementById("labels");
+  const boxes = [];
+  items.forEach(item => {
+    const n = 1;
+    for (let i = 0; i < n; i++) {
+      boxes.push('<div class="jar-label"><b>' + esc(item.title) + '</b><br>' + esc(psT("labelLot", { lot: item.lot })) + '<br>' + esc(psT("labelMade", { date: item.date || "" })) + '<br>' + esc(psT("labelBest", { date: item.best || psT("labelSetDate") })) + '<br>' + esc(item.place || "") + '<br>' + esc(item.extra || "") + '</div>');
+    }
+  });
+  root.innerHTML = '<div class="label-grid">' + boxes.join("") + '</div>';
+  root.style.display = "block";
+  const hide = () => { root.style.display = "none"; root.innerHTML = ""; };
+  window.addEventListener("afterprint", hide, { once: true });
+  window.print();
+}
+function exportBackup() {
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "preserve-safe-backup.json";
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1500);
+}
+function importBackup(file) {
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const data = JSON.parse(String(reader.result));
+      if (!data || !Array.isArray(data.batches) || !Array.isArray(data.pantry)) throw new Error("bad");
+      state = Object.assign(blankState(), data);
+      state.batches = data.batches; state.pantry = data.pantry;
+      save(); render();
+    } catch (err) { showNotice(psT("badBackup")); }
+  };
+  reader.readAsText(file);
+}
+
+function selfCheck() {
+  const errors = [];
+  if (!PreserveStrings.keysEqual()) errors.push("lang keys");
+  const eq = (a, b, m) => { if (a !== b) errors.push(m + " :: " + a + " !== " + b); };
+  eq(boilAt(recipeById("peaches"), "Hot", "Quart", 1000).minutes, 25, "peach 1000");
+  eq(boilAt(recipeById("peaches"), "Hot", "Quart", 1001).minutes, 30, "peach 1001");
+  eq(boilAt(recipeById("peaches"), "Hot", "Quart", 3000).minutes, 30, "peach 3000");
+  eq(boilAt(recipeById("peaches"), "Hot", "Quart", 3001).minutes, 35, "peach 3001");
+  eq(boilAt(recipeById("peaches"), "Hot", "Quart", 6000).minutes, 35, "peach 6000");
+  eq(boilAt(recipeById("peaches"), "Hot", "Quart", 6001).minutes, 40, "peach 6001");
+  eq(lowAcidDial(1000).psi, 11, "dial 1000");
+  eq(lowAcidDial(2000).psi, 11, "dial 2000");
+  eq(lowAcidDial(2001).psi, 12, "dial 2001");
+  eq(lowAcidDial(8000).psi, 14, "dial 8000");
+  eq(lowAcidDial(8001).ok, false, "dial 8001");
+  eq(lowAcidWeighted(1000).psi, 10, "wt 1000");
+  eq(lowAcidWeighted(1001).psi, 15, "wt 1001");
+  eq(addDays("2026-10-13", 30), "2026-11-12", "plus 30 days");
+  const sample = esc("A<B>&");
+  if (sample.indexOf("<") !== -1 || sample.indexOf(">") !== -1 || sample.indexOf("amp") === -1) errors.push("esc " + sample);
+  RECIPES.forEach(r => { if (!r.source || r.source.length < 80) errors.push("thin source " + r.id); if (!r.name) errors.push("no name " + r.id); });
+  eq(boilAt(recipeById("peaches"), "Hot", "Quart", 2500).minutes, 30, "peach 2500");
+  eq(boilAt(recipeById("peaches"), "Hot", "Pint", 0).minutes, 20, "peach pint 0");
+  eq(boilAt(recipeById("peaches"), "Raw", "Quart", 7000).minutes, 45, "peach raw quart high");
+  eq(boilAt(recipeById("applesauce"), "Hot", "Pint", 500).minutes, 15, "sauce 500");
+  eq(boilAt(recipeById("applesauce"), "Hot", "Pint", 2000).minutes, 20, "sauce 2000");
+  eq(boilAt(recipeById("applesauce"), "Hot", "Pint", 4000).minutes, 20, "sauce 4000");
+  eq(boilAt(recipeById("applesauce"), "Hot", "Pint", 7000).minutes, 25, "sauce 7000");
+  eq(boilAt(recipeById("apple-juice"), "Hot", "Pint", 4000).minutes, 10, "juice 4000");
+  eq(boilAt(recipeById("salsa-chile"), "Hot", "Pint", 340).minutes, 15, "salsa longview");
+  eq(boilAt(recipeById("salsa-chile"), "Hot", "Pint", 2500).minutes, 20, "salsa 2500");
+  eq(boilAt(recipeById("salsa-chile"), "Hot", "Pint", 7000).minutes, 25, "salsa 7000");
+  eq(boilAt(recipeById("salsa-chile"), "Hot", "Quart", 0).ok, false, "salsa quart blocked by missing row");
+  const bean = recipeById("snap-beans").jars.find(j => j.size === "Quart");
+  eq(bean.minutes, 25, "bean minutes");
+  eq(lowAcidDial(340).psi, 11, "dial 340");
+  eq(lowAcidWeighted(340).psi, 10, "wt 340");
+  eq(lowAcidDial(2500).psi, 12, "dial 2500");
+  eq(lowAcidWeighted(2500).psi, 15, "wt 2500");
+  eq(lowAcidDial(9000).ok, false, "dial 9000 blocked");
+  eq(lowAcidWeighted(9000).psi, 15, "wt 9000");
+  eq(ACID_PSI.dial(2500).psi, 7, "acid dial peach example");
+  eq(ACID_PSI.weighted(0).psi, 5, "acid wt 0");
+  eq(pressureFor("weighted-15", 2000, "dial").ok, false, "10-min tomato dial blocked");
+  eq(pressureFor("weighted-15", 2000, "weighted").psi, 15, "10-min tomato weight");
+  eq(addMonths("2026-10-13", 12), "2027-10-13", "plus 12 months");
+  eq(recipeById("corn-cream").jars.length, 1, "cream corn pints only");
+  eq(recipeById("tom-crushed").packs.Hot.Quart[0], 45, "crushed quart");
+  eq(recipeById("tom-juice-pack").packs.Hot.Pint[0], 85, "juice pack");
+  const ftState = [{ bestBy: "2027-01-01", jars: 1, archived: false }, { bestBy: "2026-11-01", jars: 2, archived: false }, { bestBy: "", jars: 1, archived: false }];
+  const sorted = ftState.slice().sort((a, b) => !a.bestBy ? 1 : !b.bestBy ? -1 : (a.bestBy < b.bestBy ? -1 : 1));
+  eq(sorted[0].bestBy, "2026-11-01", "fifo");
+  return errors;
+}
+
+function psFly(fromEl, targetId) {
+  const start = fromEl && fromEl.getBoundingClientRect ? fromEl.getBoundingClientRect() : { left: window.innerWidth / 2, top: window.innerHeight * 0.62, width: 0, height: 0 };
+  const sx = start.left + start.width / 2;
+  const sy = start.top + start.height / 2;
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  requestAnimationFrame(() => {
+    const chip = document.getElementById(targetId);
+    let i, el, dest, dx, dy;
+    if (!chip) return;
+    chip.classList.remove("is-pop");
+    void chip.offsetWidth;
+    chip.classList.add("is-pop");
+    if (reduce) return;
+    dest = chip.getBoundingClientRect();
+    dx = dest.left + dest.width / 2 - 7;
+    dy = dest.top + dest.height / 2 - 9;
+    for (i = 0; i < 5; i++) {
+      el = document.createElement("div");
+      el.className = "ps-seal";
+      el.style.left = (sx + (i - 2) * 12) + "px";
+      el.style.top = sy + "px";
+      document.body.appendChild(el);
+      el.animate([
+        { transform: "translate(0px, 0px) scale(1)", opacity: 1 },
+        { transform: "translate(" + ((dx - sx) * 0.45) + "px, " + ((dy - sy) * 0.3 - 36) + "px) scale(1.15)", opacity: 1, offset: 0.4 },
+        { transform: "translate(" + (dx - sx) + "px, " + (dy - sy) + "px) scale(0.6)", opacity: 0.15 }
+      ], { duration: 540, delay: i * 40, easing: "cubic-bezier(.2,.8,.2,1)", fill: "forwards" });
+      setTimeout(() => { if (el.parentNode) el.remove(); }, 660 + i * 40);
+    }
+  });
+}
+function showNotice(msg) {
+  let n = document.getElementById("psNotice");
+  if (!n) {
+    n = document.createElement("div");
+    n.id = "psNotice";
+    n.setAttribute("role", "alertdialog");
+    document.body.appendChild(n);
+  }
+  n.hidden = false;
+  n.innerHTML = '<div class="sheet"><p>' + esc(msg) + '</p><button type="button">' + esc(psT("ok")) + '</button></div>';
+  n.querySelector("button").onclick = () => { n.hidden = true; };
+}
+function init() {
+  state = load();
+  const app = document.getElementById("app");
+  if (!app) return;
+  app.addEventListener("click", onClick);
+  app.addEventListener("change", onChange);
+  app.addEventListener("input", onInput);
+  app.addEventListener("submit", onSubmit);
+  render();
+  const problems = selfCheck();
+  if (problems.length) console.error(problems);
+  if (location.search.indexOf("test=1") >= 0) {
+    const box = document.createElement("pre");
+    box.textContent = problems.length ? problems.join("\n") : "SELF CHECK OK " + RECIPES.length + " recipes";
+    document.body.appendChild(box);
+  }
+}
+if (typeof document !== "undefined") init();
+</script>
+<noscript><p>Preserve Safe needs JavaScript. It still stays on this device. Nothing is sent to a server.</p><p>Preserve Safe necesita JavaScript. Sigue en este aparato. No se envía nada a un servidor.</p></noscript>
+</body>
+</html>

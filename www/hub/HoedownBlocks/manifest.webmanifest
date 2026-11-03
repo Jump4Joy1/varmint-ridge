@@ -1,0 +1,12 @@
+{
+  "name": "Hoedown Blocks",
+  "short_name": "Hoedown",
+  "description": "A family homestead puzzle from JW Manor. All ages. No ads.",
+  "start_url": "index.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#1A1A1A",
+  "theme_color": "#305032",
+  "lang": "en",
+  "categories": ["games"]
+}

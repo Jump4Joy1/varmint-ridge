@@ -1,0 +1,12 @@
+{
+  "name": "Homestead Harvest",
+  "short_name": "Harvest",
+  "description": "A family crop-timing game from JW Manor. All ages. No ads.",
+  "start_url": "index.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F3EEDF",
+  "theme_color": "#305032",
+  "lang": "en",
+  "categories": ["games"]
+}

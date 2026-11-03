@@ -1,0 +1,1608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Homestead Siege — JW Manor</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect fill='%23305032' width='16' height='16'/%3E%3C/svg%3E">
+<link rel="manifest" href="manifest.webmanifest">
+<script src="strings.js"></script>
+<script id="themeTheme">/* theme: prefers-color-scheme, or a Settings choice saved in localStorage */
+(function(){var K='siege.theme',mq=matchMedia('(prefers-color-scheme: dark)');
+function get(){try{return localStorage.getItem(K)||'auto'}catch(e){return 'auto'}}
+function apply(){var v=get(),t=v==='auto'?(mq.matches?'dark':'light'):v;document.documentElement.setAttribute('data-theme',t);
+document.querySelectorAll('[data-theme-choice]').forEach(function(b){b.setAttribute('aria-pressed',b.getAttribute('data-theme-choice')===v?'true':'false')})}
+function set(mode){try{localStorage.setItem(K,mode)}catch(e){}apply()}
+window.SiegeTheme={get:get,set:set,apply:apply};
+apply();mq.addEventListener('change',apply)})();
+</script>
+<style>
+body{margin:0;background:#1A1A1A;color:#C19A50;font-family:Georgia, "Iowan Old Style", Palatino, "Palatino Linotype", serif;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;overflow:hidden;}
+body.is-play{justify-content:flex-start;align-items:center;}
+canvas{background:#1A1A1A;touch-action:none;display:none;}
+.menu{position:fixed;inset:0;background:rgba(26,26,26,0.96);display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:12;text-align:center;overflow:auto;padding:12px;}
+button{background:#305032;color:#C19A50;border:2px solid #C19A50;padding:10px 16px;margin:5px;font-size:16px;cursor:pointer;border-radius:6px;font-family:Georgia, "Iowan Old Style", Palatino, "Palatino Linotype", serif;}
+button:hover{background:#C19A50;color:#1A1A1A;}
+input{padding:8px;margin:8px;text-transform:uppercase;background:#1A1A1A;color:#C19A50;border:2px solid #C19A50;border-radius:8px;font:16px Georgia, "Iowan Old Style", Palatino, "Palatino Linotype", serif;}
+html[data-theme=dark] button{color:#F3E6C4}
+html[data-theme=dark] button:hover{color:#1A1A1A}
+html[data-theme=light] body{background:#F3EEDF;color:#2b4a2d}
+html[data-theme=light] .menu{background:rgba(243,238,223,.97);color:#1f2a1f}
+html[data-theme=light] .menu h1,html[data-theme=light] .menu h2,html[data-theme=light] .menu h3{color:#305032}
+html[data-theme=light] button{background:#305032;color:#F3E6C4;border-color:#305032}
+html[data-theme=light] button:hover{background:#C19A50;color:#1A1A1A;border-color:#8d6d2e}
+html[data-theme=light] input{background:#fff;color:#1A1A1A;border-color:#305032}
+html[data-theme=light] a{color:#305032}
+.brand{letter-spacing:.12em;text-transform:uppercase;font-size:12px;color:#C19A50;font-weight:700;margin:0}
+a.hub-link{color:#C19A50;font-size:15px;margin:6px 0 2px;text-decoration:underline}
+html[data-theme=light] a.hub-link{color:#305032}
+#hsHelp .sheet,#hsSettings .sheet{background:#241c14;color:#F3E6C4;border:3px solid #C19A50;border-radius:16px;padding:16px 18px 18px;width:min(92vw,440px);max-height:min(78vh,640px);overflow:auto;text-align:left;box-shadow:0 12px 32px rgba(0,0,0,.35)}
+#hsHelp h2,#hsSettings h2{margin:0 0 8px;color:#F3E6C4}
+#hsHelp p{font-size:16px;line-height:1.45;margin:8px 0}
+html[data-theme=light] #hsHelp .sheet,html[data-theme=light] #hsSettings .sheet{background:#fffaf0;color:#1A1A1A}
+html[data-theme=light] #hsHelp h2,html[data-theme=light] #hsSettings h2{color:#305032}
+#hsHud{position:relative;z-index:6;display:none;gap:8px;width:100%;box-sizing:border-box;padding:10px 12px 8px;pointer-events:none;flex-wrap:wrap}
+body.is-play #hsHud{display:flex}
+#hsHud[hidden]{display:none !important}
+.hh-chip{flex:1 1 64px;min-width:0;background:#FFF8EA;color:#1A1A1A;border:3px solid #C19A50;box-shadow:inset 0 0 0 2px #305032;border-radius:12px;padding:6px 8px 7px;font-family:Georgia, "Iowan Old Style", Palatino, "Palatino Linotype", serif}
+.hh-chip span{display:block;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#305032;font-weight:700;line-height:1.1}
+.hh-chip b{display:block;margin-top:2px;font-size:16px;line-height:1.1;color:#1A1A1A;font-variant-numeric:tabular-nums}
+.hh-chip i{display:block;height:4px;margin-top:4px;border-radius:99px;background:#E7D7B0;overflow:hidden}
+.hh-chip i::before{content:"";display:block;height:100%;width:var(--p,100%);background:#305032}
+html[data-theme=dark] .hh-chip{background:#1A1A1A;color:#F3E6C4}
+html[data-theme=dark] .hh-chip span{color:#F3E6C4}
+html[data-theme=dark] .hh-chip b{color:#F3E6C4}
+html[data-theme=dark] .hh-chip i{background:#3a3428}
+html[data-theme=dark] .hh-chip i::before{background:#C19A50}
+.hh-chip.is-pop{animation:hsPop .35s ease}
+@keyframes hsPop{40%{transform:scale(1.08)}}
+#hsBoss{display:none;align-items:center;gap:8px;width:calc(100% - 24px);margin:0 12px 4px;padding:3px 10px;min-height:0;flex:none;background:#FFF8EA;color:#1A1A1A;border:2px solid #C19A50;box-shadow:inset 0 0 0 1px #305032;border-radius:999px;box-sizing:border-box}
+body.is-play #hsBoss:not([hidden]){display:flex}
+#hsBoss[hidden]{display:none !important}
+#hsBoss span{display:block;font:700 10px Georgia, "Iowan Old Style", Palatino, "Palatino Linotype", serif;letter-spacing:.06em;text-transform:uppercase;color:#305032;flex:none;line-height:1}
+#hsBoss b{display:block;margin:0;font:700 12px Georgia, "Iowan Old Style", Palatino, "Palatino Linotype", serif;color:#1A1A1A;flex:none;line-height:1}
+#hsBoss i{flex:1;display:block;height:6px;margin:0;border-radius:99px;background:#E7D7B0;overflow:hidden}
+#hsBoss i::before{content:"";display:block;height:100%;width:var(--p,100%);background:#8E3B32}
+html[data-theme=dark] #hsBoss{background:#1A1A1A}
+html[data-theme=dark] #hsBoss span,html[data-theme=dark] #hsBoss b{color:#F3E6C4}
+html[data-theme=dark] #hsBoss i{background:#3a3428}
+html[data-theme=dark] #hsBoss i::before{background:#C19A50}
+body.is-play{background:#6E8F4E}
+html[data-theme=dark] body.is-play{background:#1E3A28}
+#hsToast{position:fixed;left:50%;transform:translateX(-50%);z-index:9;background:#1A1A1A;color:#F3E6C4;border:3px solid #C19A50;border-radius:12px;padding:8px 14px;font:700 16px Georgia, "Iowan Old Style", Palatino, "Palatino Linotype", serif;pointer-events:none;white-space:nowrap;max-width:92vw}
+#hsToast[hidden]{display:none}
+button.icon-btn,html[data-theme=light] button.icon-btn{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-width:64px;min-height:56px;margin:4px;padding:8px 10px;border-radius:14px;border:3px solid #C19A50;background:linear-gradient(#3e6842,#305032);color:#F3E6C4;box-shadow:inset 0 0 0 2px #1A1A1A,0 3px 0 #1A1A1A;font:700 11px Georgia, "Iowan Old Style", Palatino, "Palatino Linotype", serif;letter-spacing:.04em}
+.icon-btn svg{width:26px;height:26px;display:block}
+.icon-btn span{line-height:1.1}
+button.icon-btn:hover,html[data-theme=light] button.icon-btn:hover{background:linear-gradient(#3e6842,#305032);color:#F3E6C4}
+button.icon-btn:active,button.icon-btn.is-down{transform:translateY(2px);box-shadow:inset 0 0 0 2px #1A1A1A}
+button.icon-btn[aria-pressed="true"],html[data-theme=light] button.icon-btn[aria-pressed="true"]{background:linear-gradient(#e6d3a1,#C19A50);color:#1A1A1A}
+button.icon-btn.is-cool{opacity:.5}
+button.shop-btn,html[data-theme=light] button.shop-btn{display:flex;flex-direction:row;align-items:center;justify-content:flex-start;gap:8px;min-width:min(86vw,280px);min-height:52px;margin:5px;padding:8px 14px;border-radius:14px;border:3px solid #C19A50;background:linear-gradient(#3e6842,#305032);color:#F3E6C4;box-shadow:inset 0 0 0 2px #1A1A1A,0 3px 0 #1A1A1A;font:700 15px Georgia, "Iowan Old Style", Palatino, "Palatino Linotype", serif}
+button.shop-btn:hover,html[data-theme=light] button.shop-btn:hover{background:linear-gradient(#3e6842,#305032);color:#F3E6C4}
+button.shop-btn svg{width:22px;height:22px;flex:none}
+#touch{display:none;position:fixed;left:0;right:0;bottom:0;z-index:8;gap:6px;justify-content:center;padding:8px 8px calc(8px + env(safe-area-inset-bottom));background:#1A1A1A;box-sizing:border-box}
+body.is-play #touch{display:flex}
+#touch .icon-btn{flex:1;max-width:84px;margin:0}
+#touch .lane-btn{flex:1.35;max-width:none;min-width:0;min-height:78px;margin:0;padding:4px 2px 5px}
+#touch .lane-btn svg{width:32px;height:36px}
+#touch .lane-btn .lane-no{font-size:13px;font-weight:700}
+#touch .lane-cost{display:flex;align-items:center;gap:3px;font:700 10px Georgia, "Iowan Old Style", Palatino, "Palatino Linotype", serif;letter-spacing:.02em}
+#touch .lane-cost i{width:8px;height:8px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#ffe7a3,#C19A50 60%,#8d6d2e);border:1px solid #1A1A1A;flex:none}
+#touch .icon-btn.slim{flex:0 0 50px;max-width:52px;min-width:48px;min-height:64px}
+html[data-theme=light] #touch{background:#F3EEDF}
+.theme-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.hh-coin{position:fixed;z-index:20;width:18px;height:18px;margin:0;border-radius:50%;background:radial-gradient(circle at 35% 35%,#ffe7a3,#C19A50 55%,#8d6d2e);border:2px solid #1A1A1A;pointer-events:none;box-shadow:0 2px 0 #1A1A1A}
+@media (prefers-reduced-motion:reduce){.hh-chip.is-pop{animation:none}.icon-btn:active,.icon-btn.is-down{transform:none}}
+</style>
+</head>
+<body>
+<div id="title" class="menu">
+<p class="brand">JW Manor</p>
+<h1 data-i18n="title">Homestead Siege</h1>
+<h3 data-i18n="subtitle">Night Watch</h3>
+<button class="icon-btn labeled" type="button" onclick="startGame()" data-i18n-aria="play"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M8 5v14l12-7z"/></svg><span data-i18n="play">Play</span></button>
+<button class="icon-btn labeled" type="button" id="cont" style="display:none" onclick="siegeContinue()" data-i18n-aria="continue"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" d="M4 12h12M12 6l6 6-6 6"/><path fill="currentColor" d="M18 5h2v14h-2z"/></svg><span data-i18n="continue">Continue</span></button>
+<button class="icon-btn labeled" type="button" onclick="showHow()" data-i18n-aria="howAria"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path fill="currentColor" d="M11 17h2v-2h-2zm1-10a3 3 0 0 0-3 3h2a1 1 0 1 1 1.6.8c-.7.5-1.6 1-1.6 2.2V14h2v-.4c0-.5.4-.8 1.1-1.2A3 3 0 0 0 12 7z"/></svg><span data-i18n="how">How</span></button>
+<button class="icon-btn labeled" type="button" onclick="showScores()" data-i18n-aria="scoresAria"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 3l2.2 5.6L20 9.2l-4.2 3.6L17 19l-5-3.2L7 19l1.2-6.2L4 9.2l5.8-.6z"/></svg><span data-i18n="scores">Scores</span></button>
+<button class="icon-btn labeled" type="button" id="hsSettingsBtn" data-i18n-aria="settings"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="2"/><path fill="none" stroke="currentColor" stroke-width="2" d="M12 3v2.5M12 18.5V21M3 12h2.5M18.5 12H21M5.6 5.6l1.8 1.8M16.6 16.6l1.8 1.8M18.4 5.6l-1.8 1.8M7.4 16.6l-1.8 1.8"/></svg><span data-i18n="settings">Settings</span></button>
+<button class="icon-btn labeled" type="button" id="hsMuteTitle" onclick="siegeMute()" aria-label="Mute"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 9h4l5-4v14l-5-4H4z"/><path fill="none" stroke="currentColor" stroke-width="2" d="M16 9.2a4 4 0 0 1 0 5.6"/></svg><span>Mute</span></button>
+<p data-i18n="blurb">Hold the porch. Three lanes. Ten waves.</p>
+<a class="hub-link" href="../index.html" data-i18n="allGames">All games</a>
+</div>
+<div id="hsSettings" class="menu" style="display:none">
+<div class="sheet">
+<p class="brand">JW Manor</p>
+<h2 data-i18n="settings">Settings</h2>
+<p data-i18n="theme">Theme</p>
+<div class="theme-row" role="group" data-i18n-aria="theme">
+<button type="button" class="icon-btn labeled" data-theme-choice="auto" aria-pressed="true"><span data-i18n="themeAuto">Auto</span></button>
+<button type="button" class="icon-btn labeled" data-theme-choice="light"><span data-i18n="themeLight">Light</span></button>
+<button type="button" class="icon-btn labeled" data-theme-choice="dark"><span data-i18n="themeDark">Dark</span></button>
+</div>
+<p data-i18n="language">Language</p>
+<div class="theme-row" role="group" data-i18n-aria="language">
+<button type="button" class="icon-btn labeled" data-lang-choice="en" aria-pressed="true"><span data-i18n="langEn">English</span></button>
+<button type="button" class="icon-btn labeled" data-lang-choice="es"><span data-i18n="langEs">Español</span></button>
+</div>
+<button class="icon-btn labeled" type="button" id="hsSettingsBack" data-i18n-aria="back"><span data-i18n="back">Back</span></button>
+</div>
+</div>
+<div id="hsHelp" class="menu" style="display:none">
+<div class="sheet">
+<p class="brand">JW Manor</p>
+<h2 data-i18n="howTitle">How to Play</h2>
+<p data-i18n="how1">Three lanes lead to the porch. Tap a lane, or tap the yard, to shine the porch light. Critters close enough head back to the woods.</p>
+<p data-i18n="how2">Raccoons are quick. Crows fly and shy away from a bright lantern. Armadillos are sturdy, and Zeus the dog herds them off the path. Quicker boots make the light ready again sooner.</p>
+<p data-i18n="how3">Ten waves. Wave 10 is the Gate Boar, a big pig at the gate. The porch shop opens between waves. Spend coins you earned on the porch. P pauses. M mutes.</p>
+<p data-i18n="noads">All ages. No ads.</p>
+<button class="icon-btn labeled" type="button" id="hsHelpBack" data-i18n-aria="back"><span data-i18n="back">Back</span></button>
+</div>
+</div>
+<div id="shop" class="menu" style="display:none">
+<p class="brand">JW Manor</p>
+<h2 data-i18n="shop">Porch Shop</h2>
+<p><span data-i18n="coins">Coins</span> <span id="shopCoins">0</span></p>
+<p id="shopWave">Wave</p>
+<button class="shop-btn" id="buyLantern" type="button" onclick="siegeBuy('lantern')"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M9 2h6l1 4H8zM8 8h8l2 10H6z"/><rect x="11" y="18" width="2" height="4" fill="currentColor"/></svg><span></span></button>
+<button class="shop-btn" id="buyBoots" type="button" onclick="siegeBuy('boots')"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 14c2-6 4-8 6-8h2v6h6l2 4v2H4z"/></svg><span></span></button>
+<button class="shop-btn" id="buyZeus" type="button" onclick="siegeBuy('zeus')"><svg viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="10" cy="14" rx="6" ry="4" fill="currentColor"/><circle cx="16" cy="11" r="3" fill="currentColor"/><path fill="currentColor" d="M4 13c-2 2-2 5 1 4"/></svg><span></span></button>
+<button class="shop-btn" id="shopNext" type="button" onclick="siegeNext()"><span data-i18n="nextWaveBtn">Next Wave</span></button>
+</div>
+<div id="pause" class="menu" style="display:none">
+<h2 data-i18n="paused">Paused</h2>
+<button class="icon-btn labeled" type="button" onclick="togglePause()" data-i18n-aria="resume"><span data-i18n="resume">Resume</span></button>
+<button class="icon-btn labeled" type="button" onclick="siegeQuit()" data-i18n-aria="saveAria"><span data-i18n="save">Save</span></button>
+<button class="icon-btn labeled" type="button" onclick="startGame()" data-i18n-aria="restart"><span data-i18n="restart">Restart</span></button>
+</div>
+<div id="over" class="menu" style="display:none">
+<h2 id="overTitle" data-i18n="porchLost">Porch Lost</h2>
+<p><span data-i18n="scoreLine">Score</span> <span id="finalScore">0</span></p>
+<input id="initials" placeholder="AAA" maxlength="3">
+<button class="icon-btn labeled" type="button" onclick="saveScore()" data-i18n-aria="saveScoreAria"><span data-i18n="saveScore">Save</span></button>
+<button class="icon-btn labeled" type="button" onclick="startGame()" data-i18n-aria="againAria"><span data-i18n="again">Again</span></button>
+</div>
+<div id="scores" class="menu" style="display:none">
+<h2 data-i18n="topScores">Top 5 Scores</h2>
+<div id="scorelist"></div>
+<button class="icon-btn labeled" type="button" onclick="showTitle()" data-i18n-aria="back"><span data-i18n="back">Back</span></button>
+</div>
+<div id="hsHud" hidden>
+<div class="hh-chip" id="hsScoreChip"><span data-i18n="chipScore">Score</span><b id="hsScoreVal">0</b></div>
+<div class="hh-chip" id="hsCoinChip"><span data-i18n="chipCoins">Coins</span><b id="hsCoinVal">0</b></div>
+<div class="hh-chip"><span data-i18n="chipWave">Wave</span><b id="hsWaveVal">1/10</b></div>
+<div class="hh-chip" id="hsHouseChip"><span data-i18n="chipPorch">Porch</span><b id="hsHouseVal">100</b><i id="hsHouseBar" style="--p:100%"></i></div>
+</div>
+<div id="hsBoss" hidden><span data-i18n="boss">Gate Boar</span><i id="hsBossBar" style="--p:100%"></i><b id="hsBossVal">0</b></div>
+<div id="hsToast" hidden></div>
+<canvas id="game" width="480" height="700"></canvas>
+<div id="touch">
+<button type="button" class="icon-btn lane-btn" id="hsLane0" onclick="siegeSwing(0)" data-i18n-aria-n="lane" data-n="1"><svg viewBox="0 0 32 40" aria-hidden="true"><path stroke="currentColor" stroke-width="2" d="M16 1v6"/><rect x="10" y="7" width="12" height="4" rx="1" fill="currentColor"/><path d="M7 14h18l2 16H5z" fill="#F6D56A" stroke="currentColor" stroke-width="2"/><path d="M16 17c2 3 2 6 0 9" stroke="#E07020" stroke-width="2" fill="none"/><circle cx="16" cy="21" r="2.4" fill="#FFF8EA"/><rect x="12" y="30" width="8" height="3" fill="currentColor"/></svg><span class="lane-no">1</span><span class="lane-cost"><i></i><span id="hsCost0">26</span></span></button>
+<button type="button" class="icon-btn lane-btn" id="hsLane1" onclick="siegeSwing(1)" data-i18n-aria-n="lane" data-n="2"><svg viewBox="0 0 32 40" aria-hidden="true"><path stroke="currentColor" stroke-width="2" d="M16 1v6"/><rect x="10" y="7" width="12" height="4" rx="1" fill="currentColor"/><path d="M7 14h18l2 16H5z" fill="#F6D56A" stroke="currentColor" stroke-width="2"/><path d="M16 17c2 3 2 6 0 9" stroke="#E07020" stroke-width="2" fill="none"/><circle cx="16" cy="21" r="2.4" fill="#FFF8EA"/><rect x="12" y="30" width="8" height="3" fill="currentColor"/></svg><span class="lane-no">2</span><span class="lane-cost"><i></i><span id="hsCost1">26</span></span></button>
+<button type="button" class="icon-btn lane-btn" id="hsLane2" onclick="siegeSwing(2)" data-i18n-aria-n="lane" data-n="3"><svg viewBox="0 0 32 40" aria-hidden="true"><path stroke="currentColor" stroke-width="2" d="M16 1v6"/><rect x="10" y="7" width="12" height="4" rx="1" fill="currentColor"/><path d="M7 14h18l2 16H5z" fill="#F6D56A" stroke="currentColor" stroke-width="2"/><path d="M16 17c2 3 2 6 0 9" stroke="#E07020" stroke-width="2" fill="none"/><circle cx="16" cy="21" r="2.4" fill="#FFF8EA"/><rect x="12" y="30" width="8" height="3" fill="currentColor"/></svg><span class="lane-no">3</span><span class="lane-cost"><i></i><span id="hsCost2">26</span></span></button>
+<button type="button" class="icon-btn slim" onclick="togglePause()" data-i18n-aria="pause"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="4" width="4.2" height="16" rx="1.2" fill="currentColor"/><rect x="13.8" y="4" width="4.2" height="16" rx="1.2" fill="currentColor"/></svg></button>
+<button type="button" class="icon-btn slim" id="touchMute" onclick="siegeMute()" aria-label="Mute"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 9h4l5-4v14l-5-4H4z"/><path fill="none" stroke="currentColor" stroke-width="2" d="M16 9.2a4 4 0 0 1 0 5.6"/></svg></button>
+</div>
+<script>
+var hsT = SiegeStrings.t;
+var INK = '#1A1A1A', GOLD = '#C19A50', PINE = '#305032';
+var canvas = document.getElementById('game');
+var ctx = canvas.getContext('2d');
+var W = 480, H = 700;
+var LANES = [250, 400, 550];
+var HS_COST = { lantern: [26, 42, 64], boots: [24, 40, 60], zeus: [32, 50, 74] };
+var HS_WAVES = [
+  { name: 'Porch Prowl', count: 5, types: ['raccoon'], gap: 1.15, speed: 1.00, boss: false },
+  { name: 'Eave Shadows', count: 7, types: ['raccoon', 'crow'], gap: 1.02, speed: 1.10, boss: false },
+  { name: 'Foundation', count: 8, types: ['armadillo', 'raccoon'], gap: 0.96, speed: 1.18, boss: false },
+  { name: 'Black Wing', count: 9, types: ['crow', 'raccoon', 'crow'], gap: 0.88, speed: 1.28, boss: false },
+  { name: 'Mixed Company', count: 10, types: ['raccoon', 'crow', 'armadillo'], gap: 0.82, speed: 1.36, boss: false },
+  { name: 'Fence Rush', count: 12, types: ['raccoon', 'armadillo', 'raccoon'], gap: 0.74, speed: 1.46, boss: false },
+  { name: 'Crow Chorus', count: 13, types: ['crow', 'crow', 'raccoon'], gap: 0.68, speed: 1.56, boss: false },
+  { name: 'Shell Line', count: 14, types: ['armadillo', 'raccoon', 'crow'], gap: 0.62, speed: 1.66, boss: false },
+  { name: 'All Three', count: 16, types: ['raccoon', 'crow', 'armadillo'], gap: 0.56, speed: 1.76, boss: false },
+  { name: 'Gate Boar', count: 18, types: ['raccoon', 'crow', 'armadillo', 'raccoon'], gap: 0.5, speed: 1.9, boss: true }
+];
+var HS_KIND = {
+  raccoon: { hp: 30, speed: 42, dmg: 8, points: 12 },
+  crow: { hp: 18, speed: 64, dmg: 5, points: 14 },
+  armadillo: { hp: 58, speed: 28, dmg: 14, points: 18 },
+  boss: { hp: 460, speed: 18, dmg: 26, points: 120 }
+};
+var HS_BANJO = [
+  [164.81, 1], [220.00, 1], [246.94, 0.5], [220.00, 0.5],
+  [196.00, 1], [164.81, 0.5], [146.83, 0.5], [110.00, 1],
+  [130.81, 1], [164.81, 1], [196.00, 0.5], [246.94, 0.5],
+  [220.00, 1], [164.81, 1], [146.83, 1], [98.00, 1],
+  [146.83, 0.5], [174.61, 0.5], [220.00, 1], [196.00, 1],
+  [164.81, 1], [130.81, 0.5], [110.00, 0.5], [82.41, 1]
+];
+var IAP_ON = false;
+function siegeMathGate(a, b, answer) {
+  return a >= 12 && a <= 19 && b >= 3 && b <= 9 && (answer | 0) === a * b;
+}
+function siegePurchase() {
+  if (!IAP_ON) return { ok: false, reason: 'disabled' };
+  return { ok: false, reason: 'unavailable' };
+}
+var score = 0, coins = 0, wave = 1, house = 100;
+var running = false, paused = false, gameOver = false;
+var muted = localStorage.getItem('siegeMute') === '1';
+var audioCtx = null;
+var foes = [];
+var siege = {
+  phase: 'title',
+  levels: { lantern: 0, boots: 0, zeus: 0 },
+  queue: [],
+  clock: 0,
+  speed: 1,
+  cool: 0,
+  flash: [-1, -1, -1],
+  fx: [],
+  zeus: { x: 96, y: 168, face: 1, bite: 0 },
+  banner: '',
+  bannerT: 0,
+  between: false,
+  looping: false,
+  pending: null,
+  last: 0,
+  walk: 0,
+  banjoNext: 0,
+  banjoStep: 0,
+  houseMax: 100
+};
+function siegeWave() { return HS_WAVES[Math.max(0, Math.min(9, wave - 1))]; }
+function siegeRange() { return 92 + siege.levels.lantern * 28; }
+function siegeCoolMax() { return Math.max(0.28, 0.74 - siege.levels.boots * 0.14); }
+function siegeHideMenus() {
+  ['title', 'shop', 'pause', 'over', 'scores', 'hsHelp', 'hsSettings'].forEach(function (id) {
+    document.getElementById(id).style.display = 'none';
+  });
+}
+function siegeMake(type, lane) {
+  var kind = HS_KIND[type] || HS_KIND.raccoon;
+  var hp = kind.hp * (1 + (wave - 1) * 0.08);
+  if (type === 'boss') hp = kind.hp;
+  return {
+    type: type,
+    lane: lane,
+    x: W + 20,
+    y: LANES[lane],
+    hp: hp,
+    max: hp,
+    speed: kind.speed,
+    dmg: kind.dmg,
+    points: kind.points,
+    age: 0,
+    face: -1,
+    flash: 0
+  };
+}
+function siegeBegin() {
+  var w = siegeWave();
+  var i;
+  foes = [];
+  siege.queue = [];
+  siege.clock = 0;
+  siege.speed = w.speed;
+  siege.between = false;
+  siege.phase = 'combat';
+  for (i = 0; i < w.count; i++) {
+    siege.queue.push({ t: 0.45 + i * w.gap, type: w.types[i % w.types.length], lane: i % 3 });
+  }
+  if (w.boss) siege.queue.push({ t: 1.3, type: 'boss', lane: 1 });
+  siege.queue.sort(function (a, b) { return a.t - b.t; });
+  siege.banner = hsT('waveBanner', { n: wave, name: hsT('w' + wave) });
+  siege.bannerT = 1.5;
+}
+function siegeFresh() {
+  score = 0;
+  coins = 0;
+  wave = 1;
+  house = 100;
+  siege.levels = { lantern: 0, boots: 0, zeus: 0 };
+  siege.cool = 0;
+  siege.flash = [0, 0, 0];
+  siege.fx = [];
+  siege.zeus.x = 100;
+  siege.zeus.y = LANES[1];
+  siege.walk = 0;
+  siege.bannerT = 0;
+  gameOver = false;
+  paused = false;
+  running = true;
+}
+function siegeSave() {
+  if (!running || gameOver) return;
+  localStorage.setItem('siegeSave', JSON.stringify({
+    score: score, coins: coins, wave: wave, house: house,
+    levels: { lantern: siege.levels.lantern, boots: siege.levels.boots, zeus: siege.levels.zeus },
+    phase: siege.phase, between: !!siege.between, clock: siege.clock
+  }));
+  siegeRefreshTitle();
+}
+function siegeApply(saved) {
+  score = saved.score || 0;
+  coins = saved.coins || 0;
+  wave = Math.max(1, Math.min(10, saved.wave || 1));
+  house = saved.house == null ? 100 : saved.house;
+  if (saved.levels) {
+    siege.levels.lantern = Math.max(0, Math.min(3, saved.levels.lantern || 0));
+    siege.levels.boots = Math.max(0, Math.min(3, saved.levels.boots || 0));
+    siege.levels.zeus = Math.max(0, Math.min(3, saved.levels.zeus || 0));
+  }
+  siege.between = !!saved.between;
+  siege.phase = saved.phase === 'shop' ? 'shop' : 'combat';
+}
+function siegeBurst(x, y, n, gold) {
+  var i;
+  for (i = 0; i < n; i++) {
+    siege.fx.push({ x: x, y: y, vx: (i - n / 2) * 18, vy: -16 - (i % 3) * 8, life: 0.35 + (i % 3) * 0.08, gold: !!gold && i % 2 === 0 });
+  }
+  if (siege.fx.length > 48) siege.fx.splice(0, siege.fx.length - 48);
+}
+function siegeFloat(x, y, text) {
+  siege.fx.push({ x: x, y: y, vx: 0, vy: -24, life: 0.7, gold: true, text: text });
+}
+function siegeSwing(lane) {
+  var range, best, bestX, i, f, hit, dmg;
+  if (!running || paused || gameOver || siege.phase !== 'combat') return;
+  if (lane < 0 || lane > 2) return;
+  if (siege.cool > 0) { playSound(90, 0.04); return; }
+  siege.cool = siegeCoolMax();
+  siege.flash[lane] = 0.16;
+  range = siegeRange();
+  best = null;
+  bestX = 1e9;
+  for (i = 0; i < foes.length; i++) {
+    f = foes[i];
+    if (f.lane !== lane) continue;
+    if (f.x > 70 + range) continue;
+    if (f.x < bestX) { bestX = f.x; best = f; }
+  }
+  siegeBurst(78 + range * 0.45, LANES[lane], 5, true);
+  playSound(best ? 210 : 160, 0.05);
+  if (!best) return;
+  dmg = 18 + siege.levels.boots * 4;
+  if (best.type === 'crow') dmg += 4 + siege.levels.lantern * 6;
+  if (best.type === 'armadillo') dmg *= 0.85;
+  if (best.type === 'boss') dmg *= 0.7;
+  best.hp -= dmg;
+  best.flash = 0.1;
+  if (best.hp <= 0) siegeKill(best);
+}
+function siegeKill(f) {
+  score += f.points;
+  coins += Math.max(2, Math.floor(f.points / 3));
+  siegeFloat(f.x, f.y - 18, '+' + f.points);
+  siegeBurst(f.x, f.y, f.type === 'boss' ? 16 : 8, true);
+  playSound(f.type === 'boss' ? 250 : 380, f.type === 'boss' ? 0.18 : 0.06);
+  f.dead = true;
+  siegeFlyCoins(f);
+  siegePop(document.getElementById('hsScoreChip'));
+  siegePop(document.getElementById('hsCoinChip'));
+}
+function siegeReach(f) {
+  house -= f.dmg;
+  siegeBurst(60, f.y, 8, false);
+  playSound(70, 0.12);
+  f.dead = true;
+  if (house <= 0) {
+    house = 0;
+    siegeLose();
+  }
+}
+function siegeZeus(dt) {
+  var prey = null, best = 1e9, i, f, dx, dy, dist, spd, step;
+  if (siege.levels.zeus <= 0) return;
+  for (i = 0; i < foes.length; i++) {
+    f = foes[i];
+    if (f.type !== 'armadillo') continue;
+    dist = Math.hypot(f.x - siege.zeus.x, f.y - siege.zeus.y);
+    if (dist < best) { best = dist; prey = f; }
+  }
+  spd = 80 + siege.levels.zeus * 36;
+  if (!prey) {
+    dx = (siege.seatX || 86) - siege.zeus.x;
+    dy = (siege.seatY || LANES[1]) - siege.zeus.y;
+  } else {
+    dx = prey.x - siege.zeus.x;
+    dy = prey.y - siege.zeus.y;
+  }
+  dist = Math.hypot(dx, dy) || 1;
+  step = Math.min(dist, spd * dt);
+  siege.zeus.face = dx >= 0 ? 1 : -1;
+  siege.zeus.x += dx / dist * step;
+  siege.zeus.y += dy / dist * step;
+  if (prey && (dist < 28 || step >= dist)) {
+    prey.hp -= (14 + siege.levels.zeus * 10) * dt;
+    prey.flash = 0.08;
+    if (prey.hp <= 0) siegeKill(prey);
+  }
+  siege.zeus.x = Math.max(48, Math.min(W - 20, siege.zeus.x));
+  siege.zeus.y = Math.max(40, Math.min(H - 20, siege.zeus.y));
+}
+function siegeStep(dt) {
+  var i, f, job;
+  if (!running || paused || gameOver || siege.phase !== 'combat') return;
+  siege.clock += dt;
+  siege.walk += dt;
+  if (siege.cool > 0) siege.cool -= dt;
+  if (siege.bannerT > 0) siege.bannerT -= dt;
+  for (i = 0; i < 3; i++) if (siege.flash[i] > 0) siege.flash[i] -= dt;
+  while (siege.queue.length && siege.clock >= siege.queue[0].t) {
+    job = siege.queue.shift();
+    foes.push(siegeMake(job.type, job.lane));
+  }
+  for (i = 0; i < foes.length; i++) {
+    f = foes[i];
+    f.age += dt;
+    if (f.flash > 0) f.flash -= dt;
+    f.x -= f.speed * siege.speed * dt;
+    if (f.type === 'crow') f.y = LANES[f.lane] + Math.sin(f.age * 7) * 8;
+    if (f.x < 58 && !f.dead) siegeReach(f);
+    if (gameOver) return;
+  }
+  siegeZeus(dt);
+  if (gameOver) return;
+  for (i = foes.length - 1; i >= 0; i--) if (foes[i].dead || foes[i].hp <= 0) {
+    if (!foes[i].dead && foes[i].hp <= 0) siegeKill(foes[i]);
+    foes.splice(i, 1);
+  }
+  for (i = siege.fx.length - 1; i >= 0; i--) {
+    siege.fx[i].life -= dt;
+    siege.fx[i].x += siege.fx[i].vx * dt;
+    siege.fx[i].y += siege.fx[i].vy * dt;
+    siege.fx[i].vy += 20 * dt;
+    if (siege.fx[i].life <= 0) siege.fx.splice(i, 1);
+  }
+  if (!siege.queue.length && !foes.length) {
+    score += 15 + wave * 5;
+    coins += 8 + wave * 3;
+    if (wave >= 10) { score += 60; siegeWin(); return; }
+    siege.between = true;
+    siege.phase = 'shop';
+    paused = true;
+    playSound(540, 0.14);
+    siegeSave();
+    siegeShowShop();
+  }
+}
+function siegeShowShop() {
+  document.getElementById('shop').style.display = 'flex';
+  siegeRefreshShop();
+}
+function siegeShopLabel(id, text) {
+  var el = document.getElementById(id);
+  var span = el ? el.querySelector('span') : null;
+  if (span) span.textContent = text;
+  else if (el) el.textContent = text;
+}
+function siegeRefreshShop() {
+  var lv;
+  document.getElementById('shopCoins').textContent = String(coins);
+  document.getElementById('shopWave').textContent = siege.between ? hsT('afterWave', { n: wave }) : hsT('porchShop');
+  lv = siege.levels.lantern;
+  siegeShopLabel('buyLantern', lv >= 3 ? hsT('lanternMax') : hsT('lantern', { n: lv + 1, cost: HS_COST.lantern[lv] }));
+  lv = siege.levels.boots;
+  siegeShopLabel('buyBoots', lv >= 3 ? hsT('bootsMax') : hsT('boots', { n: lv + 1, cost: HS_COST.boots[lv] }));
+  lv = siege.levels.zeus;
+  siegeShopLabel('buyZeus', lv >= 3 ? hsT('zeusMax') : hsT('zeus', { n: lv + 1, cost: HS_COST.zeus[lv] }));
+  siegeShopLabel('shopNext', !siege.between ? hsT('backPorch') : (wave >= 10 ? hsT('holdGate') : hsT('nextWave', { n: wave + 1 })));
+}
+function siegeBuy(kind) {
+  var lv = siege.levels[kind];
+  var cost;
+  if (lv == null) return;
+  if (lv >= 3) { playSound(90, 0.05); return; }
+  cost = HS_COST[kind][lv];
+  if (coins < cost) { playSound(90, 0.06); return; }
+  coins -= cost;
+  siege.levels[kind] = lv + 1;
+  playSound(330, 0.09);
+  siegeRefreshShop();
+  if (running) siegeSave();
+}
+function siegeNext() {
+  document.getElementById('shop').style.display = 'none';
+  if (!siege.between) {
+    if (siege.phase === 'shop') siege.phase = 'combat';
+    paused = false;
+    return;
+  }
+  siege.between = false;
+  if (wave >= 10) { siegeWin(); return; }
+  wave += 1;
+  paused = false;
+  siegeBegin();
+  playSound(470, 0.1);
+}
+function siegeWin() {
+  if (gameOver) return;
+  gameOver = true;
+  running = false;
+  paused = false;
+  siege.phase = 'over';
+  localStorage.removeItem('siegeSave');
+  document.getElementById('overTitle').textContent = hsT('porchHeld');
+  document.getElementById('finalScore').textContent = String(score);
+  document.getElementById('shop').style.display = 'none';
+  document.getElementById('pause').style.display = 'none';
+  document.getElementById('over').style.display = 'flex';
+  canvas.style.display = 'none';
+  playSound(680, 0.22);
+  siegeRefreshTitle();
+}
+function siegeLose() {
+  if (gameOver) return;
+  gameOver = true;
+  running = false;
+  paused = false;
+  siege.phase = 'over';
+  localStorage.removeItem('siegeSave');
+  document.getElementById('overTitle').textContent = hsT('porchLost');
+  document.getElementById('finalScore').textContent = String(score);
+  document.getElementById('shop').style.display = 'none';
+  document.getElementById('pause').style.display = 'none';
+  document.getElementById('over').style.display = 'flex';
+  canvas.style.display = 'none';
+  playSound(78, 0.4);
+  siegeRefreshTitle();
+}
+function playSound(freq, dur) {
+  var o, g;
+  try {
+    if (muted) return;
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    o = audioCtx.createOscillator();
+    g = audioCtx.createGain();
+    o.type = 'square';
+    o.frequency.setValueAtTime(freq, audioCtx.currentTime);
+    g.gain.setValueAtTime(0.05, audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + Math.max(0.05, dur));
+    o.connect(g);
+    g.connect(audioCtx.destination);
+    o.start();
+    o.stop(audioCtx.currentTime + dur + 0.02);
+  } catch (err) {}
+}
+function siegePluck(freq, when, dur) {
+  var o, o2, g, g2;
+  if (!audioCtx || muted) return;
+  o = audioCtx.createOscillator();
+  o2 = audioCtx.createOscillator();
+  g = audioCtx.createGain();
+  g2 = audioCtx.createGain();
+  o.type = 'triangle';
+  o2.type = 'square';
+  o.frequency.setValueAtTime(freq, when);
+  o2.frequency.setValueAtTime(freq * 2, when);
+  g2.gain.setValueAtTime(0.16, when);
+  g.gain.setValueAtTime(0.0001, when);
+  g.gain.exponentialRampToValueAtTime(0.04, when + 0.015);
+  g.gain.exponentialRampToValueAtTime(0.0001, when + Math.max(0.12, dur));
+  o.connect(g);
+  o2.connect(g2);
+  g2.connect(g);
+  g.connect(audioCtx.destination);
+  o.start(when);
+  o2.start(when);
+  o.stop(when + dur + 0.05);
+  o2.stop(when + dur + 0.05);
+}
+function siegeBanjo() {
+  var music = running && !gameOver && !(paused && siege.phase === 'combat');
+  var t, guard, step, note;
+  if (!music || muted || !audioCtx) { siege.banjoNext = 0; return; }
+  if (audioCtx.state === 'suspended') {
+    try { audioCtx.resume(); } catch (err) { return; }
+  }
+  t = audioCtx.currentTime;
+  if (!siege.banjoNext || siege.banjoNext < t) siege.banjoNext = t + 0.04;
+  guard = 0;
+  while (siege.banjoNext < t + 0.3 && guard < 5) {
+    guard += 1;
+    step = siege.banjoStep % HS_BANJO.length;
+    note = HS_BANJO[step];
+    siege.banjoStep += 1;
+    siegePluck(note[0], siege.banjoNext, 0.16 + note[1] * 0.05);
+    if (step % 6 === 0) siegePluck(82.41, siege.banjoNext, 0.36);
+    siege.banjoNext += 0.26 * note[1];
+  }
+}
+function siegeBar(x, y, pct, w) {
+  ctx.fillStyle = INK;
+  ctx.fillRect(x, y, w, 5);
+  ctx.fillStyle = GOLD;
+  ctx.fillRect(x + 1, y + 1, Math.max(0, (w - 2) * Math.max(0, Math.min(1, pct))), 3);
+}
+function siegeNight() {
+  return document.documentElement.getAttribute('data-theme') !== 'light';
+}
+function siegeStill() {
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+function siegeRound(x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+function siegePop(el) {
+  if (!el) return;
+  el.classList.remove('is-pop');
+  void el.offsetWidth;
+  el.classList.add('is-pop');
+}
+function siegeFlyCoins(f) {
+  var chip = document.getElementById('hsCoinChip');
+  var reduce, rect, sx, sy, dest, dx, dy, n, i, el, live;
+  if (!chip || !f) return;
+  siegePop(chip);
+  reduce = siegeStill();
+  if (reduce) return;
+  live = document.querySelectorAll('.hh-coin').length;
+  if (live > 16) return;
+  rect = canvas.getBoundingClientRect();
+  if (!rect.width || !rect.height) return;
+  sx = rect.left + (f.x / W) * rect.width;
+  sy = rect.top + (f.y / H) * rect.height;
+  dest = chip.getBoundingClientRect();
+  dx = dest.left + dest.width / 2 - 8;
+  dy = dest.top + dest.height / 2 - 8;
+  n = f.type === 'boss' ? 6 : 4;
+  for (i = 0; i < n; i++) {
+    el = document.createElement('div');
+    el.className = 'hh-coin';
+    el.style.left = (sx + (i - (n - 1) / 2) * 10) + 'px';
+    el.style.top = sy + 'px';
+    document.body.appendChild(el);
+    el.animate([
+      { transform: 'translate(0px, 0px) scale(1)', opacity: 1 },
+      { transform: 'translate(' + ((dx - sx) * 0.5) + 'px, ' + ((dy - sy) * 0.2 - 36) + 'px) scale(1.15)', opacity: 1, offset: 0.42 },
+      { transform: 'translate(' + (dx - sx) + 'px, ' + (dy - sy) + 'px) scale(0.5)', opacity: 0.15 }
+    ], { duration: 520, delay: i * 36, easing: 'cubic-bezier(.2,.8,.2,1)', fill: 'forwards' });
+    (function (node, wait) {
+      setTimeout(function () { if (node.parentNode) node.remove(); }, wait);
+    })(el, 640 + i * 36);
+  }
+}
+function siegeSpeaker(on) {
+  if (on) return '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 9h4l5-4v14l-5-4H4z"/><path fill="none" stroke="currentColor" stroke-width="2" d="M16 9.2a4 4 0 0 1 0 5.6"/></svg>';
+  return '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 9h4l5-4v14l-5-4H4z"/><path fill="none" stroke="currentColor" stroke-width="2" d="M16 10l5 5M21 10l-5 5"/></svg>';
+}
+function siegeLayout() {
+  var top = Math.round(H * 0.2);
+  var bot = H - 10;
+  var span = Math.max(180, bot - top);
+  var i;
+  siege.laneH = Math.max(72, Math.round(span / 3 * 0.8));
+  for (i = 0; i < 3; i++) LANES[i] = Math.round(top + span * (i + 0.5) / 3);
+  siege.seatX = 74;
+  siege.seatY = Math.round(H * 0.16 + (H - 8 - H * 0.16) * 0.52);
+  siege.lanternX = 124;
+  siege.lanternY = Math.round(top + 36);
+  for (i = 0; i < foes.length; i++) {
+    if (foes[i].type !== 'crow') foes[i].y = LANES[foes[i].lane];
+  }
+}
+function siegeOneLeg(phase, color, x, y, len) {
+  var still = siegeStill();
+  var s = still ? 0 : Math.sin(phase);
+  var lift = still ? 0 : Math.max(0, s);
+  var bend = still ? 0.12 : s * 0.55;
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.rotate(bend * 0.45);
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.ellipse(0, len * 0.2, len * 0.24, len * 0.26, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.save();
+  ctx.translate(bend * len * 0.06, len * 0.4);
+  ctx.rotate(bend);
+  ctx.beginPath();
+  ctx.ellipse(0, len * 0.16, len * 0.17, len * 0.22, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = '#F6E2C4';
+  ctx.beginPath();
+  ctx.ellipse(bend * len * 0.04, len * 0.36 - lift * len * 0.22, len * 0.34, len * 0.16, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = '#C19A50';
+  var toeY = len * 0.4 - lift * len * 0.22;
+  ctx.beginPath();
+  ctx.arc(-len * 0.16, toeY, len * 0.07, 0, Math.PI * 2);
+  ctx.arc(0, toeY + len * 0.05, len * 0.07, 0, Math.PI * 2);
+  ctx.arc(len * 0.16, toeY, len * 0.07, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+  ctx.restore();
+}
+function siegeWalkLegs(phase, color, y, spread, part) {
+  var len = Math.max(11, spread + 6);
+  if (part !== 'front') {
+    siegeOneLeg(phase, color, spread * 0.9, y, len);
+    siegeOneLeg(phase + Math.PI, color, spread * 0.28, y + 1, len * 0.94);
+  }
+  if (part !== 'back') {
+    siegeOneLeg(phase + Math.PI, color, -spread * 0.2, y, len * 0.96);
+    siegeOneLeg(phase, color, -spread * 0.85, y + 1, len);
+  }
+}
+function siegeZeusSitting() {
+  var dx, dy;
+  if (siege.levels.zeus <= 0) return true;
+  dx = siege.zeus.x - (siege.seatX || 78);
+  dy = siege.zeus.y - (siege.seatY || LANES[1]);
+  return Math.hypot(dx, dy) < 42;
+}
+function siegeDrawLane(y) {
+  var night = siegeNight();
+  var h = siege.laneH || 80;
+  var x0 = 136;
+  var w = W - x0 - 10;
+  var i, px, py, tx;
+  ctx.fillStyle = night ? '#245536' : '#7FA05A';
+  siegeRound(x0 - 10, y - h * 0.5 - 10, w + 20, h + 20, 18);
+  ctx.fill();
+  ctx.fillStyle = night ? '#4E3826' : '#C4A36A';
+  siegeRound(x0, y - h * 0.5, w, h, 14);
+  ctx.fill();
+  ctx.fillStyle = night ? '#3A2918' : '#A68448';
+  ctx.fillRect(x0 + 8, y - h * 0.5 + 5, w - 16, 7);
+  ctx.fillRect(x0 + 8, y + h * 0.5 - 12, w - 16, 7);
+  ctx.fillStyle = night ? '#6A4C30' : '#E6C98A';
+  for (i = 0; i < 16; i++) {
+    px = x0 + 18 + ((i * 53 + Math.round(y)) % Math.max(20, w - 36));
+    py = y - h * 0.32 + ((i * 17) % Math.max(12, h - 18));
+    ctx.beginPath();
+    ctx.ellipse(px, py, 4, 2.2, (i % 3) * 0.4, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.fillStyle = night ? '#2A2118' : '#8B6914';
+  for (i = 0; i < 7; i++) {
+    px = x0 + 28 + i * (w / 7);
+    py = y + ((i % 2) ? 6 : -4);
+    ctx.beginPath();
+    ctx.arc(px, py, 2.2, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.strokeStyle = night ? '#3C8A48' : '#2F6B34';
+  ctx.lineWidth = 2;
+  for (i = 0; i < 9; i++) {
+    tx = x0 + 12 + i * (w / 9);
+    ctx.beginPath();
+    ctx.moveTo(tx, y - h * 0.5);
+    ctx.quadraticCurveTo(tx + 6, y - h * 0.5 - 12, tx + 11, y - h * 0.5 - 1);
+    ctx.moveTo(tx + 8, y + h * 0.5);
+    ctx.quadraticCurveTo(tx + 2, y + h * 0.5 + 11, tx - 3, y + h * 0.5 + 1);
+    ctx.stroke();
+  }
+  ctx.strokeStyle = night ? 'rgba(243,230,196,.28)' : 'rgba(92,58,36,.4)';
+  ctx.lineWidth = 3;
+  ctx.setLineDash([12, 16]);
+  ctx.beginPath();
+  ctx.moveTo(x0 + 18, y);
+  ctx.lineTo(x0 + w - 14, y);
+  ctx.stroke();
+  ctx.setLineDash([]);
+}
+function siegeDrawZeusSit(x, y) {
+  var wag = siegeStill() ? 0.2 : Math.sin(siege.walk * 6) * 0.5;
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.scale(2.1, 2.1);
+  ctx.fillStyle = '#C19A50';
+  ctx.beginPath();
+  ctx.ellipse(0, 4, 11, 8, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(8, -2, 6, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = '#8B5A2B';
+  ctx.beginPath();
+  ctx.ellipse(4, -7, 2.4, 4, -0.4, 0, Math.PI * 2);
+  ctx.ellipse(11, -7, 2.4, 4, 0.5, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = '#1A1A1A';
+  ctx.beginPath();
+  ctx.arc(10, -2, 1.1, 0, Math.PI * 2);
+  ctx.arc(12, 1, 1.2, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = '#8E3B32';
+  ctx.fillRect(5, 0, 6, 2);
+  ctx.strokeStyle = '#C19A50';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(-8, 2);
+  ctx.quadraticCurveTo(-14, -4 + wag * 6, -8, -6 + wag * 3);
+  ctx.stroke();
+  ctx.fillStyle = '#8B5A2B';
+  ctx.beginPath();
+  ctx.ellipse(-3, 12, 3.1, 2.2, -0.15, 0, Math.PI * 2);
+  ctx.ellipse(4, 12, 3.1, 2.2, 0.15, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = '#F6E2C4';
+  ctx.beginPath();
+  ctx.ellipse(-3.2, 13.2, 3.3, 1.5, 0, 0, Math.PI * 2);
+  ctx.ellipse(4.2, 13.2, 3.3, 1.5, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+}
+function siegeDrawPorch() {
+  var night = siegeNight();
+  var top = Math.round(H * 0.16);
+  var bot = H - 8;
+  var wallH = bot - top;
+  var deckTop = top + Math.round(wallH * 0.5);
+  var deckBot = deckTop + 48;
+  var railTop = deckTop - 58;
+  var y, x, lx, ly, plank, pi, px, posts;
+  ctx.fillStyle = night ? '#7A3E36' : '#8E3B32';
+  ctx.fillRect(0, top, 86, wallH);
+  ctx.strokeStyle = night ? '#4E2622' : '#6E2E2A';
+  ctx.lineWidth = 2;
+  for (y = top + 8; y < bot - 6; y += 16) {
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(86, y);
+    ctx.stroke();
+  }
+  ctx.fillStyle = night ? '#F3E6C4' : '#FFF8EA';
+  ctx.fillRect(14, top + Math.round(wallH * 0.16), 22, 16);
+  ctx.fillRect(52, top + Math.round(wallH * 0.16), 22, 16);
+  ctx.strokeStyle = night ? '#1A1A1A' : '#5C2A24';
+  ctx.strokeRect(14, top + Math.round(wallH * 0.16), 22, 16);
+  ctx.strokeRect(52, top + Math.round(wallH * 0.16), 22, 16);
+  ctx.fillStyle = night ? '#2A1C16' : '#5C2A24';
+  ctx.fillRect(32, top + Math.round(wallH * 0.34), 26, Math.max(36, wallH * 0.14));
+  ctx.strokeStyle = '#C19A50';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(32, top + Math.round(wallH * 0.34), 26, Math.max(36, wallH * 0.14));
+  ctx.fillStyle = night ? '#3A221C' : '#5C2A24';
+  ctx.beginPath();
+  ctx.moveTo(-6, top + 8);
+  ctx.lineTo(46, top - Math.min(54, H * 0.07));
+  ctx.lineTo(158, top + 16);
+  ctx.lineTo(158, top + 32);
+  ctx.lineTo(0, top + 24);
+  ctx.fill();
+  ctx.fillStyle = night ? '#E6D2A4' : '#F6E7C4';
+  ctx.fillRect(6, deckTop, 148, 6);
+  for (y = deckTop + 6; y < deckBot; y += 7) {
+    plank = ((y / 7) | 0) % 2 === 0;
+    ctx.fillStyle = plank ? (night ? '#7A5230' : '#E0C088') : (night ? '#6B4423' : '#C4A36A');
+    ctx.fillRect(6, y, 148, 7);
+  }
+  ctx.strokeStyle = night ? '#3A2414' : '#5C3A24';
+  ctx.lineWidth = 1;
+  for (y = deckTop + 6; y <= deckBot; y += 7) {
+    ctx.beginPath();
+    ctx.moveTo(6, y);
+    ctx.lineTo(154, y);
+    ctx.stroke();
+  }
+  posts = [14, 78, 136];
+  for (pi = 0; pi < posts.length; pi++) {
+    px = posts[pi];
+    ctx.fillStyle = night ? '#F3E6C4' : '#FFF8EA';
+    ctx.fillRect(px, railTop + 8, 8, deckTop - railTop);
+    ctx.fillStyle = night ? '#C19A50' : '#8B5A2B';
+    ctx.beginPath();
+    ctx.arc(px + 4, railTop + 6, 6, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = night ? '#E6D2A4' : '#F6E7C4';
+    ctx.fillRect(px - 2, railTop, 12, 5);
+  }
+  ctx.fillStyle = night ? '#F3E6C4' : '#FFF8EA';
+  ctx.fillRect(14, railTop + 4, 130, 7);
+  ctx.fillStyle = night ? '#E6D2A4' : '#F6E7C4';
+  ctx.fillRect(18, deckTop - 12, 122, 6);
+  ctx.fillStyle = '#FFF8EA';
+  for (x = 28; x <= 128; x += 12) ctx.fillRect(x, railTop + 14, 3, Math.max(8, deckTop - railTop - 28));
+  ctx.fillStyle = night ? '#8B5A2B' : '#C4A36A';
+  ctx.strokeStyle = '#5C3A24';
+  ctx.lineWidth = 1.5;
+  ctx.fillRect(142, deckBot - 2, 32, 11);
+  ctx.strokeRect(142, deckBot - 2, 32, 11);
+  ctx.fillRect(154, deckBot + 12, 32, 11);
+  ctx.strokeRect(154, deckBot + 12, 32, 11);
+  ctx.fillRect(166, deckBot + 26, 32, 11);
+  ctx.strokeRect(166, deckBot + 26, 32, 11);
+  lx = siege.lanternX || 124;
+  ly = siege.lanternY || (top + 50);
+  ctx.strokeStyle = '#5C3A24';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(lx, top + 30);
+  ctx.lineTo(lx, ly - 12);
+  ctx.stroke();
+  ctx.fillStyle = '#3A2414';
+  ctx.fillRect(lx - 9, ly - 12, 18, 5);
+  ctx.fillStyle = '#F6D56A';
+  siegeRound(lx - 8, ly - 6, 16, 18, 3);
+  ctx.fill();
+  ctx.strokeStyle = '#5C3A24';
+  ctx.strokeRect(lx - 8, ly - 6, 16, 18);
+  ctx.fillStyle = '#FFF4C8';
+  ctx.beginPath();
+  ctx.arc(lx, ly + 2, 4, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = '#E07020';
+  ctx.beginPath();
+  ctx.moveTo(lx, ly - 2);
+  ctx.quadraticCurveTo(lx + 3, ly + 4, lx, ly + 8);
+  ctx.quadraticCurveTo(lx - 3, ly + 4, lx, ly - 2);
+  ctx.fill();
+  if (siegeZeusSitting()) siegeDrawZeusSit(siege.seatX || 78, siege.seatY || (top + 110));
+}
+function siegeDrawWorld() {
+  var night = siegeNight();
+  var i, skyTop;
+  skyTop = Math.round(H * 0.24);
+  var sky = ctx.createLinearGradient(0, 0, 0, skyTop);
+  if (night) {
+    sky.addColorStop(0, '#141A24');
+    sky.addColorStop(1, '#24362C');
+  } else {
+    sky.addColorStop(0, '#F6E7C4');
+    sky.addColorStop(1, '#C5D7A4');
+  }
+  ctx.fillStyle = sky;
+  ctx.fillRect(0, 0, W, H);
+  if (night) {
+    ctx.fillStyle = '#F3E6C4';
+    for (i = 0; i < 16; i++) ctx.fillRect(150 + (i * 41) % 300, 10 + (i * 13) % Math.max(24, skyTop - 20), 2, 2);
+    ctx.beginPath();
+    ctx.arc(400, 34, 14, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#141A24';
+    ctx.beginPath();
+    ctx.arc(406, 30, 11, 0, Math.PI * 2);
+    ctx.fill();
+  } else {
+    ctx.fillStyle = '#F6D56A';
+    ctx.beginPath();
+    ctx.arc(400, 36, 16, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,.75)';
+    ctx.beginPath();
+    ctx.ellipse(250, 28, 26, 9, 0, 0, Math.PI * 2);
+    ctx.ellipse(286, 32, 18, 8, 0, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.fillStyle = night ? '#1B4030' : '#6E8F4E';
+  ctx.fillRect(0, skyTop - 8, W, H);
+  ctx.fillStyle = night ? '#163528' : '#5E8444';
+  ctx.beginPath();
+  ctx.moveTo(140, skyTop + 8);
+  ctx.quadraticCurveTo(260, skyTop - 28, 400, skyTop + 4);
+  ctx.lineTo(W, skyTop + 20);
+  ctx.lineTo(140, skyTop + 20);
+  ctx.fill();
+  ctx.fillStyle = night ? '#6E2E2A' : '#8E3B32';
+  ctx.fillRect(300, skyTop - 46, 48, 36);
+  ctx.fillStyle = night ? '#3A221C' : '#5C2A24';
+  ctx.beginPath();
+  ctx.moveTo(292, skyTop - 44);
+  ctx.lineTo(324, skyTop - 68);
+  ctx.lineTo(356, skyTop - 44);
+  ctx.fill();
+  ctx.fillStyle = night ? '#163222' : '#2F5A32';
+  ctx.beginPath();
+  ctx.moveTo(250, skyTop + 6);
+  ctx.lineTo(262, skyTop - 36);
+  ctx.lineTo(274, skyTop + 6);
+  ctx.fill();
+  for (i = 0; i < 3; i++) siegeDrawLane(LANES[i]);
+  siegeDrawPorch();
+}
+function siegeDrawRaccoon(phase) {
+  siegeWalkLegs(phase, '#5C5954', 8, 7, 'back');
+  ctx.fillStyle = '#C8C2B6';
+  ctx.beginPath();
+  ctx.ellipse(12, 3, 8, 5, 0.6, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = '#1A1A1A';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.arc(14, 2, 4.5, 0.2, 2.4);
+  ctx.stroke();
+  ctx.fillStyle = '#8A8680';
+  ctx.beginPath();
+  ctx.ellipse(0, 2, 16, 10, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = '#F4EFE4';
+  ctx.beginPath();
+  ctx.ellipse(-1, 6, 9, 4, 0, 0, Math.PI);
+  ctx.fill();
+  ctx.fillStyle = '#1A1A1A';
+  ctx.beginPath();
+  ctx.ellipse(-11, 0, 7, 6, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = '#F4EFE4';
+  ctx.beginPath();
+  ctx.ellipse(-13, 2, 3.4, 2.4, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = '#1A1A1A';
+  ctx.beginPath();
+  ctx.arc(-14.2, 0.2, 1.1, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = '#8A8680';
+  ctx.beginPath();
+  ctx.moveTo(-16, -4);
+  ctx.lineTo(-14, -11);
+  ctx.lineTo(-10, -4);
+  ctx.moveTo(-10, -4);
+  ctx.lineTo(-7, -10);
+  ctx.lineTo(-4, -3);
+  ctx.fill();
+  siegeWalkLegs(phase, '#5C5954', 8, 7, 'front');
+}
+function siegeDrawCrow(age) {
+  var flap = siegeStill() ? -6 : Math.sin(age * 14) * 14;
+  ctx.fillStyle = '#1A1A1A';
+  ctx.beginPath();
+  ctx.ellipse(2, 1, 13, 7, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(-2, -2);
+  ctx.quadraticCurveTo(8, -flap - 16, 26, -flap);
+  ctx.quadraticCurveTo(8, 2, 0, 3);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(2, 0);
+  ctx.quadraticCurveTo(14, flap - 8, 22, flap * 0.4);
+  ctx.quadraticCurveTo(10, 6, 2, 4);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(-10, -1, 6, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = '#E0A030';
+  ctx.beginPath();
+  ctx.moveTo(-15, -1);
+  ctx.lineTo(-23, 1);
+  ctx.lineTo(-15, 3);
+  ctx.fill();
+  ctx.fillStyle = '#FFF8EA';
+  ctx.beginPath();
+  ctx.arc(-12, -2, 1.5, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = '#1A1A1A';
+  ctx.beginPath();
+  ctx.arc(-12.3, -2, 0.6, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = '#1A1A1A';
+  ctx.beginPath();
+  ctx.moveTo(12, 0);
+  ctx.lineTo(22, -5);
+  ctx.lineTo(22, 5);
+  ctx.fill();
+}
+function siegeDrawArmadillo(phase) {
+  siegeWalkLegs(phase, '#5C4310', 9, 7, 'back');
+  ctx.fillStyle = '#8B6914';
+  ctx.beginPath();
+  ctx.ellipse(2, 2, 16, 11, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = '#E2C27A';
+  ctx.fillRect(-8, -5, 18, 4);
+  ctx.fillRect(-8, 0, 18, 4);
+  ctx.fillRect(-8, 5, 18, 4);
+  ctx.strokeStyle = '#5C4310';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(-8, -5, 18, 4);
+  ctx.strokeRect(-8, 0, 18, 4);
+  ctx.strokeRect(-8, 5, 18, 4);
+  ctx.fillStyle = '#F0D7A2';
+  ctx.beginPath();
+  ctx.ellipse(-15, 3, 6, 5, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = '#1A1A1A';
+  ctx.beginPath();
+  ctx.arc(-17, 2, 1.1, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = '#8B6914';
+  ctx.beginPath();
+  ctx.moveTo(-18, -1);
+  ctx.lineTo(-16, -8);
+  ctx.lineTo(-12, -1);
+  ctx.fill();
+  ctx.fillStyle = '#C4A36A';
+  ctx.beginPath();
+  ctx.moveTo(14, 2);
+  ctx.quadraticCurveTo(26, 10, 16, 12);
+  ctx.lineTo(14, 2);
+  ctx.fill();
+  siegeWalkLegs(phase, '#5C4310', 9, 7, 'front');
+}
+function siegeDrawBoar(phase) {
+  siegeWalkLegs(phase * 0.8, '#8E3B32', 12, 10, 'back');
+  ctx.fillStyle = '#C47A6A';
+  ctx.beginPath();
+  ctx.ellipse(4, 4, 26, 15, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = '#F0C2B6';
+  ctx.beginPath();
+  ctx.ellipse(2, 9, 14, 7, 0, 0, Math.PI);
+  ctx.fill();
+  ctx.fillStyle = '#A85A52';
+  ctx.beginPath();
+  ctx.ellipse(-20, 3, 10, 9, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = '#F3C1B4';
+  ctx.beginPath();
+  ctx.ellipse(-27, 5, 5.5, 4, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = '#1A1A1A';
+  ctx.beginPath();
+  ctx.arc(-29, 4, 1, 0, Math.PI * 2);
+  ctx.arc(-25, 4, 1.1, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = '#8E3B32';
+  ctx.beginPath();
+  ctx.moveTo(-24, -3);
+  ctx.lineTo(-20, -14);
+  ctx.lineTo(-14, -2);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(-16, -2);
+  ctx.lineTo(-10, -12);
+  ctx.lineTo(-6, -1);
+  ctx.fill();
+  ctx.strokeStyle = '#8E3B32';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.arc(28, 2, 5, 0.5, 5.2);
+  ctx.stroke();
+  siegeWalkLegs(phase * 0.8, '#8E3B32', 12, 10, 'front');
+}
+function siegeFoeOrigin(f) {
+  if (f.type !== 'boss') return { x: f.x, y: f.y };
+  return {
+    x: f.x + 36,
+    y: f.y + Math.round(Math.min(56, (siege.laneH || 90) * 0.3))
+  };
+}
+function siegeDrawFoe(f) {
+  var step = f.age * 9;
+  var bob = siegeStill() ? 0 : Math.sin(step) * (f.type === 'crow' ? 8 : 6);
+  var squash = siegeStill() ? 1 : 1 + Math.sin(step * 2) * 0.05;
+  var grow = f.type === 'boss' ? 3.65 : 2.7;
+  var origin = siegeFoeOrigin(f);
+  ctx.save();
+  ctx.translate(origin.x, origin.y + bob);
+  ctx.scale(grow * squash, grow / squash);
+  if (f.type === 'crow') siegeDrawCrow(f.age);
+  else if (f.type === 'armadillo') siegeDrawArmadillo(step);
+  else if (f.type === 'boss') siegeDrawBoar(step);
+  else siegeDrawRaccoon(step);
+  if (f.flash > 0) {
+    ctx.strokeStyle = '#F6D56A';
+    ctx.lineWidth = 2;
+    ctx.globalAlpha = 0.8;
+    ctx.beginPath();
+    ctx.arc(0, 0, f.type === 'boss' ? 34 : 22, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+  }
+  ctx.restore();
+  if (f.max) siegeBar(origin.x - 18, origin.y - (f.type === 'boss' ? 78 : 58), f.hp / f.max, f.type === 'boss' ? 48 : 36);
+}
+function siegeDrawZeus() {
+  var step, bob, wag;
+  if (siege.levels.zeus <= 0 || siegeZeusSitting()) return;
+  step = siege.walk * 11;
+  bob = siegeStill() ? 0 : Math.sin(step) * 5;
+  wag = siegeStill() ? 0 : Math.sin(siege.walk * 10);
+  ctx.save();
+  ctx.translate(siege.zeus.x, siege.zeus.y + bob);
+  ctx.scale((siege.zeus.face || 1) * 2.5, 2.5);
+  siegeWalkLegs(step, '#8B5A2B', 7, 6, 'back');
+  ctx.fillStyle = '#C19A50';
+  ctx.beginPath();
+  ctx.ellipse(0, 2, 16, 8, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = '#F3E6C4';
+  ctx.beginPath();
+  ctx.ellipse(0, 6, 8, 3.5, 0, 0, Math.PI);
+  ctx.fill();
+  ctx.fillStyle = '#C19A50';
+  ctx.beginPath();
+  ctx.arc(14, -1, 6.5, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = '#8B5A2B';
+  ctx.beginPath();
+  ctx.ellipse(10, -6, 3, 5, -0.5, 0, Math.PI * 2);
+  ctx.ellipse(18, -6, 3, 5, 0.4, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = '#1A1A1A';
+  ctx.beginPath();
+  ctx.arc(16, -1, 1.2, 0, Math.PI * 2);
+  ctx.arc(18.5, 2, 1.3, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = '#8E3B32';
+  ctx.fillRect(11, 1, 7, 2.4);
+  ctx.strokeStyle = '#C19A50';
+  ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  ctx.moveTo(-14, 1);
+  ctx.quadraticCurveTo(-22, -6 + wag * 6, -16, -8 + wag * 4);
+  ctx.stroke();
+  siegeWalkLegs(step, '#8B5A2B', 7, 6, 'front');
+  ctx.restore();
+}
+function siegeDrawFx() {
+  var i, p, tw;
+  for (i = 0; i < siege.fx.length; i++) {
+    p = siege.fx[i];
+    ctx.globalAlpha = Math.max(0, Math.min(1, p.life * 2));
+    if (p.text) {
+      ctx.font = 'bold 13px Georgia, "Iowan Old Style", Palatino, "Palatino Linotype", serif';
+      tw = ctx.measureText(p.text).width;
+      ctx.fillStyle = '#FFF8EA';
+      siegeRound(p.x - 4, p.y - 13, tw + 8, 16, 4);
+      ctx.fill();
+      ctx.lineWidth = 1.5;
+      ctx.strokeStyle = '#305032';
+      ctx.stroke();
+      ctx.fillStyle = '#1A1A1A';
+      ctx.fillText(p.text, p.x, p.y);
+    } else {
+      ctx.fillStyle = p.gold ? '#F6D56A' : '#F3E6C4';
+      ctx.fillRect(p.x, p.y, 3, 3);
+    }
+  }
+  ctx.globalAlpha = 1;
+}
+function siegeDrawSwing() {
+  var i, reach, a, g, half, ox;
+  reach = siegeRange();
+  ox = siege.lanternX || 120;
+  for (i = 0; i < 3; i++) {
+    if (siege.flash[i] > 0) {
+      a = Math.min(0.62, siege.flash[i] * 3.4);
+      reach = Math.max(56, (70 + siegeRange()) - ox);
+      half = Math.atan2((siege.laneH || 80) * 0.42, reach);
+      g = ctx.createRadialGradient(ox, LANES[i], 8, ox, LANES[i], reach);
+      g.addColorStop(0, 'rgba(255, 220, 130,' + a + ')');
+      g.addColorStop(1, 'rgba(255, 220, 130, 0)');
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.moveTo(ox, LANES[i]);
+      ctx.arc(ox, LANES[i], reach, -half, half);
+      ctx.closePath();
+      ctx.fill();
+    }
+  }
+}
+function siegeSyncHud() {
+  var toast, hud, rect, boss, i, cooling, laneBtn;
+  var scoreEl = document.getElementById('hsScoreVal');
+  var coinEl = document.getElementById('hsCoinVal');
+  var waveEl = document.getElementById('hsWaveVal');
+  var houseEl = document.getElementById('hsHouseVal');
+  var bar = document.getElementById('hsHouseBar');
+  if (scoreEl) scoreEl.textContent = String(score);
+  if (coinEl) coinEl.textContent = String(coins);
+  if (waveEl) waveEl.textContent = wave + '/10';
+  if (houseEl) houseEl.textContent = String(Math.max(0, Math.round(house)));
+  if (bar) bar.style.setProperty('--p', Math.max(0, Math.min(100, house)) + '%');
+  toast = document.getElementById('hsToast');
+  if (toast) {
+    if (siege.bannerT > 0 && siege.banner) {
+      toast.hidden = false;
+      toast.textContent = siege.banner;
+      toast.style.opacity = String(siege.bannerT < 0.4 ? Math.max(0, siege.bannerT / 0.4) : 1);
+      hud = document.getElementById('hsHud');
+      if (hud) {
+        rect = hud.getBoundingClientRect();
+        toast.style.top = (rect.bottom + 8) + 'px';
+      }
+    } else toast.hidden = true;
+  }
+  boss = null;
+  for (i = 0; i < foes.length; i++) if (foes[i].type === 'boss') boss = foes[i];
+  var bossEl = document.getElementById('hsBoss');
+  if (bossEl) {
+    var showBoss = !boss;
+    if (bossEl.hidden !== showBoss) {
+      bossEl.hidden = showBoss;
+      siege.needScale = true;
+    }
+    if (boss) {
+      document.getElementById('hsBossVal').textContent = String(Math.max(0, Math.round(boss.hp)));
+      document.getElementById('hsBossBar').style.setProperty('--p', Math.max(0, Math.min(100, boss.hp / boss.max * 100)) + '%');
+    }
+  }
+  cooling = siege.cool > 0;
+  var lv = siege.levels.lantern;
+  var costText = cooling ? (Math.max(0.1, siege.cool).toFixed(1) + 's') : (lv >= 3 ? hsT('max') : String(HS_COST.lantern[lv]));
+  for (i = 0; i < 3; i++) {
+    laneBtn = document.getElementById('hsLane' + i);
+    if (laneBtn) {
+      laneBtn.classList.toggle('is-cool', cooling);
+      var coin = laneBtn.querySelector('.lane-cost i');
+      if (coin) coin.style.visibility = (cooling || lv >= 3) ? 'hidden' : 'visible';
+    }
+    var costEl = document.getElementById('hsCost' + i);
+    if (costEl) costEl.textContent = costText;
+  }
+}
+function siegeDrawHud() {
+  siegeSyncHud();
+  if (paused && siege.phase === 'combat') {
+    ctx.fillStyle = '#1A1A1A';
+    ctx.globalAlpha = 0.45;
+    ctx.fillRect(0, 0, W, H);
+    ctx.globalAlpha = 1;
+  }
+}
+function siegePaint() {
+  var i, dpr, cssW, cssH;
+  if (siege.needScale) {
+    siege.needScale = false;
+    scaleCanvas();
+  }
+  dpr = siege.dpr || 1;
+  cssW = siege.cssW || canvas.clientWidth || W;
+  cssH = siege.cssH || canvas.clientHeight || H;
+  ctx.setTransform(dpr * cssW / W, 0, 0, dpr * cssH / H, 0, 0);
+  ctx.imageSmoothingEnabled = true;
+  siegeDrawWorld();
+  siegeDrawSwing();
+  for (i = 0; i < foes.length; i++) if (foes[i].type === 'boss') siegeDrawFoe(foes[i]);
+  for (i = 0; i < foes.length; i++) if (foes[i].type !== 'boss') siegeDrawFoe(foes[i]);
+  siegeDrawZeus();
+  siegeDrawFx();
+  siegeDrawHud();
+}
+function scaleCanvas() {
+  var hudEl = document.getElementById('hsHud');
+  var bossEl = document.getElementById('hsBoss');
+  var touch = document.getElementById('touch');
+  var playing = document.body.classList.contains('is-play');
+  var hudH = 72;
+  var toolH = 96;
+  var cssW, cssH, dpr;
+  var top = 0;
+  var bottom = window.innerHeight;
+  if (playing && hudEl && !hudEl.hidden) top = hudEl.getBoundingClientRect().bottom;
+  if (playing && bossEl && !bossEl.hidden) top = Math.max(top, bossEl.getBoundingClientRect().bottom);
+  if (playing && touch && touch.offsetHeight) bottom = touch.getBoundingClientRect().top;
+  else if (playing) bottom = window.innerHeight - toolH;
+  cssW = Math.max(180, window.innerWidth);
+  cssH = Math.max(240, Math.floor(bottom - top - 6));
+  H = Math.max(560, Math.round(W * cssH / cssW));
+  siegeLayout();
+  dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+  siege.cssW = cssW;
+  siege.cssH = cssH;
+  siege.dpr = dpr;
+  canvas.style.width = cssW + 'px';
+  canvas.style.height = cssH + 'px';
+  canvas.style.transform = 'none';
+  canvas.style.border = '0';
+  canvas.style.maxWidth = 'none';
+  canvas.style.maxHeight = 'none';
+  canvas.width = Math.round(cssW * dpr);
+  canvas.height = Math.round(cssH * dpr);
+}
+function worldPoint(clientX, clientY) {
+  var rect = canvas.getBoundingClientRect();
+  return {
+    x: (clientX - rect.left) / rect.width * W,
+    y: (clientY - rect.top) / rect.height * H
+  };
+}
+function siegeLaneAt(y) {
+  var best = 0, dist = 1e9, i, d;
+  for (i = 0; i < 3; i++) {
+    d = Math.abs(y - LANES[i]);
+    if (d < dist) { dist = d; best = i; }
+  }
+  return best;
+}
+function togglePause() {
+  if (!running || gameOver) return;
+  if (siege.phase === 'shop') return;
+  paused = !paused;
+  document.getElementById('pause').style.display = paused ? 'flex' : 'none';
+}
+function siegePaintMute() {
+  var label = hsT(muted ? 'unmute' : 'mute');
+  var title = document.getElementById('hsMuteTitle');
+  var touch = document.getElementById('touchMute');
+  var span, svg;
+  if (title) {
+    title.setAttribute('aria-label', label);
+    span = title.querySelector('span');
+    if (span) span.textContent = label;
+    svg = title.querySelector('svg');
+    if (svg) svg.outerHTML = siegeSpeaker(!muted);
+  }
+  if (touch) {
+    touch.setAttribute('aria-label', label);
+    touch.innerHTML = siegeSpeaker(!muted);
+  }
+}
+function siegeMute() {
+  muted = !muted;
+  localStorage.setItem('siegeMute', muted ? '1' : '0');
+  siegePaintMute();
+  playSound(muted ? 120 : 520, 0.05);
+}
+function siegeRefreshTitle() {
+  var cont = document.getElementById('cont');
+  if (cont) cont.style.display = localStorage.getItem('siegeSave') ? '' : 'none';
+  siegePaintMute();
+}
+function showHow() {
+  siegeHideMenus();
+  document.getElementById('hsHelp').style.display = 'flex';
+}
+function showScores() {
+  document.getElementById('title').style.display = 'none';
+  document.getElementById('scores').style.display = 'flex';
+  var list = [];
+  try { list = JSON.parse(localStorage.getItem('siegeTop') || '[]'); } catch (err) { list = []; }
+  document.getElementById('scorelist').innerHTML = list.length ? list.map(function (s, i) { return '<div>' + (i + 1) + '. ' + s.initials + ' - ' + s.score + '</div>'; }).join('') : '<div>' + hsT('noScores') + '</div>';
+}
+function saveScore() {
+  var initials = (document.getElementById('initials').value || 'AAA').toUpperCase().slice(0, 3);
+  var list = [];
+  try { list = JSON.parse(localStorage.getItem('siegeTop') || '[]'); } catch (err) { list = []; }
+  list.push({ initials: initials, score: score });
+  list.sort(function (a, b) { return b.score - a.score; });
+  localStorage.setItem('siegeTop', JSON.stringify(list.slice(0, 5)));
+  var high = parseInt(localStorage.getItem('siegeHigh') || '0', 10);
+  if (score > high) localStorage.setItem('siegeHigh', String(score));
+  showScores();
+}
+function showTitle() {
+  var hud = document.getElementById('hsHud');
+  var toast = document.getElementById('hsToast');
+  siegeHideMenus();
+  document.getElementById('title').style.display = 'flex';
+  canvas.style.display = 'none';
+  document.body.classList.remove('is-play');
+  if (hud) hud.hidden = true;
+  if (toast) toast.hidden = true;
+  running = false;
+  paused = false;
+  siege.phase = 'title';
+  siegeRefreshTitle();
+}
+function siegeQuit() {
+  siegeSave();
+  document.getElementById('pause').style.display = 'none';
+  showTitle();
+}
+function siegeContinue() {
+  try { siege.pending = JSON.parse(localStorage.getItem('siegeSave') || 'null'); }
+  catch (err) { siege.pending = null; }
+  if (!siege.pending) return;
+  startGame();
+}
+function startGame() {
+  var pending = siege.pending;
+  var reopen = false;
+  siege.pending = null;
+  siegeHideMenus();
+  document.body.classList.add('is-play');
+  var hud = document.getElementById('hsHud');
+  if (hud) hud.hidden = false;
+  canvas.style.display = 'block';
+  siegeFresh();
+  if (pending) {
+    siegeApply(pending);
+    reopen = siege.phase === 'shop';
+  } else {
+    localStorage.removeItem('siegeSave');
+  }
+  siegeBegin();
+  if (reopen) {
+    siege.phase = 'shop';
+    siege.between = true;
+    paused = true;
+    foes = [];
+    siege.queue = [];
+    siegeShowShop();
+  }
+  scaleCanvas();
+  playSound(440, 0.08);
+  if (!siege.looping) {
+    siege.looping = true;
+    requestAnimationFrame(siegeUpdate);
+  }
+}
+function siegeUpdate(t) {
+  var dt = siege.last ? Math.min(0.05, (t - siege.last) / 1000) : 0.016;
+  siege.last = t || 0;
+  if (!dt || dt < 0) dt = 0.016;
+  try { siegeBanjo(); } catch (err) {}
+  siegeStep(dt);
+  if (canvas.style.display !== 'none') siegePaint();
+  requestAnimationFrame(siegeUpdate);
+}
+function siegeReport() {
+  var bossHp = 0, i;
+  for (i = 0; i < foes.length; i++) if (foes[i].type === 'boss') bossHp = Math.round(foes[i].hp);
+  return {
+    wave: wave, score: score, coins: coins, house: house, phase: siege.phase,
+    paused: paused, running: running, gameOver: gameOver, muted: muted,
+    n: foes.length,
+    types: foes.map(function (f) { return f.type; }),
+    xs: foes.map(function (f) { return Math.round(f.x); }),
+    levels: { lantern: siege.levels.lantern, boots: siege.levels.boots, zeus: siege.levels.zeus },
+    cool: Math.round(siege.cool * 100) / 100,
+    range: siegeRange(),
+    boss: bossHp,
+    queue: siege.queue.length,
+    speed: siege.speed,
+    save: localStorage.getItem('siegeSave') ? 1 : 0,
+    muteFlag: localStorage.getItem('siegeMute') || '0',
+    between: siege.between
+  };
+}
+canvas.addEventListener('click', function (e) {
+  var p = worldPoint(e.clientX, e.clientY);
+  siegeSwing(siegeLaneAt(p.y));
+});
+canvas.addEventListener('touchstart', function (e) {
+  var tch;
+  e.preventDefault();
+  tch = e.changedTouches[0];
+  var p = worldPoint(tch.clientX, tch.clientY);
+  siegeSwing(siegeLaneAt(p.y));
+}, { passive: false });
+document.addEventListener('keydown', function (e) {
+  if (e.key === 'p' || e.key === 'P' || e.key === 'Escape') togglePause();
+  if (e.key === 'm' || e.key === 'M') siegeMute();
+  if (e.key === '1') siegeSwing(0);
+  if (e.key === '2') siegeSwing(1);
+  if (e.key === '3') siegeSwing(2);
+});
+window.addEventListener('resize', scaleCanvas);
+document.getElementById('hsHelpBack').onclick = function () {
+  document.getElementById('hsHelp').style.display = 'none';
+  if (!running) document.getElementById('title').style.display = 'flex';
+};
+document.getElementById('hsSettingsBtn').onclick = function () {
+  siegeHideMenus();
+  document.getElementById('hsSettings').style.display = 'flex';
+  if (window.SiegeTheme) SiegeTheme.apply();
+};
+document.getElementById('hsSettingsBack').onclick = function () {
+  document.getElementById('hsSettings').style.display = 'none';
+  if (!running) document.getElementById('title').style.display = 'flex';
+};
+document.querySelectorAll('[data-theme-choice]').forEach(function (b) {
+  b.addEventListener('click', function () { SiegeTheme.set(b.getAttribute('data-theme-choice')); });
+});
+document.addEventListener('pointerdown', function (e) {
+  var b = e.target.closest && e.target.closest('.icon-btn, .shop-btn');
+  if (b) b.classList.add('is-down');
+});
+document.addEventListener('pointerup', function () {
+  document.querySelectorAll('.is-down').forEach(function (b) { b.classList.remove('is-down'); });
+});
+if (window.SiegeTheme) SiegeTheme.apply();
+window.siegeAfterLang = function () {
+  siegeRefreshShop();
+  siegePaintMute();
+  var scores = document.getElementById('scores');
+  if (scores && scores.style.display === 'flex') showScores();
+};
+document.querySelectorAll('[data-lang-choice]').forEach(function (b) {
+  b.addEventListener('click', function () { SiegeStrings.setLang(b.getAttribute('data-lang-choice')); });
+});
+SiegeStrings.apply();
+siegeRefreshTitle();
+</script>
+</body>
+</html>
