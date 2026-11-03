@@ -1,3 +1,7 @@
+## Short phone pass (2026-11-03)
+
+On a short phone the title keeps Settings, both volume sliders, and the privacy line on screen. Tapping a defense at either edge of the yard opens Upgrade and Sell inside the garden, stacked, not cut off. Short phones skip the blur behind menus. If the phone asks for less motion, the screen does not shake. Real purchases stay off.
+
 ## Phone pass (2026-11-02)
 
 Wave 1 shows three tap hints: place a scarecrow, start the wave, keep one bed alive. They stop after wave 1, and they stay off for Today's Ridge. Small phones get taller buttons, a larger Start pill, and a wider thumb reach. Settings has Color-blind safe (blue, orange, and a circle, square, or triangle). Older short phone screens drop the pixel ratio to 1.25 and skip blur, the extra banjo voice, and some particles. Real purchases stay off.
