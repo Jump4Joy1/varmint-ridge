@@ -158,7 +158,7 @@ html[data-theme="dark"] .panel h2 { color: var(--gold); }
 <main>
   <p class="brand">JW Manor</p>
   <h1 id="hubTitle">JW Manor Homestead Games</h1>
-  <p class="tag" id="hubTag">Four homestead games, plus the canning log. All ages. No ads.</p>
+  <p class="tag" id="hubTag">Five homestead games, plus the canning log. All ages. No ads.</p>
   <div class="tools" role="group" aria-label="Language">
     <button type="button" id="langEn" aria-pressed="true">English</button>
     <button type="button" id="langEs" aria-pressed="false">Español</button>
@@ -182,10 +182,15 @@ html[data-theme="dark"] .panel h2 { color: var(--gold); }
       <span id="wHoeBody"></span>
     </a>
   </div>
-  <p class="note" id="widgetNote">Siege and Harvest have no daily. Phone widgets still need the Apple app. They are not installed from this page. This board uses the same date as the games.</p>
+  <p class="note" id="widgetNote">Yard Line, Siege, and Harvest have no daily. Phone widgets still need the Apple app. They are not installed from this page. This board uses the same date as the games.</p>
 
   <h2 id="gamesLabel">Games</h2>
   <div class="cards">
+    <a class="card" id="cardYard" href="YardLine/index.html">
+      <h3>Yard Line</h3>
+      <p data-en="A card fight for the yard. Free to play. The practice store is inside the game." data-es="Una pelea de cartas por el patio. Gratis. La tienda de práctica está en el juego.">A card fight for the yard. Free to play. The practice store is inside the game.</p>
+      <span class="url" data-live="YardLine/index.html"></span>
+    </a>
     <a class="card" id="cardVarmint" href="https://jump4joy1.github.io/varmint-ridge/">
       <h3>Varmint Ridge</h3>
       <p data-en="Defend the garden. Catch the raccoon before it gets away." data-es="Defiende el huerto. Atrapa al mapache antes de que huya.">Defend the garden. Catch the raccoon before it gets away.</p>
@@ -232,7 +237,7 @@ html[data-theme="dark"] .panel h2 { color: var(--gold); }
 <div class="ov" id="buys" role="dialog" aria-modal="true" aria-labelledby="buysTitle">
   <div class="panel">
     <h2 id="buysTitle">Purchases</h2>
-    <p id="buysText">Nothing is for sale on this menu. Varmint Ridge, Hoedown Blocks, and Homestead Siege keep any store behind a grown-up question, and those stores are turned off. Harvest and Preserve Safe have no store. No card is charged. No ads.</p>
+    <p id="buysText">Nothing is for sale on this menu. Yard Line has a practice store inside the game, behind a grown-up question. That store does not charge a card. Varmint Ridge, Hoedown Blocks, and Homestead Siege keep any store behind a grown-up question, and those stores are turned off. Harvest and Preserve Safe have no store. No ads.</p>
     <button type="button" id="buysBack" data-en="Back" data-es="Volver">Back</button>
   </div>
 </div>
@@ -241,37 +246,37 @@ html[data-theme="dark"] .panel h2 { color: var(--gold); }
 (function () {
   var COPY = {
     en: {
-      tag: 'Four homestead games, plus the canning log. All ages. No ads.',
+      tag: 'Five homestead games, plus the canning log. All ages. No ads.',
       foot: 'All ages. No ads. Nothing on this menu is for sale.',
       today: 'Today',
       games: 'Games',
       ridgeTitle: "Today's Ridge",
       hoeTitle: 'Daily Well',
       hoeBody: 'Clear 4 lines. Par 16.',
-      widgetNote: 'Siege and Harvest have no daily. Phone widgets still need the Apple app. They are not installed from this page. This board uses the same date as the games.',
+      widgetNote: 'Yard Line, Siege, and Harvest have no daily. Phone widgets still need the Apple app. They are not installed from this page. This board uses the same date as the games.',
       gateLead: 'A grown-up has to answer before purchase notes open. All ages. No ads. No card is charged.',
       gateTitle: 'Grown-ups',
       gateBad: 'Not quite. Ask a grown-up for help.',
       buysTitle: 'Purchases',
-      buys: 'Nothing is for sale on this menu. Varmint Ridge, Hoedown Blocks, and Homestead Siege keep any store behind a grown-up question, and those stores are turned off. Harvest and Preserve Safe have no store. No card is charged. No ads.',
+      buys: 'Nothing is for sale on this menu. Yard Line has a practice store inside the game, behind a grown-up question. That store does not charge a card. Varmint Ridge, Hoedown Blocks, and Homestead Siege keep any store behind a grown-up question, and those stores are turned off. Harvest and Preserve Safe have no store. No ads.',
       ridgeBody: function (p) {
         return p.critter.name + '. ' + p.challenge.title + ' · wave ' + p.wave + ' (' + p.waveName + ').';
       }
     },
     es: {
-      tag: 'Cuatro juegos de la finca, y el cuaderno de envasado. Todas las edades. Sin anuncios.',
+      tag: 'Cinco juegos de la finca, y el cuaderno de envasado. Todas las edades. Sin anuncios.',
       foot: 'Todas las edades. Sin anuncios. Este menú no vende nada.',
       today: 'Hoy',
       games: 'Juegos',
       ridgeTitle: 'Cresta de hoy',
       hoeTitle: 'Pozo del día',
       hoeBody: 'Limpia 4 líneas. Par 16.',
-      widgetNote: 'Asedio y Cosecha no tienen reto diario. Los widgets del teléfono siguen necesitando la app de Apple. Esta página no los instala. Este tablero usa la misma fecha que los juegos.',
+      widgetNote: 'Yard Line, Asedio y Cosecha no tienen reto diario. Los widgets del teléfono siguen necesitando la app de Apple. Esta página no los instala. Este tablero usa la misma fecha que los juegos.',
       gateLead: 'Un adulto tiene que responder antes de ver las notas de compra. Todas las edades. Sin anuncios. No se cobra tarjeta.',
       gateTitle: 'Adultos',
       gateBad: 'Casi. Pide ayuda a un adulto.',
       buysTitle: 'Compras',
-      buys: 'Este menú no vende nada. Varmint Ridge, Hoedown Blocks y Homestead Siege guardan cualquier tienda detrás de una pregunta de adulto, y esas tiendas están apagadas. Harvest y Preserve Safe no tienen tienda. No se cobra tarjeta. Sin anuncios.',
+      buys: 'Este menú no vende nada. Yard Line tiene una tienda de práctica dentro del juego, detrás de una pregunta de adulto. Esa tienda no cobra tarjeta. Varmint Ridge, Hoedown Blocks y Homestead Siege guardan cualquier tienda detrás de una pregunta de adulto, y esas tiendas están apagadas. Harvest y Preserve Safe no tienen tienda. Sin anuncios.',
       ridgeBody: function (p) {
         return p.critter.name + '. ' + p.challenge.title + ' · ola ' + p.wave + ' (' + p.waveName + ').';
       }

@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#305032">
+<meta name="color-scheme" content="dark light">
+<meta name="description" content="Yard Line, a homestead card fight. Free to play. All ages. No ads. Practice store only.">
+<title>Yard Line</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect fill='%23305032' width='16' height='16'/%3E%3Crect fill='%23C19A50' x='2' y='7' width='12' height='2'/%3E%3C/svg%3E">
+<script>
+(function(){
+  var K='yl.theme', mq=matchMedia('(prefers-color-scheme: dark)');
+  function get(){try{return localStorage.getItem(K)||'auto'}catch(e){return 'auto'}}
+  function apply(){
+    var v=get(), t=v==='auto'?(mq.matches?'dark':'light'):v;
+    document.documentElement.setAttribute('data-theme', t);
+    var m=document.querySelector('meta[name="theme-color"]');
+    if(m) m.setAttribute('content', t==='dark'?'#1A1A1A':'#F3E6C4');
+    var b=document.getElementById('themeBtn');
+    if(b) b.textContent=v==='auto'?'Auto':v==='light'?'Light':'Dark';
+  }
+  window.YLTheme={get:get,set:function(mode){try{localStorage.setItem(K,mode)}catch(e){}apply()},apply:apply,cycle:function(){var o={auto:'light',light:'dark',dark:'auto'};this.set(o[get()]||'auto')}};
+  apply(); mq.addEventListener('change', apply);
+})();
+</script>
+<style>
+:root{--ink:#1A1A1A;--pine:#305032;--gold:#C19A50;--cream:#F3EEDF;--paper:#FFF8EA;--card:#fffaf0}
+html[data-theme=dark]{--ink:#F3E6C4;--cream:#1A1A1A;--paper:#241c14;--card:#1c241c}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:var(--cream);color:var(--ink);font-family:Georgia,"Iowan Old Style",Palatino,serif}
+body{user-select:none;-webkit-user-select:none}
+input{user-select:text;-webkit-user-select:text;font:700 18px Georgia,serif}
+#app{max-width:480px;margin:0 auto;min-height:100%;display:flex;flex-direction:column;padding:calc(8px + env(safe-area-inset-top)) 10px calc(12px + env(safe-area-inset-bottom))}
+header{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+header b{color:var(--gold)}
+button,.cardbtn{font-family:inherit;min-height:44px;border-radius:12px;border:2px solid var(--gold);background:var(--pine);color:#F3E6C4;padding:8px 12px;font-size:16px;cursor:pointer}
+button.alt{background:transparent;color:var(--ink)}
+button:disabled{opacity:.45}
+h1{font-size:32px;margin:8px 0 4px;color:var(--pine)}
+html[data-theme=dark] h1{color:var(--gold)}
+h2{font-size:20px;margin:8px 0}
+.sub{margin:0 0 10px}
+.screen{display:none;flex:1}
+.screen.on{display:block}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+.list{display:grid;gap:8px}
+.item{background:var(--card);border:2px solid var(--gold);border-radius:12px;padding:10px}
+.item b{color:var(--pine)}
+html[data-theme=dark] .item b{color:#F3E6C4}
+.small{font-size:13px;line-height:1.35}
+canvas{width:100%;height:auto;background:#1c3120;border-radius:12px;border:3px solid var(--gold);touch-action:none;display:block}
+.hand{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px}
+.hand button{min-height:64px;padding:6px;font-size:13px;line-height:1.15}
+.hand button.sel{outline:3px solid var(--gold)}
+.lanes{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.ov{position:fixed;inset:0;background:rgba(26,26,26,.72);display:none;align-items:center;justify-content:center;padding:16px;z-index:5}
+.ov.on{display:flex}
+.panel{background:var(--paper);color:var(--ink);border:3px solid var(--gold);border-radius:16px;padding:14px;width:min(420px,100%)}
+.msg{min-height:1.2em;color:#8C3A2F}
+a.quiet{color:var(--gold)}
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <span>Coins <b id="coins">0</b></span>
+    <span>Gems <b id="gems">0</b></span>
+    <span>Trophies <b id="trophies">0</b></span>
+    <button type="button" class="alt" id="themeBtn">Auto</button>
+    <button type="button" class="alt" id="muteBtn">Sound</button>
+  </header>
+
+  <section class="screen on" id="home">
+    <p class="small"><a class="quiet" href="../index.html">All games</a></p>
+    <h1>Yard Line</h1>
+    <p class="sub">Drop critters. Hold the barn. Free to play. All ages. No ads.</p>
+    <p class="small" id="offerLine"></p>
+    <div class="row">
+      <button type="button" id="playBtn">Play</button>
+      <button type="button" class="alt" id="yardBtn">Yard</button>
+      <button type="button" class="alt" id="passBtn">Season</button>
+      <button type="button" class="alt" id="shopBtn">Store</button>
+    </div>
+    <p class="small">Wins pay coins. Upgrades take time. Gems finish a timer. The store is practice only and does not charge a card.</p>
+  </section>
+
+  <section class="screen" id="yard">
+    <h2>Yard</h2>
+    <p class="small">Cards, the barn, the kennel, the fence shop, and Zeus's collar. A timer starts when you pay coins. You can keep playing while it runs.</p>
+    <p class="small" id="yardNote"></p>
+    <div class="list" id="yardList"></div>
+    <button type="button" class="alt" id="yardBack">Back</button>
+  </section>
+
+  <section class="screen" id="pass">
+    <h2>Season pass</h2>
+    <p class="small" id="passInfo"></p>
+    <div class="list" id="passList"></div>
+    <div class="row">
+      <button type="button" id="buyPass">Season pass $4.99</button>
+      <button type="button" class="alt" id="passBack">Back</button>
+    </div>
+  </section>
+
+  <section class="screen" id="shop">
+    <h2>Practice store</h2>
+    <p class="small">Fixed packs. No random boxes. No ads. A grown-up answers first. Confirming does not charge a card.</p>
+    <div class="list" id="shopList"></div>
+    <button type="button" class="alt" id="shopBack">Back</button>
+  </section>
+
+  <section class="screen" id="battle">
+    <p class="small" id="battleHud">Energy 0</p>
+    <canvas id="cv" width="400" height="520"></canvas>
+    <div class="hand" id="hand"></div>
+    <div class="lanes">
+      <button type="button" id="lane0">Left lane</button>
+      <button type="button" id="lane1">Right lane</button>
+    </div>
+    <button type="button" class="alt" id="giveUp">Leave fight</button>
+  </section>
+
+  <section class="screen" id="result">
+    <h2 id="resultTitle">Yard held</h2>
+    <p id="resultText"></p>
+    <div class="row">
+      <button type="button" id="againBtn">Play again</button>
+      <button type="button" class="alt" id="resultHome">Home</button>
+    </div>
+  </section>
+</div>
+
+<div class="ov" id="gate">
+  <div class="panel">
+    <h2>Grown-ups</h2>
+    <p class="small">A grown-up has to answer before a practice purchase. All ages. No ads. No card is charged.</p>
+    <p id="gateQ"></p>
+    <input id="gateA" inputmode="numeric" maxlength="4" aria-label="Answer">
+    <button type="button" id="gateGo">OK</button>
+    <p class="msg" id="gateMsg"></p>
+    <button type="button" class="alt" id="gateBack">Back</button>
+  </div>
+</div>
+<div class="ov" id="confirm">
+  <div class="panel">
+    <h2 id="confirmTitle">Practice purchase</h2>
+    <p id="confirmText"></p>
+    <p class="small">Nothing is charged. This only adds the listed items on this device.</p>
+    <button type="button" id="confirmOk">Add it</button>
+    <button type="button" class="alt" id="confirmNo">Cancel</button>
+  </div>
+</div>
+
+<script>
+(function () {
+  var CARDS = {
+    raccoon: {name:'Raccoon', cost:2, hp:90, dmg:16, spd:78, r:11},
+    crow: {name:'Crow', cost:3, hp:55, dmg:12, spd:96, r:10, fly:1},
+    fox: {name:'Fox', cost:3, hp:100, dmg:20, spd:110, r:11, skin:'Gold coat'},
+    possum: {name:'Possum', cost:4, hp:150, dmg:14, spd:40, r:12, revive:1},
+    armadillo: {name:'Armadillo', cost:5, hp:320, dmg:11, spd:30, r:14},
+    zeus: {name:'Zeus', cost:4, hp:170, dmg:26, spd:84, r:12},
+    scarecrow: {name:'Scarecrow', cost:4, hp:220, dmg:7, spd:0, r:13, range:86, building:1},
+    lantern: {name:'Lantern', cost:3, spell:1, dmg:80, r:48}
+  };
+  var ORDER = Object.keys(CARDS);
+  var BUILDINGS = {
+    barn: {name:'Barn', blurb:'More barn health in a fight.'},
+    kennel: {name:'Kennel', blurb:'Zeus hits harder.'},
+    fence: {name:'Fence shop', blurb:'Scarecrows reach farther.'}
+  };
+  var PASS = [
+    {free:'40 coins', paid:'10 gems'},
+    {free:'60 coins', paid:'20 gems'},
+    {free:'80 coins', paid:'30 gems'},
+    {free:'100 coins', paid:'40 gems'},
+    {free:'120 coins', paid:'50 gems'},
+    {free:'150 coins', paid:'60 gems'},
+    {free:'180 coins', paid:'80 gems'},
+    {free:'200 coins', paid:'Gold fox coat'}
+  ];
+  var PRODUCTS = [
+    {id:'gems80', name:'80 Gem pack', price:'$0.99', contents:'80 gems', gems:80},
+    {id:'gems500', name:'500 Gem pack', price:'$4.99', contents:'500 gems', gems:500},
+    {id:'gems1200', name:'1,200 Gem pack', price:'$9.99', contents:'1,200 gems', gems:1200},
+    {id:'gems2500', name:'2,500 Gem pack', price:'$19.99', contents:'2,500 gems', gems:2500},
+    {id:'coins2000', name:'2,000 Coin sack', price:'$1.99', contents:'2,000 coins', coins:2000},
+    {id:'starter', name:'Starter yard', price:'$2.99', once:1, contents:'150 gems, 1,000 coins, and Raccoon starts at level 2 if it is still level 1.', gems:150, coins:1000, raccoon:2},
+    {id:'pass', name:'Season pass', price:'$4.99', once:1, contents:'The paid track for this season. The free track stays open either way.', pass:1},
+    {id:'skin', name:'Gold fox coat', price:'$1.99', once:1, contents:'The fox wears a gold coat. The stats do not change.', skin:1},
+    {id:'harvest', name:'Harvest week', price:'$4.99', once:1, limited:1, contents:'300 gems, 2,000 coins, and the gold fox coat if you do not have it.', gems:300, coins:2000, skin:1}
+  ];
+
+  function blank() {
+    var cards = {};
+    ORDER.forEach(function (id) { cards[id] = {lv:1, until:0}; });
+    return {
+      coins:100, gems:20, trophies:0, xp:0, passPaid:false,
+      claimedFree:{}, claimedPaid:{},
+      cards:cards,
+      buildings:{barn:{lv:1,until:0}, kennel:{lv:1,until:0}, fence:{lv:1,until:0}},
+      gear:{collar:{lv:1,until:0}},
+      skin:false, starter:false, harvest:false,
+      offerStart:Date.now(), mute:false
+    };
+  }
+  function load() {
+    try {
+      var raw = localStorage.getItem('yardline-v1');
+      if (!raw) return blank();
+      var s = JSON.parse(raw);
+      var b = blank();
+      Object.keys(b).forEach(function (k) { if (s[k] === undefined) s[k] = b[k]; });
+      ORDER.forEach(function (id) { if (!s.cards[id]) s.cards[id] = {lv:1, until:0}; });
+      return s;
+    } catch (e) { return blank(); }
+  }
+  function save() { try { localStorage.setItem('yardline-v1', JSON.stringify(S)); } catch (e) {} }
+  var S = load();
+  var gateAns = 0, gateUntil = 0, pending = null, sel = null, clockSkew = 0;
+  var B = null, last = 0, raf = 0;
+  var cv = document.getElementById('cv'), ctx = cv.getContext('2d');
+
+  function $(id) { return document.getElementById(id); }
+  function show(id) {
+    document.querySelectorAll('.screen').forEach(function (n) { n.classList.remove('on'); });
+    $(id).classList.add('on');
+    if (id !== 'battle' && raf) { cancelAnimationFrame(raf); raf = 0; }
+    paint();
+  }
+  function now() { return Date.now() + clockSkew; }
+  function remain(until) { return Math.max(0, until - now()); }
+  function clock(ms) {
+    var s = Math.ceil(ms / 1000);
+    var m = Math.floor(s / 60);
+    s = s % 60;
+    return m + ':' + (s < 10 ? '0' : '') + s;
+  }
+  function upgradeMs(lv) { return lv <= 1 ? 45000 : lv === 2 ? 180000 : 900000; }
+  function coinCost(lv) { return 40 * lv * lv; }
+  function skipGems(until) { return Math.max(1, Math.ceil(remain(until) / 20000)); }
+  function cardPower(id) {
+    var lv = S.cards[id].lv;
+    var mult = 1 + (lv - 1) * 0.15;
+    if (id === 'zeus') mult += (S.gear.collar.lv - 1) * 0.08 + (S.buildings.kennel.lv - 1) * 0.05;
+    return mult;
+  }
+  function rangeOf(id) {
+    var c = CARDS[id];
+    var r = c.range || 0;
+    if (id === 'scarecrow') r += (S.buildings.fence.lv - 1) * 12;
+    return r;
+  }
+  function seasonLeft() {
+    var end = S.offerStart + 14 * 86400000;
+    return Math.max(0, end - now());
+  }
+  function offerOpen() { return !S.harvest && now() < S.offerStart + 7 * 86400000; }
+
+  function paint() {
+    $('coins').textContent = S.coins;
+    $('gems').textContent = S.gems;
+    $('trophies').textContent = S.trophies;
+    $('muteBtn').textContent = S.mute ? 'Muted' : 'Sound';
+    var left = seasonLeft();
+    var days = Math.ceil(left / 86400000);
+    var offer = offerOpen() ? ' Harvest week is on this device for ' + Math.max(1, Math.ceil((S.offerStart + 7 * 86400000 - now()) / 86400000)) + ' more day(s).' : '';
+    $('offerLine').textContent = 'Season time left: ' + days + ' day(s). Trophies ' + S.trophies + '.' + offer;
+    if ($('yard').classList.contains('on')) paintYard();
+    if ($('pass').classList.contains('on')) paintPass();
+    if ($('shop').classList.contains('on')) paintShop();
+    if (window.YLTheme) window.YLTheme.apply();
+  }
+
+  function row(title, body, buttons) {
+    var el = document.createElement('div');
+    el.className = 'item';
+    el.innerHTML = '<b>' + title + '</b><div class="small">' + body + '</div>';
+    var r = document.createElement('div');
+    r.className = 'row';
+    buttons.forEach(function (b) { r.appendChild(b); });
+    el.appendChild(r);
+    return el;
+  }
+  function btn(label, fn, alt) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.textContent = label;
+    if (alt) b.className = 'alt';
+    b.addEventListener('click', fn);
+    return b;
+  }
+  function busyLine(node) {
+    if (remain(node.until) <= 0) return 'Ready.';
+    return 'Working ' + clock(remain(node.until)) + '. Speed up for ' + skipGems(node.until) + ' gems.';
+  }
+  function paintYard() {
+    var box = $('yardList');
+    box.innerHTML = '';
+    ORDER.forEach(function (id) {
+      var c = CARDS[id], n = S.cards[id];
+      var skin = id === 'fox' && S.skin ? ' Gold coat on.' : '';
+      var body = 'Level ' + n.lv + '. Fight cost ' + c.cost + '.' + skin + ' ' + busyLine(n) + ' Next upgrade ' + coinCost(n.lv) + ' coins, ' + clock(upgradeMs(n.lv)) + '.';
+      var buttons = [];
+      if (remain(n.until) > 0) buttons.push(btn('Speed up · ' + skipGems(n.until) + ' gems', function () { speedUp(n); }));
+      else buttons.push(btn('Upgrade', function () { startUpgrade(n); }));
+      box.appendChild(row(c.name, body, buttons));
+    });
+    Object.keys(BUILDINGS).forEach(function (id) {
+      var n = S.buildings[id];
+      var body = 'Level ' + n.lv + '. ' + BUILDINGS[id].blurb + ' ' + busyLine(n) + ' Next ' + coinCost(n.lv) + ' coins.';
+      var buttons = [];
+      if (remain(n.until) > 0) buttons.push(btn('Speed up · ' + skipGems(n.until) + ' gems', function () { speedUp(n); }));
+      else buttons.push(btn('Upgrade', function () { startUpgrade(n); }));
+      box.appendChild(row(BUILDINGS[id].name, body, buttons));
+    });
+    var g = S.gear.collar;
+    box.appendChild(row("Zeus's collar", 'Level ' + g.lv + '. A little more bite. ' + busyLine(g) + ' Next ' + coinCost(g.lv) + ' coins.', [
+      remain(g.until) > 0 ? btn('Speed up · ' + skipGems(g.until) + ' gems', function () { speedUp(g); }) : btn('Upgrade', function () { startUpgrade(g); })
+    ]));
+  }
+  function yardNote(text) {
+    var n = $('yardNote');
+    if (n) n.textContent = text || '';
+  }
+  function startUpgrade(node) {
+    if (remain(node.until) > 0) return false;
+    var cost = coinCost(node.lv);
+    if (S.coins < cost) {
+      yardNote('Need ' + cost + ' coins. Wins pay coins. The practice store sells a coin sack.');
+      paint();
+      return false;
+    }
+    S.coins -= cost;
+    node.until = now() + upgradeMs(node.lv);
+    yardNote('Upgrade started. Play while it runs, or spend gems to finish it.');
+    save(); paint();
+    return true;
+  }
+  function speedUp(node) {
+    var cost = skipGems(node.until);
+    if (remain(node.until) <= 0) return false;
+    if (S.gems < cost) {
+      yardNote('Need ' + cost + ' gems to finish now. The practice store sells gem packs.');
+      paint();
+      return false;
+    }
+    S.gems -= cost;
+    node.lv += 1;
+    node.until = 0;
+    yardNote('Finished. Level ' + node.lv + '.');
+    save(); paint();
+    return true;
+  }
+  function finishDue() {
+    function check(node) {
+      if (node.until && node.until <= now()) { node.lv += 1; node.until = 0; }
+    }
+    ORDER.forEach(function (id) { check(S.cards[id]); });
+    Object.keys(S.buildings).forEach(function (id) { check(S.buildings[id]); });
+    check(S.gear.collar);
+  }
+
+  function paintPass() {
+    var tier = Math.min(PASS.length, Math.floor(S.xp / 40));
+    $('passInfo').textContent = 'Pass points ' + S.xp + '. Tiers open: ' + tier + ' of ' + PASS.length + '. ' + (S.passPaid ? 'Paid track is open.' : 'Paid track is locked.') + ' Time left ' + Math.ceil(seasonLeft() / 86400000) + ' day(s).';
+    $('buyPass').disabled = !!S.passPaid;
+    $('buyPass').textContent = S.passPaid ? 'Season pass open' : 'Season pass $4.99';
+    var box = $('passList');
+    box.innerHTML = '';
+    PASS.forEach(function (p, i) {
+      var n = i + 1;
+      var open = tier >= n;
+      var buttons = [];
+      if (open && !S.claimedFree[n]) buttons.push(btn('Free', function () { claim(n, 'free'); }));
+      if (open && S.passPaid && !S.claimedPaid[n]) buttons.push(btn('Paid', function () { claim(n, 'paid'); }));
+      var state = !open ? 'Locked until ' + (n * 40) + ' points.' : 'Open.';
+      if (S.claimedFree[n]) state += ' Free taken.';
+      if (S.claimedPaid[n]) state += ' Paid taken.';
+      box.appendChild(row('Tier ' + n, 'Free: ' + p.free + '. Paid: ' + p.paid + '. ' + state, buttons));
+    });
+  }
+  function claim(n, track) {
+    var tier = Math.min(PASS.length, Math.floor(S.xp / 40));
+    if (tier < n) return;
+    if (track === 'free') {
+      if (S.claimedFree[n]) return;
+      S.claimedFree[n] = 1;
+      S.coins += [40,60,80,100,120,150,180,200][n - 1];
+    } else {
+      if (!S.passPaid || S.claimedPaid[n]) return;
+      S.claimedPaid[n] = 1;
+      if (n === 8) S.skin = true;
+      else S.gems += [10,20,30,40,50,60,80][n - 1];
+    }
+    save(); paint();
+  }
+
+  function paintShop() {
+    var box = $('shopList');
+    box.innerHTML = '';
+    PRODUCTS.forEach(function (p) {
+      if (p.limited && !offerOpen()) return;
+      var owned = (p.id === 'starter' && S.starter) || (p.id === 'pass' && S.passPaid) || (p.id === 'skin' && S.skin) || (p.id === 'harvest' && S.harvest);
+      var b = btn(owned ? 'Owned' : 'Buy ' + p.price, function () { askBuy(p); });
+      b.disabled = !!owned;
+      box.appendChild(row(p.name, p.contents, [b]));
+    });
+  }
+  function askBuy(p) { pending = p; if (now() < gateUntil) openConfirm(); else openGate(); }
+  function openGate() {
+    var a = 12 + Math.floor(Math.random() * 8);
+    var b = 6 + Math.floor(Math.random() * 4);
+    gateAns = a * b;
+    $('gateQ').textContent = 'What is ' + a + ' × ' + b + '?';
+    $('gateA').value = '';
+    $('gateMsg').textContent = '';
+    $('gate').classList.add('on');
+  }
+  function openConfirm() {
+    $('gate').classList.remove('on');
+    $('confirmTitle').textContent = pending.name + ' · ' + pending.price;
+    $('confirmText').textContent = pending.contents;
+    $('confirm').classList.add('on');
+  }
+  function grant(p) {
+    if (!p) return false;
+    if (p.id === 'starter' && S.starter) return false;
+    if (p.id === 'pass' && S.passPaid) return false;
+    if (p.id === 'skin' && S.skin) return false;
+    if (p.id === 'harvest' && S.harvest) return false;
+    if (p.gems) S.gems += p.gems;
+    if (p.coins) S.coins += p.coins;
+    if (p.pass) S.passPaid = true;
+    if (p.skin) S.skin = true;
+    if (p.raccoon && S.cards.raccoon.lv < p.raccoon) S.cards.raccoon.lv = p.raccoon;
+    if (p.id === 'starter') S.starter = true;
+    if (p.id === 'harvest') S.harvest = true;
+    save(); paint();
+    return true;
+  }
+
+  function tone(f) {
+    if (S.mute) return;
+    try {
+      var AC = tone.ac || (tone.ac = new (window.AudioContext || window.webkitAudioContext)());
+      if (AC.state === 'suspended') AC.resume();
+      var o = AC.createOscillator(), g = AC.createGain();
+      o.frequency.value = f; g.gain.value = 0.04;
+      o.connect(g); g.connect(AC.destination);
+      o.start(); o.stop(AC.currentTime + 0.08);
+    } catch (e) {}
+  }
+
+  function makeBattle() {
+    var deck = ORDER.slice();
+    B = {
+      energy:5, ai:5, t:0, over:false,
+      deck:deck, hand:deck.slice(0,4), next:4,
+      aiDeck:deck.slice().reverse(), aiNext:0,
+      units:[],
+      barn:1200 + (S.buildings.barn.lv - 1) * 200,
+      aiBarn:1200,
+      barnMax:1200 + (S.buildings.barn.lv - 1) * 200
+    };
+    sel = null;
+  }
+  function spawn(id, side, lane) {
+    var c = CARDS[id];
+    if (c.spell) {
+      var hit = B.units.filter(function (u) { return u.side !== side && u.lane === lane; })
+        .sort(function (a, b) { return side === 'me' ? a.y - b.y : b.y - a.y; })[0];
+      if (hit) {
+        var dmg = c.dmg * (side === 'me' ? cardPower(id) : 1);
+        B.units.forEach(function (u) {
+          if (u.side === side) return;
+          if (Math.hypot(u.x - hit.x, u.y - hit.y) < c.r + 20) u.hp -= dmg * (u === hit ? 1 : 0.45);
+        });
+      }
+      return;
+    }
+    var mult = side === 'me' ? cardPower(id) : 1;
+    B.units.push({
+      id:id, side:side, lane:lane,
+      x:lane ? 280 : 120,
+      y:side === 'me' ? 430 : 120,
+      hp:c.hp * mult, max:c.hp * mult,
+      dmg:c.dmg * mult, spd:c.spd, fly:!!c.fly, r:c.r,
+      building:!!c.building, range:id === 'scarecrow' ? rangeOf(id) : 26,
+      cd:0, revive:!c.revive
+    });
+  }
+  function deploy(id, lane) {
+    if (!B || B.over) return false;
+    var c = CARDS[id];
+    if (B.energy < c.cost) return false;
+    if (B.hand.indexOf(id) < 0) return false;
+    B.energy -= c.cost;
+    spawn(id, 'me', lane);
+    var i = B.hand.indexOf(id);
+    B.hand[i] = B.deck[B.next % B.deck.length];
+    B.next += 1;
+    sel = null;
+    tone(520);
+    return true;
+  }
+  function aiPlay(dt) {
+    B.ai = Math.min(8, B.ai + dt * 0.7);
+    B.aiWait = (B.aiWait || 0) - dt;
+    if (B.aiWait > 0) return;
+    var id = B.aiDeck[B.aiNext % B.aiDeck.length];
+    if (B.ai >= CARDS[id].cost) {
+      B.ai -= CARDS[id].cost;
+      spawn(id, 'ai', Math.random() < 0.5 ? 0 : 1);
+      B.aiNext += 1;
+      B.aiWait = 1.6;
+    }
+  }
+  function damageUnit(u, d) {
+    u.hp -= d;
+    if (u.hp <= 0) {
+      if (CARDS[u.id].revive && !u.revive) { u.revive = 1; u.hp = u.max * 0.4; u.cd = 0.8; return; }
+      u.dead = 1;
+    }
+  }
+  function step(dt) {
+    if (!B || B.over) return;
+    dt = Math.min(0.05, dt);
+    B.t += dt;
+    B.energy = Math.min(8, B.energy + dt * 0.85);
+    aiPlay(dt);
+    B.units.forEach(function (u) {
+      if (u.dead) return;
+      u.cd -= dt;
+      var foes = B.units.filter(function (o) { return !o.dead && o.side !== u.side && (u.fly || o.fly || o.lane === u.lane || u.building); });
+      var target = null, best = 1e9;
+      foes.forEach(function (o) {
+        var dd = Math.hypot(o.x - u.x, o.y - u.y);
+        var reach = (u.building ? u.range : 28) + o.r;
+        if (dd < best && dd <= reach + (u.building ? 0 : 8)) { best = dd; target = o; }
+      });
+      if (u.building) {
+        if (target && u.cd <= 0) { u.cd = 0.9; damageUnit(target, u.dmg); }
+        return;
+      }
+      if (target && best <= 30 + target.r) {
+        if (u.cd <= 0) { u.cd = 0.55; damageUnit(target, u.dmg); }
+      } else {
+        var dir = u.side === 'me' ? -1 : 1;
+        u.y += dir * u.spd * dt;
+        if (u.side === 'me' && u.y < 70) { B.aiBarn -= 80; u.dead = 1; }
+        if (u.side === 'ai' && u.y > 470) { B.barn -= 80; u.dead = 1; }
+      }
+    });
+    B.units = B.units.filter(function (u) { return !u.dead && u.hp > 0; });
+    towerShot('me', 460, B.units.filter(function (u) { return u.side === 'ai' && u.y > 250; }));
+    towerShot('ai', 90, B.units.filter(function (u) { return u.side === 'me' && u.y < 280; }));
+    if (B.barn <= 0 || B.aiBarn <= 0 || B.t > 75) endBattle();
+  }
+  function towerShot(side, y, foes) {
+    if (!foes.length) return;
+    var key = side + 'Shot';
+    B[key] = (B[key] || 0) - 0.016;
+    if (B[key] > 0) return;
+    B[key] = 0.7;
+    var f = foes.sort(function (a, b) { return side === 'me' ? b.y - a.y : a.y - b.y; })[0];
+    damageUnit(f, side === 'me' ? 16 : 14);
+  }
+  function endBattle() {
+    if (!B || B.over) return;
+    B.over = true;
+    var won = B.barn > B.aiBarn;
+    var coins = won ? 40 : 12;
+    var xp = won ? 20 : 8;
+    S.coins += coins;
+    S.xp += xp;
+    S.trophies = Math.max(0, S.trophies + (won ? 30 : -15));
+    save();
+    $('resultTitle').textContent = won ? 'The yard held' : 'The barn took a hit';
+    $('resultText').textContent = (won ? 'Win. ' : 'Loss. ') + '+' + coins + ' coins and +' + xp + ' pass points. You can play again right away.';
+    show('result');
+    tone(won ? 660 : 220);
+  }
+
+  function draw() {
+    if (!B) return;
+    ctx.setTransform(1,0,0,1,0,0);
+    ctx.clearRect(0,0,400,520);
+    ctx.fillStyle = '#234026';
+    ctx.fillRect(0,0,400,520);
+    ctx.fillStyle = '#C19A50';
+    ctx.fillRect(40,78,320,10);
+    ctx.fillRect(40,452,320,10);
+    ctx.fillStyle = '#1A1A1A';
+    ctx.fillRect(150,40,100,28);
+    ctx.fillRect(150,470,100,28);
+    var mine = Math.max(0, B.barn / B.barnMax);
+    var theirs = Math.max(0, B.aiBarn / 1200);
+    ctx.fillStyle = '#9be27a';
+    ctx.fillRect(152,472,96 * mine,24);
+    ctx.fillRect(152,42,96 * theirs,24);
+    ctx.fillStyle = '#F3E6C4';
+    ctx.font = '12px Georgia';
+    ctx.fillText('Energy ' + B.energy.toFixed(1), 12, 24);
+    ctx.fillText(Math.ceil(Math.max(0, 75 - B.t)) + 's', 340, 24);
+    [[120,460],[280,460],[120,90],[280,90]].forEach(function (p, i) {
+      ctx.fillStyle = i < 2 ? '#C19A50' : '#8C3A2F';
+      ctx.beginPath(); ctx.arc(p[0], p[1], 14, 0, 7); ctx.fill();
+    });
+    B.units.forEach(function (u) {
+      ctx.fillStyle = u.side === 'me' ? '#F3E6C4' : '#1A1A1A';
+      if (u.id === 'fox' && u.side === 'me' && S.skin) ctx.fillStyle = '#C19A50';
+      ctx.beginPath(); ctx.arc(u.x, u.y, u.r, 0, 7); ctx.fill();
+      ctx.fillStyle = '#305032';
+      ctx.fillRect(u.x - 10, u.y - u.r - 6, 20 * Math.max(0, u.hp / u.max), 3);
+    });
+    var hud = $('battleHud');
+    if (hud) hud.textContent = 'Energy ' + B.energy.toFixed(1) + ' · pick a card, then a lane';
+    var hand = $('hand');
+    if (hand.dataset.sig !== B.hand.join()) {
+      hand.dataset.sig = B.hand.join();
+      hand.innerHTML = '';
+      B.hand.forEach(function (id) {
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.addEventListener('click', function () { sel = id; draw(); });
+        hand.appendChild(b);
+      });
+    }
+    Array.prototype.forEach.call(hand.children, function (b, i) {
+      var id = B.hand[i], c = CARDS[id];
+      b.textContent = c.name + ' ' + c.cost;
+      b.disabled = B.energy < c.cost;
+      b.classList.toggle('sel', sel === id);
+    });
+  }
+  function frame(t) {
+    if (!B || B.over) return;
+    var dt = last ? (t - last) / 1000 : 0.016;
+    last = t;
+    step(dt);
+    draw();
+    if (B && !B.over) raf = requestAnimationFrame(frame);
+  }
+
+  $('themeBtn').onclick = function () { window.YLTheme.cycle(); };
+  $('muteBtn').onclick = function () { S.mute = !S.mute; save(); paint(); };
+  $('playBtn').onclick = function () { makeBattle(); show('battle'); last = 0; raf = requestAnimationFrame(frame); };
+  $('yardBtn').onclick = function () { finishDue(); show('yard'); };
+  $('passBtn').onclick = function () { show('pass'); };
+  $('shopBtn').onclick = function () { show('shop'); };
+  $('yardBack').onclick = $('passBack').onclick = $('shopBack').onclick = $('resultHome').onclick = function () { show('home'); };
+  $('againBtn').onclick = function () { $('playBtn').click(); };
+  $('giveUp').onclick = function () { if (B) { B.barn = 0; endBattle(); } };
+  $('lane0').onclick = function () { if (sel) deploy(sel, 0); draw(); };
+  $('lane1').onclick = function () { if (sel) deploy(sel, 1); draw(); };
+  $('gateBack').onclick = function () { pending = null; $('gate').classList.remove('on'); };
+  $('confirmNo').onclick = function () { pending = null; $('confirm').classList.remove('on'); };
+  $('gateGo').onclick = function () {
+    if (parseInt($('gateA').value, 10) !== gateAns) {
+      $('gateMsg').textContent = 'Not quite. Ask a grown-up for help.';
+      openGate();
+      $('gateMsg').textContent = 'Not quite. Ask a grown-up for help.';
+      return;
+    }
+    gateUntil = now() + 120000;
+    openConfirm();
+  };
+  $('gateA').addEventListener('keydown', function (e) { if (e.key === 'Enter') $('gateGo').click(); });
+  $('confirmOk').onclick = function () {
+    var p = pending;
+    pending = null;
+    $('confirm').classList.remove('on');
+    grant(p);
+    tone(700);
+  };
+
+  setInterval(function () { finishDue(); if (!$('battle').classList.contains('on')) paint(); }, 1000);
+  paint();
+
+  window.YL = {
+    get S() { return S; },
+    CARDS: CARDS,
+    PRODUCTS: PRODUCTS,
+    tick: function (ms) {
+      clockSkew += ms;
+      finishDue();
+      paint();
+    },
+    startUpgrade: startUpgrade,
+    speedUp: speedUp,
+    deploy: deploy,
+    step: step,
+    grant: grant,
+    makeBattle: makeBattle,
+    endBattle: endBattle,
+    get B() { return B; },
+    show: show
+  };
+})();
+</script>
+</body>
+</html>
