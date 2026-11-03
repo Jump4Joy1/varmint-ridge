@@ -1,5 +1,5 @@
 /* JW Manor Homestead Games menu cache. No ads. No remote calls. */
-const CACHE = "manor-games-hub-1";
+const CACHE = "manor-games-hub-2";
 const ASSETS = ["./", "./index.html", "./manifest.webmanifest"];
 
 self.addEventListener("install", (event) => {
