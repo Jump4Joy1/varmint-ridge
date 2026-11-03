@@ -1,3 +1,7 @@
+## Test-mode shop (2026-11-03)
+
+Gems are saved on the device. The store lists fixed packs only: gem packs, the Starter Pack, speed-ups, defense lessons, cosmetic yard and varmint skins, and Season 1 with the free and paid tracks both visible before you buy. Prices stay on the buttons. Settings keeps a spend summary. There is no timer, no ads, and no surprise box. Real billing stays off. A grown-up math question still comes first.
+
 ## Short phone pass (2026-11-03)
 
 On a short phone the title keeps Settings, both volume sliders, and the privacy line on screen. Tapping a defense at either edge of the yard opens Upgrade and Sell inside the garden, stacked, not cut off. Short phones skip the blur behind menus. If the phone asks for less motion, the screen does not shake. Real purchases stay off.
