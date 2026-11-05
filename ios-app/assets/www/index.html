@@ -251,7 +251,8 @@ const IAP = (function(){
  const fire=(key,sku)=>{try{api.onEntitlement&&api.onEntitlement(key,sku)}catch(e){}};
  const keyOf=sku=>(products.find(p=>p.sku===sku)||{}).key;
  const testMode=()=>IAP_TEST&&!native;
- const remember=(sku)=>{const p=products.find(x=>x.sku===sku);if(!p||p.type==='consumable')return;const owned=LS.get('testOwned',[]);if(owned.indexOf(sku)<0){owned.push(sku);LS.set('testOwned',owned)}};
+ const alreadyOwned=key=>key==='season1'?!!LS.get('seasonPass',false):key==='pass'?!!LS.get('pass',false):key==='starter'?!!LS.get('starterOwned',false):false;
+ const remember=(sku)=>{const p=products.find(x=>x.sku===sku);if(!p||p.type==='consumable')return;const raw=LS.get('testOwned',[]);const owned=Array.isArray(raw)?raw:[];if(owned.indexOf(sku)<0){owned.push(sku);LS.set('testOwned',owned)}};
  api.available=()=>testMode()||(IAP_ENABLED&&native&&api.ready);
  api.init=async()=>{if(testMode()){api.backend='test';api.ready=true;return true}if(!IAP_ENABLED||!native)return false;try{
   if(rc){const plat=cap.getPlatform();await rc.configure({apiKey:REVENUECAT_API_KEY[plat]||''});api.backend='revenuecat';
@@ -262,7 +263,9 @@ const IAP = (function(){
    await store.initialize();products.forEach(p=>{const sp=store.get(p.sku);if(sp&&sp.pricing)p.price=sp.pricing.price})}
   else return false;api.ready=true;return true}catch(e){return false}};
  api.purchase=async(sku)=>{if(testMode()){const p=products.find(x=>x.sku===sku);if(!p)return{ok:false,reason:'not found'};
+  if(p.type!=='consumable'&&alreadyOwned(p.key))return{ok:false,reason:'owned'};
   if(api.confirmTest){const ok=await api.confirmTest(p);if(!ok)return{ok:false,reason:'cancelled'}}
+  if(p.type!=='consumable'&&alreadyOwned(p.key))return{ok:false,reason:'owned'};
   remember(sku);fire(p.key,sku);return{ok:true,test:true}}
   if(!api.available())return{ok:false,reason:'disabled'};try{
   if(api.backend==='revenuecat'){const r=await rc.getProducts({productIdentifiers:[sku]});const prod=(r.products||[])[0];if(!prod)return{ok:false,reason:'not found'};
@@ -547,7 +550,7 @@ function step(dt){if(!S)return;S.t+=dt;
  if(S.crops.every(c=>c.hp<=0)){end(false);return}
  if(!S.queue.length&&!S.foes.length)waveClear()}
 function waveClear(){const bonus=20+S.wave*5,alive=S.crops.filter(c=>c.hp>0).length;S.coins+=bonus+alive*3;S.score+=50*S.wave+alive*20;S.crops.forEach(c=>{if(c.hp>0)c.hp=Math.min(c.max,c.hp+10)});
- if(!S.dailyStop){const done=LS.get('seasonDone',[]);if(done.indexOf(S.wave)<0){done.push(S.wave);LS.set('seasonDone',done)}}
+ if(!S.dailyStop){const done=seasonList();if(done.indexOf(S.wave)<0){done.push(S.wave);LS.set('seasonDone',done)}}
  const best=LS.get('reach',1);if(S.wave+1>best)LS.set('reach',Math.min(WAVES.length,S.wave+1));
  if(S.wave>=WAVES.length||S.dailyStop){end(true);return}SFX.clear();S.wave++;S.phase='build';S.banner={txt:'Wave cleared! +'+(bonus+alive*3)+' coins',t:2};save();bgCache=null;setTimeout(()=>{if(S&&S.phase==='build')openShop(true)},900);ui()}
 function end(won){S.phase=won?'won':'lost';LS.del('save');const alive=S.crops.filter(c=>c.hp>0),pct=S.crops.reduce((a,c)=>a+Math.max(0,c.hp),0)/500;
@@ -557,8 +560,8 @@ function end(won){S.phase=won?'won':'lost';LS.del('save');const alive=S.crops.fi
  $('endScore').textContent=S.score;$('endSave').style.display='';$('initials').value=LS.get('ini','');if(S.score>LS.get('best',0))LS.set('best',S.score);publishWidget();
  if(won){SFX.clear();for(let i=0;i<6;i++)setTimeout(()=>burst(rnd(60,340),rnd(150,350),30,['#ffd66e','#fff','#C19A50','#9be27a'],180),i*250)}else SFX.lose();
  setTimeout(()=>show('sEnd'),won?1400:900);ui()}
-function save(){if(S&&S.phase==='build')LS.set('save',{wave:S.wave,coins:S.coins,score:S.score,fence:S.fence,zeus:S.zeus,kills:S.kills,lost:S.lost,crops:S.crops.map(c=>c.hp),towers:S.towers.map(t=>({type:t.type,x:t.x,y:t.y,lv:t.lv,spent:t.spent})),only:S.only||'',dailyRule:S.dailyRule||'',dailyStop:!!S.dailyStop,dailyTitle:S.dailyTitle||''})}
-function load(){const d=LS.get('save',null);if(!d)return false;newState(d.wave);S.coins=d.coins;S.score=d.score;S.fence=d.fence;S.zeus=d.zeus;S.kills=d.kills||0;S.lost=d.lost||0;d.crops.forEach((h,i)=>S.crops[i].hp=h);S.towers=d.towers.map(t=>({...t,cdLeft:0,kick:0}));S.only=d.only||'';S.dailyRule=d.dailyRule||'';S.dailyStop=!!d.dailyStop;S.dailyTitle=d.dailyTitle||'';if(S.only)sel=S.only;return true}
+function save(){if(S&&S.phase==='build')LS.set('save',{wave:S.wave,coins:S.coins,score:S.score,fence:S.fence,zeus:S.zeus,kills:S.kills,lost:S.lost,crops:S.crops.map(c=>c.hp),towers:S.towers.map(t=>({type:t.type,x:t.x,y:t.y,lv:t.lv,spent:t.spent})),only:S.only||'',dailyRule:S.dailyRule||'',dailyStop:!!S.dailyStop,dailyTitle:S.dailyTitle||'',armed:!!S.armedSpeed})}
+function load(){const d=LS.get('save',null);if(!d)return false;const bank=LS.get('bank',0)|0,zb=LS.get('zeusBonus',0)|0;newState(d.wave);S.coins=(d.coins|0)+bank;S.score=d.score|0;S.fence=d.fence|0;S.zeus=Math.max(d.zeus|0,zb?1:0);S.kills=d.kills||0;S.lost=d.lost||0;(d.crops||[]).forEach((h,i)=>{if(S.crops[i])S.crops[i].hp=h});S.towers=(d.towers||[]).map(t=>({...t,cdLeft:0,kick:0}));S.only=d.only||'';S.dailyRule=d.dailyRule||'';S.dailyStop=!!d.dailyStop;S.dailyTitle=d.dailyTitle||'';S.armedSpeed=!!d.armed;if(S.only)sel=S.only;return true}
 
 /* ---------- input ---------- */
 function canPlace(x,y){if(y<285||y>486)return 'Build in the yard';if(y>FENCE_Y-28&&y<FENCE_Y+22)return 'Not on the fence';if(S.towers.some(t=>Math.hypot(t.x-x,t.y-y)<30))return 'Too close';return null}
@@ -705,18 +708,18 @@ function promptDaily(){if(S)return;const b=$('bDaily');if(b){b.style.boxShadow='
 let gateAns=0,gateUntil=0,gateNext=null;
 function storeMsg(m,ok){const c=ok?(cb?'#56B4E9':'#9be27a'):badInk();$('storeNote').innerHTML='<span style="color:'+c+'">'+(cb?(ok?'● ':'▲ '):'')+m+'</span>'}
 function freshGate(){const a=Math.floor(rnd(12,20)),b=Math.floor(rnd(6,10));gateAns=a*b;$('gateQ').textContent='What is '+a+' \u00d7 '+b+'?';$('gateA').value='';$('gateMsg').textContent='';$('gateA').focus()}
-function showGate(next){gateNext=next;const tb=$('testBuy');if(tb)tb.style.display='none';show('sGate');freshGate()}
+function showGate(next){gateNext=next;if(typeof confirmSheet==='function'&&confirmSheet.cancel)confirmSheet.cancel();show('sGate');freshGate()}
 function passGate(){gateUntil=Date.now()+120000;const next=gateNext;gateNext=null;if(next)next()}
 function withPurchaseGate(fn){if(Date.now()<gateUntil)fn();else showGate(fn)}
 function todayStamp(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
-function pushSpend(row){const log=LS.get('spend',[]);log.push(row);LS.set('spend',log.slice(-40))}
+function pushSpend(row){const log=LS.get('spend',[]);const arr=Array.isArray(log)?log:[];arr.push(row);LS.set('spend',arr.slice(-40))}
 function logMoney(name,cents){pushSpend({kind:'money',name:name,cents:cents,at:todayStamp()})}
 function logGems(name,gems){pushSpend({kind:'gems',name:name,gems:gems,at:todayStamp()})}
 function addGems(n){LS.set('gems',(LS.get('gems',0)|0)+n)}
-function skinBag(){const o=LS.get('skins',null)||{yard:['dusk'],varmint:['natural']};o.yard=o.yard||['dusk'];o.varmint=o.varmint||['natural'];return o}
+function skinBag(){const raw=LS.get('skins',null);const o=raw&&typeof raw==='object'&&!Array.isArray(raw)?raw:{yard:['dusk'],varmint:['natural']};if(!Array.isArray(o.yard))o.yard=['dusk'];if(!Array.isArray(o.varmint))o.varmint=['natural'];return o}
 function skinOwned(kind,id){if(id==='dusk'||id==='natural')return true;return skinBag()[kind].indexOf(id)>=0}
 function giveSkin(kind,id){const o=skinBag();if(o[kind].indexOf(id)<0)o[kind].push(id);LS.set('skins',o);LS.set(kind,id)}
-function giveLesson(type){const L=LS.get('lessons',{})||{};L[type]=true;LS.set('lessons',L)}
+function giveLesson(type){const raw=LS.get('lessons',{});const L=raw&&typeof raw==='object'&&!Array.isArray(raw)?raw:{};L[type]=true;LS.set('lessons',L)}
 const GEM_ITEMS=[
  {id:'speed',gems:40,name:'Speed-up',desc:'One token. The next wave you arm starts at x2. You can switch back to x1. No timer.'},
  {id:'lesson:scarecrow',gems:120,name:'Scarecrow lesson',desc:'Scarecrows you place start at level 2. Level 3 still costs coins.'},
@@ -738,23 +741,23 @@ const SEASON_PAID=[
  {id:'p3',need:6,text:'Scarecrow lesson, or 80 gems if you already own it'},
  {id:'p4',need:9,text:'Moonlit yard skin'},
  {id:'p5',need:12,text:'Gold trim varmint skin'}];
-function seasonProgress(){return (LS.get('seasonDone',[])||[]).length}
+function seasonList(){const d=LS.get('seasonDone',[]);return Array.isArray(d)?d:[]}
+function seasonProgress(){return seasonList().length}
 function paintSpend(){const box=$('spendSum');if(!box)return;box.textContent='';
- const gems=LS.get('gems',0)|0,log=LS.get('spend',[])||[];
+ const gems=LS.get('gems',0)|0,rawLog=LS.get('spend',[]),log=Array.isArray(rawLog)?rawLog:[];
  const cents=log.filter(x=>x.kind==='money').reduce((a,x)=>a+(x.cents|0),0);
  const gspent=log.filter(x=>x.kind==='gems').reduce((a,x)=>a+(x.gems|0),0);
  const head=document.createElement('p');head.textContent='Gems on this device: '+gems+'. Test total $'+(cents/100).toFixed(2)+' (not charged). Gems spent: '+gspent+'.';box.appendChild(head);
  if(!log.length){const q=document.createElement('p');q.textContent='No purchases yet.';box.appendChild(q);return}
  log.slice().reverse().forEach(row=>{const d=document.createElement('div');d.textContent=row.kind==='money'?row.name+' · $'+(row.cents/100).toFixed(2)+' · test · '+row.at:row.name+' · '+row.gems+' gems · '+row.at;box.appendChild(d)})}
-function confirmSpend(name,gems){return new Promise(resolve=>{
- $('testBuyName').textContent='Spend '+gems+' gems on '+name+'? No card is charged.';
- $('testBuy').style.display='';
- const finish=ok=>{$('testBuy').style.display='none';$('testBuyOk').onclick=null;$('testBuyNo').onclick=null;resolve(ok)};
- $('testBuyOk').onclick=()=>finish(true);$('testBuyNo').onclick=()=>finish(false)})}
-function spendGems(cost,name,apply){if((LS.get('gems',0)|0)<cost){storeMsg('That costs '+cost+' gems. You have '+(LS.get('gems',0)|0)+'.',false);return}
- withPurchaseGate(()=>{confirmSpend(name,cost).then(ok=>{if(!ok)return;const have=LS.get('gems',0)|0;if(have<cost){storeMsg('That costs '+cost+' gems. You have '+have+'.',false);return}
-  LS.set('gems',have-cost);logGems(name,cost);apply();if($('sStore').classList.contains('show'))openStoreBody();storeMsg(name+' is yours. '+cost+' gems spent.',true);paintSpend()})})}
-function claimSeason(id){const claims=LS.get('seasonClaims',[])||[];if(claims.indexOf(id)>=0)return;
+let buyBusy=false;
+function gemOwned(id){if(!id||id==='speed')return false;if(id==='season')return !!LS.get('seasonPass',false);if(id.indexOf('lesson:')===0){const L=LS.get('lessons',{});return !!(L&&typeof L==='object'&&!Array.isArray(L)&&L[id.slice(7)])}if(id.indexOf('yard:')===0||id.indexOf('varmint:')===0){const b=id.split(':');return skinOwned(b[0],b[1])}return false}
+function confirmSheet(text){return new Promise(resolve=>{if(buyBusy){resolve(false);return}buyBusy=true;$('testBuyName').textContent=text;$('testBuy').style.display='';let done=false;const finish=ok=>{if(done)return;done=true;buyBusy=false;$('testBuy').style.display='none';$('testBuyOk').onclick=null;$('testBuyNo').onclick=null;resolve(!!ok)};confirmSheet.cancel=()=>finish(false);$('testBuyOk').onclick=()=>finish(true);$('testBuyNo').onclick=()=>finish(false)})}
+function spendGems(cost,name,apply,id){if(buyBusy)return;if(gemOwned(id)){storeMsg('Already owned.',false);return}const have0=LS.get('gems',0)|0;if(have0<cost){storeMsg('That costs '+cost+' gems. You have '+have0+'.',false);return}
+ withPurchaseGate(()=>{if(buyBusy)return;if(gemOwned(id)){storeMsg('Already owned.',false);return}const have1=LS.get('gems',0)|0;if(have1<cost){storeMsg('That costs '+cost+' gems. You have '+have1+'.',false);return}
+  confirmSheet('Spend '+cost+' gems on '+name+'? No card is charged.').then(ok=>{if(!ok)return;if(gemOwned(id)){storeMsg('Already owned.',false);return}const have=LS.get('gems',0)|0;if(have<cost){storeMsg('That costs '+cost+' gems. You have '+have+'.',false);return}
+   LS.set('gems',have-cost);logGems(name,cost);apply();if($('sStore').classList.contains('show'))openStoreBody();storeMsg(name+' is yours. '+cost+' gems spent.',true);paintSpend()})})}
+function claimSeason(id){const raw=LS.get('seasonClaims',[]);const claims=Array.isArray(raw)?raw.slice():[];if(claims.indexOf(id)>=0)return;
  const row=SEASON_FREE.concat(SEASON_PAID).find(x=>x.id===id);if(!row)return;
  if(id.charAt(0)==='p'&&!LS.get('seasonPass',false))return;if(seasonProgress()<row.need)return;
  claims.push(id);LS.set('seasonClaims',claims);
@@ -770,17 +773,15 @@ function claimSeason(id){const claims=LS.get('seasonClaims',[])||[];if(claims.in
  if(id==='p5')giveSkin('varmint','gold');
  openStoreBody();storeMsg('Reward added. It was listed before you played.',true);paintSpend()}
 function gemAction(id){const item=GEM_ITEMS.find(x=>x.id===id);
- if(id==='season'){if(LS.get('seasonPass',false))return;spendGems(400,'Season 1 Pass',()=>LS.set('seasonPass',true));return}
- if(!item)return;
- if(item.id.indexOf('lesson:')===0&&(LS.get('lessons',{})||{})[item.id.slice(7)])return;
- if((item.id.indexOf('yard:')===0||item.id.indexOf('varmint:')===0)&&skinOwned(item.id.split(':')[0],item.id.split(':')[1]))return;
+ if(id==='season'){if(gemOwned('season')){storeMsg('Already owned.',false);return}spendGems(400,'Season 1 Pass',()=>LS.set('seasonPass',true),'season');return}
+ if(!item||gemOwned(item.id)){if(item)storeMsg('Already owned.',false);return}
  spendGems(item.gems,item.name,()=>{
   if(item.id==='speed')LS.set('speedLeft',(LS.get('speedLeft',0)|0)+1);
   else if(item.id.indexOf('lesson:')===0)giveLesson(item.id.slice(7));
-  else{const bits=item.id.split(':');giveSkin(bits[0],bits[1])}})}
-function openStoreBody(){const box=$('storeItems');box.className='store';box.style.display='';$('testBuy').style.display='none';$('storeNote').textContent='';
+  else{const bits=item.id.split(':');giveSkin(bits[0],bits[1])}},item.id)}
+function openStoreBody(){const box=$('storeItems');box.className='store';box.style.display='';if(!buyBusy)$('testBuy').style.display='none';$('storeNote').textContent='';
  if(!IAP.available()){box.innerHTML='<p class="small">The store isn\'t open yet. There are no ads.</p>';show('sStore');return}
- const gems=LS.get('gems',0)|0,lessons=LS.get('lessons',{})||{},pass=!!LS.get('seasonPass',false),claims=LS.get('seasonClaims',[])||[],prog=seasonProgress();
+ const gems=LS.get('gems',0)|0,rawLessons=LS.get('lessons',{}),lessons=rawLessons&&typeof rawLessons==='object'&&!Array.isArray(rawLessons)?rawLessons:{},pass=!!LS.get('seasonPass',false),rawClaims=LS.get('seasonClaims',[]),claims=Array.isArray(rawClaims)?rawClaims:[],prog=seasonProgress();
  const moneyBtn=(p,owned)=>owned?'<button class="btn sm" type="button" disabled>Owned</button>':'<button class="btn sm" type="button" data-sku="'+p.sku+'">Buy '+p.price+'</button>';
  const gemBtn=(id,cost,owned)=>owned?'<button class="btn sm" type="button" disabled>Owned</button>':'<button class="btn sm" type="button" data-gem="'+id+'">Buy · '+cost+' gems</button>';
  let html='<p class="small">Test mode. Nothing on this screen charges a card. No ads. No surprise boxes. Prices stay the same, and every pack lists exactly what is inside. There is no timer.</p>';
@@ -806,8 +807,8 @@ function openStoreBody(){const box=$('storeItems');box.className='store';box.sty
  html+=pass?'<p class="small">Paid track: owned.</p>':'<div class="row"><span><b>Season 1 Pass</b> '+season.price+' or 400 gems<br><span class="small">'+season.desc+'</span></span><button class="btn sm" type="button" data-sku="'+season.sku+'">Buy '+season.price+'</button> <button class="btn sm" type="button" data-gem="season">Buy · 400 gems</button></div>';
  SEASON_FREE.forEach((row,i)=>{
   const paid=SEASON_PAID[i],got=claims.indexOf(row.id)>=0,gotP=claims.indexOf(paid.id)>=0,ready=prog>=row.need;
-  const freeBtn=got?'<button class="btn sm" type="button" disabled>Claimed</button>':(ready?'<button class="btn sm" type="button" data-claim="'+row.id+'">Claim free</button>':'<button class="btn sm" type="button" disabled>After wave '+row.need+'</button>');
-  const paidBtn=gotP?'<button class="btn sm" type="button" disabled>Claimed</button>':(!pass?'<button class="btn sm" type="button" disabled>Paid track</button>':(ready?'<button class="btn sm" type="button" data-claim="'+paid.id+'">Claim paid</button>':'<button class="btn sm" type="button" disabled>After wave '+paid.need+'</button>'));
+  const freeBtn=got?'<button class="btn sm" type="button" disabled>Claimed</button>':'<button class="btn sm" type="button" data-claim="'+row.id+'"'+(ready?'':' disabled')+'>'+(ready?'Claim free':'After wave '+row.need)+'</button>';
+  const paidBtn=gotP?'<button class="btn sm" type="button" disabled>Claimed</button>':'<button class="btn sm" type="button" data-claim="'+paid.id+'"'+((pass&&ready)?'':' disabled')+'>'+(!pass?'Paid track':(ready?'Claim paid':'After wave '+paid.need))+'</button>';
   html+='<div class="tier"><b>Wave '+row.need+'</b><br>Free: '+row.text+'<br>Paid: '+paid.text+'<div class="claim">'+freeBtn+paidBtn+'</div></div>'});
  html+='<h3>Coins and waves</h3>';
  IAP.products.filter(p=>p.key==='coins'||p.key==='pass').forEach(p=>{const owned=p.key==='pass'&&!!LS.get('pass',false);html+='<div class="row"><span><b>'+p.name+'</b> '+p.price+'<br><span class="small">'+p.desc+'</span></span>'+moneyBtn(p,owned)+'</div>'});
@@ -822,13 +823,8 @@ function openStoreBody(){const box=$('storeItems');box.className='store';box.sty
 $('bStore').onclick=()=>{back='sTitle';if(Date.now()<gateUntil)openStoreBody();else showGate(openStoreBody)};
 $('gateGo').onclick=()=>{if(parseInt($('gateA').value,10)!==gateAns){freshGate();$('gateMsg').textContent='Not quite. Ask a grown-up for help.';return}passGate()};
 $('gateA').addEventListener('keydown',e=>{if(e.key==='Enter'){$('gateGo').click()}});
-$('gateBack').onclick=()=>{gateNext=null;toTitle()};
-IAP.confirmTest=(p)=>new Promise(resolve=>{
- $('testBuyName').textContent=p.name+' · '+p.price+' · test, no card';
- $('testBuy').style.display='';
- const finish=ok=>{$('testBuy').style.display='none';$('testBuyOk').onclick=null;$('testBuyNo').onclick=null;resolve(ok)};
- $('testBuyOk').onclick=()=>finish(true);$('testBuyNo').onclick=()=>finish(false);
-});
+$('gateBack').onclick=()=>{gateNext=null;if(confirmSheet.cancel)confirmSheet.cancel();toTitle()};
+IAP.confirmTest=(p)=>buyBusy?Promise.resolve(false):confirmSheet(p.name+' · '+p.price+' · test, no card');
 function grant(key){
  if(key==='gems80'){addGems(80);logMoney('Gem Handful',99);return 'Gem Handful: 80 gems saved on this device.'}
  if(key==='gems500'){addGems(500);logMoney('Gem Pouch',499);return 'Gem Pouch: 500 gems saved on this device.'}

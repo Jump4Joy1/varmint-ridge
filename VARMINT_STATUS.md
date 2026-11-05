@@ -1,3 +1,7 @@
+## Shop audit (2026-11-05)
+
+Continuing a saved game keeps a coin pack and a Zeus bonus bought after the save, and it keeps an armed speed-up. A second tap does not buy twice, cancel does not spend, and an expired grown-up question has to be answered again. The Starter Pack, lessons, skins, and season rewards grant once. Real billing stays off. The campaign is still free to play.
+
 ## Test-mode shop (2026-11-03)
 
 Gems are saved on the device. The store lists fixed packs only: gem packs, the Starter Pack, speed-ups, defense lessons, cosmetic yard and varmint skins, and Season 1 with the free and paid tracks both visible before you buy. Prices stay on the buttons. Settings keeps a spend summary. There is no timer, no ads, and no surprise box. Real billing stays off. A grown-up math question still comes first.
