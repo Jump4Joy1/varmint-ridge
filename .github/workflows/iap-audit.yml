@@ -27,13 +27,16 @@ jobs:
           node-version: 22
 
       - name: Install Playwright
-        run: npm install --prefix "$RUNNER_TEMP/pw" playwright@1.64.0
+        run: |
+          npm install --prefix "$RUNNER_TEMP/pw" playwright@1.64.0
 
       - name: Install Chromium
-        run: "$RUNNER_TEMP/pw/node_modules/.bin/playwright" install --with-deps chromium
+        run: |
+          "$RUNNER_TEMP/pw/node_modules/.bin/playwright" install --with-deps chromium
 
       - name: Pages still publishes main only
-        run: python3 -c "import pathlib; t=pathlib.Path('.github/workflows/pages.yml').read_text(); assert 'branches: [main]' in t, t; assert 'iap-test' not in t"
+        run: |
+          python3 -c 'import pathlib; t=pathlib.Path(".github/workflows/pages.yml").read_text(); assert "branches: [main]" in t and "iap-test" not in t'
 
       - name: Audit save, shop, and gate
         run: node tests/iap-audit.mjs
