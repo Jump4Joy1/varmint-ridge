@@ -139,6 +139,24 @@ html[data-theme=light] .vols label{color:#305032}
 }
 html.lite .ov{backdrop-filter:none;-webkit-backdrop-filter:none;background:rgba(14,18,12,.94)}
 html.lite[data-theme=light] .ov{background:rgba(243,230,196,.96)}
+:focus{outline:none}
+:focus-visible{outline:3px solid #ffe39a;outline-offset:3px}
+html[data-theme=light] :focus-visible{outline-color:#305032}
+#gateA:focus{outline:3px solid #ffe39a;outline-offset:3px}
+html[data-theme=light] #gateA:focus{outline-color:#305032}
+.card:focus-visible{outline-offset:1px}
+@media (max-width:400px){
+ #sGate .panel,#sStore .panel{max-width:none}
+ #sGate .small,#sStore .small{font-size:14px;line-height:1.35}
+ #gateQ{font-size:22px;line-height:1.25;margin:8px 0}
+ #gateA{min-height:48px;font-size:22px;width:7.5rem}
+ #sGate #gateGo,#sGate #gateBack,#testBuy .btn,#sStore>.panel>.btn{display:block;width:100%;max-width:280px;margin:6px auto}
+ #sStore .row{flex-direction:column;align-items:stretch}
+ #sStore .row>span{min-width:0}
+ #sStore .row .btn,#sStore .tier .claim .btn{min-height:44px}
+ #testBuy{margin:8px 0;padding:8px;border:2px solid var(--gold);border-radius:10px}
+ html[data-theme=light] #testBuy{background:rgba(48,80,50,.08)}
+}
 </style>
 </head>
 <body>
@@ -210,7 +228,7 @@ html.lite[data-theme=light] .ov{background:rgba(243,230,196,.96)}
   <div class="ov" id="sGate"><div class="panel"><h2>Grown-ups</h2>
    <p class="small">A grown-up has to answer before any purchase, including gems. All ages. No ads. A test purchase does not charge a card.</p>
    <p style="font-size:20px" id="gateQ"></p>
-   <input id="gateA" inputmode="numeric" maxlength="4" autocomplete="off" aria-label="Answer">
+   <input id="gateA" inputmode="numeric" maxlength="4" autocomplete="off" enterkeyhint="done" aria-labelledby="gateQ">
    <button class="btn sm" id="gateGo">OK</button>
    <p class="small" id="gateMsg"></p>
    <button class="btn alt" id="gateBack">Back</button></div></div>
@@ -592,7 +610,16 @@ $('tmSell').onclick=()=>{const t=selTower;if(!t)return;S.coins+=Math.floor(t.spe
 function toggleFast(){speed=speed===1?2:1}
 function pause(){if(!S||(S.phase!=='wave'&&S.phase!=='build'))return;S.prev=S.phase;S.phase='paused';show('sPause')}
 function resume(){if(S&&S.phase==='paused'){S.phase=S.prev;hideAll();themeChip(false)}}
-addEventListener('keydown',e=>{if(e.target.tagName==='INPUT')return;const k=e.key.toLowerCase();if(k==='m')setMute(!muted);
+addEventListener('keydown',e=>{
+ if(e.key==='Escape'){
+  const tb=$('testBuy');
+  if(tb&&tb.style.display!=='none'&&$('sStore').classList.contains('show')){$('testBuyNo').click();e.preventDefault();return}
+  if($('sGate').classList.contains('show')){$('gateBack').click();e.preventDefault();return}
+  const shown=[...document.querySelectorAll('.ov.show')].find(n=>n.id!=='sTitle');
+  const back=shown&&shown.querySelector('[data-close]');
+  if(back){back.click();e.preventDefault();return}
+ }
+ if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;const k=e.key.toLowerCase();if(k==='m')setMute(!muted);
  if(!S)return;if(k==='1')pick('scarecrow');if(k==='2')pick('lantern');if(k==='3')pick('trap');if(k===' '){e.preventDefault();startWave()}if(k==='f')toggleFast();
  if(k==='p'||k==='escape'){if(S.phase==='paused')resume();else if(!document.querySelector('.ov.show'))pause()}});
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&S&&S.phase==='wave')pause()});
@@ -600,9 +627,9 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden&&S&&S.phase
 /* ---------- bottom bar ---------- */
 const bar=$('bar');const cards={};
 Object.keys(TOWERS).forEach((k,i)=>{const b=document.createElement('div');b.className='card';const c=document.createElement('canvas');c.width=56;c.height=44;c.style.width='40px';c.style.height='32px';
- b.appendChild(c);b.title=TOWERS[k].name;b.setAttribute('role','button');b.insertAdjacentHTML('beforeend','<div class="nm">'+(k==='trap'?'Trap':TOWERS[k].name)+'</div><div class="c">'+TOWERS[k].cost+'</div>');b.onclick=()=>pick(k);bar.appendChild(b);cards[k]={b,c}});
-const goCard=document.createElement('div');goCard.className='card';goCard.innerHTML='<div style="font-size:20px;line-height:1">&#9654;</div><div class="nm" id="goTxt">Start</div><div class="c">wave</div>';goCard.setAttribute('role','button');goCard.onclick=()=>{audio();if(S&&S.phase==='build')startWave();else toggleFast()};bar.appendChild(goCard);
-const shopCard=document.createElement('div');shopCard.className='card';shopCard.innerHTML='<div style="font-size:20px;line-height:1">&#9874;</div><div class="nm">Shop</div><div class="c">build</div>';shopCard.setAttribute('role','button');shopCard.title='Homestead upgrades';shopCard.onclick=()=>{if(S&&S.phase==='build')openShop(false)};bar.appendChild(shopCard);
+ b.appendChild(c);b.title=TOWERS[k].name;b.setAttribute('role','button');b.tabIndex=0;b.addEventListener('keydown',ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();ev.stopPropagation();b.click()}});b.insertAdjacentHTML('beforeend','<div class="nm">'+(k==='trap'?'Trap':TOWERS[k].name)+'</div><div class="c">'+TOWERS[k].cost+'</div>');b.onclick=()=>pick(k);bar.appendChild(b);cards[k]={b,c}});
+const goCard=document.createElement('div');goCard.className='card';goCard.innerHTML='<div style="font-size:20px;line-height:1">&#9654;</div><div class="nm" id="goTxt">Start</div><div class="c">wave</div>';goCard.setAttribute('role','button');goCard.tabIndex=0;goCard.addEventListener('keydown',ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();ev.stopPropagation();goCard.click()}});goCard.onclick=()=>{audio();if(S&&S.phase==='build')startWave();else toggleFast()};bar.appendChild(goCard);
+const shopCard=document.createElement('div');shopCard.className='card';shopCard.innerHTML='<div style="font-size:20px;line-height:1">&#9874;</div><div class="nm">Shop</div><div class="c">build</div>';shopCard.setAttribute('role','button');shopCard.tabIndex=0;shopCard.title='Homestead upgrades';shopCard.addEventListener('keydown',ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();ev.stopPropagation();shopCard.click()}});shopCard.onclick=()=>{if(S&&S.phase==='build')openShop(false)};bar.appendChild(shopCard);
 function drawCardIcons(){const real=ctx;Object.keys(cards).forEach(k=>{const g=cards[k].c.getContext('2d');g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,56,44);g.scale(1.25,1.25);ctx=g;try{drawTower({type:k,x:22,y:k==='trap'?20:30,lv:1,cdLeft:1},0,true)}finally{ctx=real}})}
 function pick(k){if(S&&S.only&&k!==S.only){SFX.deny();floatTxt(200,320,'Today: '+TOWERS[S.only].name+' only',badInk());return}sel=k;selTower=null;placeMenu();ui()}
 function ui(){Object.keys(cards).forEach(k=>{const locked=!!(S&&S.only&&S.only!==k);cards[k].b.classList.toggle('sel',k===sel);cards[k].b.classList.toggle('poor',!!S&&(S.coins<TOWERS[k].cost||locked));cards[k].b.style.pointerEvents=locked?'none':''});

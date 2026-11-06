@@ -332,6 +332,37 @@ console.log('phone', JSON.stringify(fit));
 need('short-phone', fit.overflow === 0 && fit.clipped === false && parseInt(fit.card, 10) >= 88);
 await se.close();
 
+const p390 = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 3, isMobile: true, hasTouch: true, userAgent: ua });
+const pg = await p390.newPage();
+watch(pg);
+await boot(pg);
+const fit390 = await pg.evaluate(() => {
+  document.getElementById('themeBtn').click();
+  const ov = document.getElementById('sTitle');
+  const theme = document.documentElement.getAttribute('data-theme');
+  return { overflow: ov.scrollHeight - ov.clientHeight, w: window.innerWidth, theme };
+});
+await pg.evaluate(() => document.getElementById('bStore').click());
+await pg.waitForFunction(() => document.getElementById('sGate').classList.contains('show'));
+await pg.evaluate(() => document.getElementById('gateA').focus());
+const gateBox = await pg.evaluate(() => {
+  const q = document.getElementById('gateQ');
+  const a = document.getElementById('gateA');
+  const panel = document.querySelector('#sGate .panel').getBoundingClientRect();
+  const ar = a.getBoundingClientRect();
+  const outline = getComputedStyle(a).outlineStyle;
+  return {
+    h: ar.height, q: q.getBoundingClientRect().height,
+    inside: ar.left >= panel.left - 1 && ar.right <= panel.right + 1,
+    outline, theme: document.documentElement.getAttribute('data-theme'),
+  };
+});
+await pg.keyboard.press('Escape');
+const escaped = await pg.evaluate(() => document.getElementById('sTitle').classList.contains('show') && !document.getElementById('sGate').classList.contains('show'));
+console.log('phone390', JSON.stringify({ fit390, gateBox, escaped }));
+need('phone-390', fit390.w === 390 && fit390.overflow === 0 && fit390.theme === 'light' && gateBox.h >= 44 && gateBox.inside && gateBox.outline !== 'none' && escaped === true);
+await p390.close();
+
 console.log('errors', JSON.stringify(errors));
 need('no-page-errors', errors.length === 0, errors);
 await browser.close();
