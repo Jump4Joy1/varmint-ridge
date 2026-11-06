@@ -1,0 +1,49 @@
+# Shop audit for pull requests. Does not deploy.
+# GitHub Pages still publishes main only, from pages.yml.
+# The www artifact is a downloadable preview of this branch, not the live site.
+name: Shop audit
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: iap-audit-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install Playwright
+        run: npm install --prefix "$RUNNER_TEMP/pw" playwright@1.64.0
+
+      - name: Install Chromium
+        run: "$RUNNER_TEMP/pw/node_modules/.bin/playwright" install --with-deps chromium
+
+      - name: Pages still publishes main only
+        run: python3 -c "import pathlib; t=pathlib.Path('.github/workflows/pages.yml').read_text(); assert 'branches: [main]' in t, t; assert 'iap-test' not in t"
+
+      - name: Audit save, shop, and gate
+        run: node tests/iap-audit.mjs
+        env:
+          NODE_PATH: ${{ runner.temp }}/pw/node_modules
+
+      - name: Upload www preview artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: www-preview-not-pages
+          path: www
+          if-no-files-found: error
+          retention-days: 7
