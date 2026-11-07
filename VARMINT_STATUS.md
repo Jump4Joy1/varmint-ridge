@@ -1,3 +1,15 @@
+## Widgets (2026-11-07)
+
+The WidgetKit source is in the repo. It has not been compiled. `WIDGETS.md` is the checklist: xcodebuild not run, device install not run. A Mac, Xcode 16 or newer, and an Apple Developer account are still required. The website cannot add the widgets.
+
+## Shop audit (2026-11-05)
+
+Continuing a saved game keeps a coin pack and a Zeus bonus bought after the save, and it keeps an armed speed-up. A second tap does not buy twice, cancel does not spend, and an expired grown-up question has to be answered again. The Starter Pack, lessons, skins, and season rewards grant once. Real billing stays off. The campaign is still free to play.
+
+## Test-mode shop (2026-11-03)
+
+Gems are saved on the device. The store lists fixed packs only: gem packs, the Starter Pack, speed-ups, defense lessons, cosmetic yard and varmint skins, and Season 1 with the free and paid tracks both visible before you buy. Prices stay on the buttons. Settings keeps a spend summary. There is no timer, no ads, and no surprise box. Real billing stays off. A grown-up math question still comes first.
+
 ## Short phone pass (2026-11-03)
 
 On a short phone the title keeps Settings, both volume sliders, and the privacy line on screen. Tapping a defense at either edge of the yard opens Upgrade and Sell inside the garden, stacked, not cut off. Short phones skip the blur behind menus. If the phone asks for less motion, the screen does not shake. Real purchases stay off.
