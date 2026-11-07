@@ -16,4 +16,4 @@ Today's Ridge (on the title screen) is the same challenge the widgets describe.
 
 ## Widgets (needs the Xcode project)
 
-Widgets cannot be added from the Safari home-screen icon. They ship inside the Expo app in `ios-app/`. See `ios-app/README.md`. You need a Mac, Xcode, and an Apple Developer account before a real iPhone will run that build.
+Widgets cannot be added from the Safari home-screen icon. They ship inside the Expo app in `ios-app/`. See `ios-app/README.md` and `WIDGETS.md`. You need a Mac, Xcode 16 or newer, and an Apple Developer account before a real iPhone will run that build. That Xcode build is UNRUN. The repo checks only compare the Swift tables with the web game.

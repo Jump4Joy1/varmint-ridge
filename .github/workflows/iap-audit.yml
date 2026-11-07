@@ -38,6 +38,9 @@ jobs:
         run: |
           python3 -c 'import pathlib; t=pathlib.Path(".github/workflows/pages.yml").read_text(); assert "branches: [main]" in t and "iap-test" not in t'
 
+      - name: Widget source contract
+        run: node tests/widget-contract.mjs
+
       - name: Audit save, shop, and gate
         run: node tests/iap-audit.mjs
         env:

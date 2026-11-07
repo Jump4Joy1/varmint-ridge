@@ -1,3 +1,7 @@
+## Widgets (2026-11-07)
+
+The WidgetKit source is in the repo. It has not been compiled. `WIDGETS.md` is the checklist: xcodebuild not run, device install not run. A Mac, Xcode 16 or newer, and an Apple Developer account are still required. The website cannot add the widgets.
+
 ## Shop audit (2026-11-05)
 
 Continuing a saved game keeps a coin pack and a Zeus bonus bought after the save, and it keeps an armed speed-up. A second tap does not buy twice, cancel does not spend, and an expired grown-up question has to be answered again. The Starter Pack, lessons, skins, and season rewards grant once. Real billing stays off. The campaign is still free to play.
