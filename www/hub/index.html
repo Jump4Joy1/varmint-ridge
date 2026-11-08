@@ -76,12 +76,12 @@ main {
   text-transform: uppercase;
   font-size: 12px;
   font-weight: 700;
-  color: var(--gold);
+  color: #6B5420;
   margin: 0 0 6px;
 }
 h1 { font-size: 34px; line-height: 1.05; margin: 0 0 8px; color: var(--pine); font-weight: 600; }
 html[data-theme="dark"] h1 { color: var(--gold); }
-h2 { font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: var(--gold); margin: 22px 0 8px; }
+h2 { font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: #6B5420; margin: 22px 0 8px; }
 .tag { margin: 0 0 14px; font-size: 17px; }
 .tools { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 8px; }
 button, .card {
@@ -134,9 +134,13 @@ html[data-theme="dark"] a.card:focus-visible,
 html[data-theme="dark"] a.widget:focus-visible {
   outline-color: var(--gold);
 }
-.k { display: block; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--gold); margin-bottom: 4px; }
+.k { display: block; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: #6B5420; margin-bottom: 4px; }
 .note, .foot { margin: 12px 0 0; font-size: 14px; line-height: 1.4; color: var(--pine); }
+html[data-theme="dark"] .brand,
+html[data-theme="dark"] h2,
+html[data-theme="dark"] .k { color: var(--gold); }
 html[data-theme="dark"] .note, html[data-theme="dark"] .foot { color: #F3E6C4; }
+html[data-theme="dark"] .msg { color: #F6D3CB; }
 .wide { width: 100%; margin-top: 16px; }
 .ov {
   position: fixed;
@@ -178,11 +182,11 @@ html[data-theme="dark"] .panel h2 { color: var(--gold); }
   <p class="brand">JW Manor</p>
   <h1 id="hubTitle">JW Manor Homestead Games</h1>
   <p class="tag" id="hubTag">Five games on this menu, plus the canning log. All ages. No ads.</p>
-  <div class="tools" role="group" aria-label="Language">
+  <div class="tools" id="langTools" role="group" aria-label="Language">
     <button type="button" id="langEn" aria-pressed="true">English</button>
     <button type="button" id="langEs" aria-pressed="false">Español</button>
   </div>
-  <div class="tools" role="group" aria-label="Theme">
+  <div class="tools" id="themeTools" role="group" aria-label="Theme">
     <button type="button" id="themeAuto">Auto</button>
     <button type="button" id="themeLight" data-en="Light" data-es="Claro">Light</button>
     <button type="button" id="themeDark" data-en="Dark" data-es="Oscuro">Dark</button>
@@ -260,6 +264,7 @@ html[data-theme="dark"] .panel h2 { color: var(--gold); }
   </div>
 
   <button class="wide" type="button" id="btnBuys" data-en="Purchases" data-es="Compras">Purchases</button>
+  <p class="note" id="offlineNote"></p>
   <p class="foot" id="hubFoot">All ages. No ads. Nothing on this menu is for sale.</p>
 </main>
 
@@ -268,7 +273,7 @@ html[data-theme="dark"] .panel h2 { color: var(--gold); }
     <h2 id="gateTitle">Grown-ups</h2>
     <p class="note" id="gateLead">A grown-up has to answer before purchase notes open. All ages. No ads. No card is charged.</p>
     <p class="q" id="gateQ"></p>
-    <input id="gateA" inputmode="numeric" maxlength="4" autocomplete="off" aria-label="Answer">
+    <input id="gateA" inputmode="numeric" maxlength="4" autocomplete="off" aria-labelledby="gateQ">
     <button type="button" id="gateGo">OK</button>
     <p class="msg" id="gateMsg"></p>
     <button type="button" id="gateBack" data-en="Back" data-es="Volver">Back</button>
@@ -300,6 +305,9 @@ html[data-theme="dark"] .panel h2 { color: var(--gold); }
       gateBad: 'Not quite. Ask a grown-up for help.',
       buysTitle: 'Purchases',
       buys: 'Nothing on this menu is for sale. This page does not open a store and does not charge a card. No ads.',
+      langGroup: 'Language',
+      themeGroup: 'Theme',
+      offline: 'Saved on this device: this menu only. A game card and the published garden site need a connection. They are not saved here.',
       ridgeBody: function (p) {
         return p.critter.name + '. ' + p.challenge.title + ' · wave ' + p.wave + ' (' + p.waveName + ').';
       }
@@ -318,6 +326,9 @@ html[data-theme="dark"] .panel h2 { color: var(--gold); }
       gateBad: 'Casi. Pide ayuda a un adulto.',
       buysTitle: 'Compras',
       buys: 'Este menú no vende nada. Esta página no abre una tienda y no cobra tarjeta. Sin anuncios.',
+      langGroup: 'Idioma',
+      themeGroup: 'Tema',
+      offline: 'Guardado en este aparato: solo este menú. Una tarjeta de juego y el sitio publicado del huerto necesitan conexión. Aquí no se guardan.',
       ridgeBody: function (p) {
         return p.critter.name + '. ' + p.challenge.title + ' · ola ' + p.wave + ' (' + p.waveName + ').';
       }
@@ -391,6 +402,9 @@ html[data-theme="dark"] .panel h2 { color: var(--gold); }
     document.getElementById('gateTitle').textContent = copy.gateTitle;
     document.getElementById('buysTitle').textContent = copy.buysTitle;
     document.getElementById('buysText').textContent = copy.buys;
+    document.getElementById('offlineNote').textContent = copy.offline;
+    document.getElementById('langTools').setAttribute('aria-label', copy.langGroup);
+    document.getElementById('themeTools').setAttribute('aria-label', copy.themeGroup);
     document.querySelectorAll('[data-en]').forEach(function (el) {
       el.textContent = el.getAttribute(code === 'es' ? 'data-es' : 'data-en');
     });
@@ -420,6 +434,14 @@ html[data-theme="dark"] .panel h2 { color: var(--gold); }
     document.getElementById('gate').classList.remove('show');
     document.getElementById('buys').classList.remove('show');
     if (id) document.getElementById(id).classList.add('show');
+    var open = !!id;
+    var menu = document.querySelector('main');
+    menu.inert = open;
+    menu.setAttribute('aria-hidden', open ? 'true' : 'false');
+  }
+  function closeDialog() {
+    show(null);
+    document.getElementById('btnBuys').focus();
   }
   function openBuys() {
     if (Date.now() < gateUntil) {
@@ -438,8 +460,8 @@ html[data-theme="dark"] .panel h2 { color: var(--gold); }
   document.getElementById('themeLight').addEventListener('click', function () { window.ManorTheme.set('light'); });
   document.getElementById('themeDark').addEventListener('click', function () { window.ManorTheme.set('dark'); });
   document.getElementById('btnBuys').addEventListener('click', openBuys);
-  document.getElementById('gateBack').addEventListener('click', function () { show(null); });
-  document.getElementById('buysBack').addEventListener('click', function () { show(null); });
+  document.getElementById('gateBack').addEventListener('click', closeDialog);
+  document.getElementById('buysBack').addEventListener('click', closeDialog);
   document.getElementById('gateGo').addEventListener('click', function () {
     if (parseInt(document.getElementById('gateA').value, 10) !== gateAns) {
       freshGate();
@@ -453,13 +475,25 @@ html[data-theme="dark"] .panel h2 { color: var(--gold); }
     if (e.key === 'Enter') document.getElementById('gateGo').click();
   });
   document.addEventListener('keydown', function (e) {
-    if (e.key !== 'Escape') return;
-    var gateOn = document.getElementById('gate').classList.contains('show');
-    var buysOn = document.getElementById('buys').classList.contains('show');
-    if (!gateOn && !buysOn) return;
-    e.preventDefault();
-    show(null);
-    document.getElementById('btnBuys').focus();
+    var open = document.querySelector('.ov.show');
+    if (!open) return;
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      closeDialog();
+      return;
+    }
+    if (e.key !== 'Tab') return;
+    var items = open.querySelectorAll('button, input, a[href]');
+    if (!items.length) return;
+    var first = items[0];
+    var last = items[items.length - 1];
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault();
+      first.focus();
+    }
   });
 
   paint();
