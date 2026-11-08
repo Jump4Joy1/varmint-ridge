@@ -1,6 +1,6 @@
 /* JW Manor Homestead Games menu cache. No ads. No remote calls.
    Saved on this device: this menu and its manifest only. Games are not saved. */
-const CACHE = "manor-games-hub-6";
+const CACHE = "manor-games-hub-7";
 const ASSETS = ["./index.html", "./manifest.webmanifest"];
 
 function menuIndex() {

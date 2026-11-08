@@ -125,14 +125,27 @@ article.held {
 article.held h3 { margin: 0 0 4px; font-size: 22px; color: var(--pine); font-weight: 600; }
 html[data-theme="dark"] article.held h3 { color: #F3E6C4; }
 article.held p { margin: 0; font-size: 16px; line-height: 1.35; }
-button:focus-visible, a.card:focus-visible, a.widget:focus-visible, input:focus-visible {
+button:focus-visible, a.card:focus-visible, a.widget:focus-visible, a.inlink:focus-visible, input:focus-visible {
   outline: 3px solid var(--pine);
   outline-offset: 2px;
 }
 html[data-theme="dark"] button:focus-visible,
 html[data-theme="dark"] a.card:focus-visible,
-html[data-theme="dark"] a.widget:focus-visible {
+html[data-theme="dark"] a.widget:focus-visible,
+html[data-theme="dark"] a.inlink:focus-visible {
   outline-color: var(--gold);
+}
+a.inlink {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  margin-top: 8px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: var(--pine);
+  color: #F3E6C4;
+  text-decoration: none;
+  font-size: 16px;
 }
 .k { display: block; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: #6B5420; margin-bottom: 4px; }
 .note, .foot { margin: 12px 0 0; font-size: 14px; line-height: 1.4; color: var(--pine); }
@@ -181,7 +194,7 @@ html[data-theme="dark"] .panel h2 { color: var(--gold); }
 <main>
   <p class="brand">JW Manor</p>
   <h1 id="hubTitle">JW Manor Homestead Games</h1>
-  <p class="tag" id="hubTag">The published garden game and the canning log open from this menu. Other names are listed and not linked. All ages. No ads.</p>
+  <p class="tag" id="hubTag">Varmint Ridge has a review preview and a published site. Other names are listed and not linked. All ages. No ads.</p>
   <div class="tools" id="langTools" role="group" aria-label="Language">
     <button type="button" id="langEn" aria-pressed="true">English</button>
     <button type="button" id="langEs" aria-pressed="false">Español</button>
@@ -195,12 +208,12 @@ html[data-theme="dark"] .panel h2 { color: var(--gold); }
   <h2 id="todayLabel">Today</h2>
   <div class="widgets">
     <a class="widget" id="wRidge" href="https://jump4joy1.github.io/varmint-ridge/?daily=1">
-      <span class="k">Varmint Ridge</span>
+      <span class="k" data-en="Published daily" data-es="Publicado, del día">Published daily</span>
       <strong id="wRidgeTitle">Today's Ridge</strong>
       <span id="wRidgeBody"></span>
     </a>
     <article class="widget" id="wHoe">
-      <span class="k" data-en="Not linked" data-es="Sin enlace">Not linked</span>
+      <span class="k" data-en="Unavailable" data-es="No disponible">Unavailable</span>
       <strong id="wHoeTitle">Daily Well</strong>
       <span id="wHoeBody"></span>
     </article>
@@ -208,19 +221,19 @@ html[data-theme="dark"] .panel h2 { color: var(--gold); }
   <p class="note" id="widgetNote">The Ridge date opens the published garden game. The well date is only text. Hoedown Blocks is not linked. Phone widgets still need an Apple app. This page does not install them.</p>
 
   <h2 id="gamesLabel">Games</h2>
-  <p class="note" id="gamesNote" data-en="Two links open: the published Varmint Ridge site, and the canning log. Yard Line, Homestead Siege, Hoedown Blocks, and Homestead Harvest are not linked until each one has a reviewed preview." data-es="Se abren dos enlaces: el sitio publicado de Varmint Ridge, y el cuaderno de envasado. Yard Line, Homestead Siege, Hoedown Blocks y Homestead Harvest no se enlazan hasta que cada uno tenga una vista revisada.">Two links open: the published Varmint Ridge site, and the canning log. Yard Line, Homestead Siege, Hoedown Blocks, and Homestead Harvest are not linked until each one has a reviewed preview.</p>
+  <p class="note" id="gamesNote" data-en="Varmint Ridge has a review preview, which is not the release, and the published site. Yard Line, Homestead Siege, Hoedown Blocks, Homestead Harvest, Homestead Clash, and the canning log are not linked. No review address was given for them." data-es="Varmint Ridge tiene una vista de revisión, que no es el lanzamiento, y el sitio publicado. Yard Line, Homestead Siege, Hoedown Blocks, Homestead Harvest, Homestead Clash y el cuaderno de envasado no se enlazan. No hay dirección de revisión para ellos.">Varmint Ridge has a review preview, which is not the release, and the published site. Yard Line, Homestead Siege, Hoedown Blocks, Homestead Harvest, Homestead Clash, and the canning log are not linked. No review address was given for them.</p>
   <div class="cards">
     <article class="card" id="cardYard">
       <span class="k" data-en="Unavailable" data-es="No disponible">Unavailable</span>
       <h3>Yard Line</h3>
       <p data-en="Coming soon is not a date. Not linked until this game has a reviewed preview. This menu does not open the copy beside it. This is not Homestead Clash." data-es="Pronto no es una fecha. No se enlaza hasta que este juego tenga una vista revisada. Este menú no abre la copia que está junto a él. Esto no es Homestead Clash.">Coming soon is not a date. Not linked until this game has a reviewed preview. This menu does not open the copy beside it. This is not Homestead Clash.</p>
     </article>
-    <a class="card" id="cardVarmint" href="https://jump4joy1.github.io/varmint-ridge/">
-      <span class="k" data-en="Published site" data-es="Sitio publicado">Published site</span>
+    <article class="card" id="cardVarmint">
       <h3>Varmint Ridge</h3>
-      <p data-en="The published garden game. This menu does not open the old VarmintRidge folder." data-es="El juego del huerto ya publicado. Este menú no abre la carpeta vieja VarmintRidge.">The published garden game. This menu does not open the old VarmintRidge folder.</p>
-      <span class="url">https://jump4joy1.github.io/varmint-ridge/</span>
-    </a>
+      <p data-en="The review address is not the release. The other address is the published garden game. This menu does not open the old VarmintRidge folder." data-es="La dirección de revisión no es el lanzamiento. La otra dirección es el juego del huerto publicado. Este menú no abre la carpeta vieja VarmintRidge.">The review address is not the release. The other address is the published garden game. This menu does not open the old VarmintRidge folder.</p>
+      <a class="inlink" id="cardVarmintReview" href="https://varmint-ridge-iap-review.pages.dev/" data-en="Review preview (not released)" data-es="Vista de revisión (no publicado)">Review preview (not released)</a>
+      <a class="inlink" id="cardVarmintLive" href="https://jump4joy1.github.io/varmint-ridge/" data-en="Published site" data-es="Sitio publicado">Published site</a>
+    </article>
     <article class="card" id="cardSiege">
       <span class="k" data-en="Unavailable" data-es="No disponible">Unavailable</span>
       <h3>Homestead Siege</h3>
@@ -236,12 +249,11 @@ html[data-theme="dark"] .panel h2 { color: var(--gold); }
       <h3>Homestead Harvest</h3>
       <p data-en="Coming soon is not a date. Not linked until this game has a reviewed preview. This is not Homestead Clash." data-es="Pronto no es una fecha. No se enlaza hasta que este juego tenga una vista revisada. Esto no es Homestead Clash.">Coming soon is not a date. Not linked until this game has a reviewed preview. This is not Homestead Clash.</p>
     </article>
-    <a class="card" id="cardPreserve" href="PreserveSafe/index.html">
-      <span class="k" data-en="On this menu" data-es="En este menú">On this menu</span>
+    <article class="card" id="cardPreserve">
+      <span class="k" data-en="Unavailable" data-es="No disponible">Unavailable</span>
       <h3>Preserve Safe</h3>
-      <p data-en="Not a game. A field log of published canning numbers." data-es="No es un juego. Un cuaderno de cifras publicadas para envasar.">Not a game. A field log of published canning numbers.</p>
-      <span class="url" data-live="PreserveSafe/index.html"></span>
-    </a>
+      <p data-en="Not a game. Not linked. No review address was given for this log." data-es="No es un juego. No se enlaza. No hay dirección de revisión para este cuaderno.">Not a game. Not linked. No review address was given for this log.</p>
+    </article>
   </div>
 
   <h2 id="heldLabel" data-en="Not on this menu" data-es="Fuera de este menú">Not on this menu</h2>
@@ -288,7 +300,7 @@ html[data-theme="dark"] .panel h2 { color: var(--gold); }
 (function () {
   var COPY = {
     en: {
-      tag: 'The published garden game and the canning log open from this menu. Other names are listed and not linked. All ages. No ads.',
+      tag: 'Varmint Ridge has a review preview and a published site. Other names are listed and not linked. All ages. No ads.',
       foot: 'All ages. No ads. Nothing on this menu is for sale.',
       today: 'Today',
       games: 'Games',
@@ -309,7 +321,7 @@ html[data-theme="dark"] .panel h2 { color: var(--gold); }
       }
     },
     es: {
-      tag: 'El juego del huerto publicado y el cuaderno de envasado se abren desde este menú. Los otros nombres están listados y no se enlazan. Todas las edades. Sin anuncios.',
+      tag: 'Varmint Ridge tiene una vista de revisión y un sitio publicado. Los otros nombres están listados y no se enlazan. Todas las edades. Sin anuncios.',
       foot: 'Todas las edades. Sin anuncios. Este menú no vende nada.',
       today: 'Hoy',
       games: 'Juegos',
