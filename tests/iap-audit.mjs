@@ -55,7 +55,7 @@ function watch(page) {
   page.on('console', (m) => { if (m.type() === 'error') errors.push(m.text()); });
 }
 async function open(extra) {
-  const ctx = await browser.newContext({ viewport: { width: 375, height: 667 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true, userAgent: ua, ...extra });
+  const ctx = await browser.newContext({ viewport: { width: 375, height: 667 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true, userAgent: ua, serviceWorkers: 'block', ...extra });
   const page = await ctx.newPage();
   watch(page);
   return { ctx, page };
@@ -83,15 +83,17 @@ async function answerGate(page, wrongFirst) {
 async function confirm(page, yes) {
   await page.waitForFunction(() => document.getElementById('testBuy').style.display !== 'none');
   await page.evaluate((yes) => document.getElementById(yes ? 'testBuyOk' : 'testBuyNo').click(), yes);
-  await page.waitForTimeout(40);
+  await page.waitForFunction(() => document.getElementById('testBuy').style.display === 'none');
 }
 
 const sw = fs.readFileSync(path.join(root, 'sw.js'), 'utf8');
+const swIos = fs.readFileSync(path.join(repo, 'ios-app/assets/www/sw.js'), 'utf8');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const manifest = JSON.parse(fs.readFileSync(path.join(root, 'manifest.webmanifest'), 'utf8'));
 const widgets = fs.readFileSync(path.join(repo, 'ios-app/targets/widget/RidgeWidgets.swift'), 'utf8');
 need('source-flags', html.includes('const IAP_ENABLED = false') && html.includes('const IAP_TEST = true') && !/admob|adsense|doubleclick|fundingchoices/i.test(html));
-need('cache-name', /const CACHE = "varmint-ridge-iphone-8"/.test(sw));
+need('cache-name', sw === swIos && /const CACHE = "varmint-ridge-iphone-9"/.test(sw));
+need('cache-bust', sw.includes('self.skipWaiting()') && sw.includes('self.clients.claim()') && sw.includes('caches.delete(key)'));
 need('manifest-relative', manifest.start_url === './index.html' && manifest.scope === './');
 need('widget-copy', widgets.includes('of 12'));
 
@@ -127,7 +129,7 @@ const cb2 = await a.page.evaluate(() => { document.getElementById('bSet').click(
 need('colorblind-persists', cb1 === 'On' && cb2 === 'On');
 await a.ctx.close();
 
-const mot = await browser.newContext({ viewport: { width: 375, height: 667 }, isMobile: true, hasTouch: true, userAgent: ua, reducedMotion: 'reduce' });
+const mot = await browser.newContext({ viewport: { width: 375, height: 667 }, isMobile: true, hasTouch: true, userAgent: ua, reducedMotion: 'reduce', serviceWorkers: 'block' });
 const mp = await mot.newPage();
 watch(mp);
 await boot(mp);
@@ -318,7 +320,7 @@ const gatedAgain = await shop.page.evaluate(() => document.getElementById('sGate
 need('gate-cancel', backed.title === true && backed.store === false && backed.gems === 80 && gatedAgain === true);
 await shop.ctx.close();
 
-const se = await browser.newContext({ viewport: { width: 320, height: 568 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true, userAgent: ua });
+const se = await browser.newContext({ viewport: { width: 320, height: 568 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true, userAgent: ua, serviceWorkers: 'block' });
 const sp = await se.newPage();
 watch(sp);
 await boot(sp);
@@ -332,7 +334,7 @@ console.log('phone', JSON.stringify(fit));
 need('short-phone', fit.overflow === 0 && fit.clipped === false && parseInt(fit.card, 10) >= 88);
 await se.close();
 
-const p390 = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 3, isMobile: true, hasTouch: true, userAgent: ua });
+const p390 = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 3, isMobile: true, hasTouch: true, userAgent: ua, serviceWorkers: 'block' });
 const pg = await p390.newPage();
 watch(pg);
 await boot(pg);

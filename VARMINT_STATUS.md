@@ -1,3 +1,7 @@
+## Hardening (2026-11-07)
+
+The offline cache name is `varmint-ridge-iphone-9`. The worker still tries the network first, then drops any older cache when it activates. The shop audit blocks a service worker and waits until the test-purchase sheet closes, instead of a fixed delay. Two local runs passed. This is not an App Store build.
+
 ## Widgets (2026-11-07)
 
 The WidgetKit source is in the repo. It has not been compiled. `WIDGETS.md` is the checklist: xcodebuild not run, device install not run. A Mac, Xcode 16 or newer, and an Apple Developer account are still required. The website cannot add the widgets.
