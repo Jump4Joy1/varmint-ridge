@@ -69,8 +69,8 @@ Gaps found in the headless audit:
 - Balance tuning from human playtests. Optional extras: endless mode, achievements. Wave numbers were not retuned this round.
 - Apple Developer account, then `ios-app/README.md`, before the widgets can be installed on a phone.
 
-## Supporter Store (native IAP, OFF)
+## Supporter Store (test mode only, no real billing)
 - Stripe was removed: the payment-link slots and the `?paid=` handler are gone. The games are sold only through the App Store and Google Play. See `../IAP_PLAN.md`.
-- The `IAP` module offers `products`, `purchase(sku)`, `restore()`, `onEntitlement(key, sku)` and `init()`. Natively it uses RevenueCat, or `cordova-plugin-purchase` as a fallback, and only when `IAP_ENABLED` is true. In a browser, `IAP_TEST` runs the same Coin Pack / Ridge Pass / Starter Bundle flow with a confirm step and no charge. Coin Pack banks 500 coins for the next game. The grown-up multiplication question opens first, on its own screen.
+- The `IAP` module offers `products`, `purchase(sku)`, `restore()`, `onEntitlement(key, sku)` and `init()`. Nov 10, 2026: the RevenueCat and `cordova-plugin-purchase` code paths were removed. There is no real billing code in this build, and `IAP_ENABLED` stays false. `IAP_TEST` runs the same Coin Pack / Ridge Pass / Starter Bundle flow with a confirm step and no charge. Coin Pack banks 500 coins for the next game. The grown-up multiplication question opens first, on its own screen.
 - Products: `com.jwmanor.varmintridge.coins` (consumable, $0.99, 500 coins banked), `.ridgepass` (non-consumable, $2.99, all waves), `.starter` (non-consumable, $1.99, 300 coins + Zeus Lv1, granted once).
-- The grown-up math gate guards the store, and each Buy and Restore once the two-minute pass expires. Grants happen only from plugin callbacks, and RevenueCat does the server-side receipt validation.
+- The grown-up math gate guards the store, and each Buy and Restore once the two-minute pass expires. Grants happen only after the test confirm step. Real billing (and receipt validation) would have to be added and reviewed separately before any paid build.

@@ -27,7 +27,7 @@ Also true in the source, and covered by those checks:
 - The widget was not installed on an iPhone. See `WIDGETS.md`.
 - No signing, no provisioning profile, no TestFlight upload.
 - No App Store Connect listing, screenshots, age rating, or privacy answers.
-- Real in-app purchase is off by design. RevenueCat keys are empty. No store product was created.
+- Real in-app purchase is off by design. As of Nov 10, 2026 there is no billing SDK code in the page at all (RevenueCat and cordova-plugin-purchase paths removed). No store product was created.
 - Cloudflare review settings were not changed. That project is coordinator-managed.
 
 ## Blockers before any store submission
