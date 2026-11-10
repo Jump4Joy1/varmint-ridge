@@ -38,6 +38,30 @@ jobs:
         run: |
           python3 -c 'import pathlib; t=pathlib.Path(".github/workflows/pages.yml").read_text(); assert "branches: [main]" in t and "iap-test" not in t'
 
+      - name: No ads, no billing SDKs, no loot boxes; iPhone copy matches
+        run: |
+          set -eu
+          # forbid PATTERN FILES...: exit 1 on a match OR on a grep error.
+          forbid() {
+            label=$1; pattern=$2; shift 2
+            rc=0
+            grep -RInE -i "$pattern" "$@" || rc=$?
+            if [ "$rc" -ne 1 ]; then
+              echo "::error::$label (grep exit $rc)"
+              exit 1
+            fi
+          }
+          cmp www/index.html ios-app/assets/www/index.html
+          cmp www/sw.js ios-app/assets/www/sw.js
+          scan="www ios-app/App.js ios-app/package.json ios-app/app.json ios-app/targets"
+          forbid "real payment code found" 'revenuecat|cdvpurchase|cordova-plugin-purchase|purchaseStoreProduct|react-native-iap|expo-in-app-purchases|react-native-purchases|storekit|stripe|paypal|PaymentRequest' $scan
+          forbid "ad code found" 'adsbygoogle|googlesyndication|doubleclick|admob|adsense|fundingchoices|applovin|unityads' $scan
+          forbid "loot-box wording found" 'loot ?box|gacha|mystery (box|pack|chest)|random (reward|pack|prize)' www/index.html
+          grep -q 'const IAP_ENABLED = false;' www/index.html
+          grep -q 'const IAP_TEST = true;' www/index.html
+          grep -q 'function freshGate()' www/index.html
+          grep -q 'prefers-color-scheme' www/index.html
+
       - name: Widget source contract
         run: node tests/widget-contract.mjs
 

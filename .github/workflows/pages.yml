@@ -24,14 +24,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # GITHUB_TOKEN cannot enable Pages. A token with Pages write can.
-      # The connected GitHub app cannot call the Pages API, so this step
-      # is best-effort and the deploy step is what publishes www/.
-      - name: Enable Pages if the token is allowed
-        continue-on-error: true
+      # Pages is already enabled for this repo. No failure masking: if the
+      # Pages config cannot be read, the deploy fails visibly.
+      - name: Configure Pages
         uses: actions/configure-pages@v5
-        with:
-          enablement: true
 
       - name: Upload the game
         uses: actions/upload-pages-artifact@v3

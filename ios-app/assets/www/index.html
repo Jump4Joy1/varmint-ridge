@@ -247,54 +247,35 @@ html[data-theme=light] #gateA:focus{outline-color:#305032}
 </div>
 <script>
 'use strict';
-/* ================= Supporter Store =================
-   Real App Store / Play billing stays off (IAP_ENABLED=false). No ads.
-   IAP_TEST lets the browser finish a purchase with no charge, after the grown-up gate.
-   A native build uses RevenueCat, then cordova-plugin-purchase, only when IAP_ENABLED is true. */
+/* ================= Supporter Store (test mode only) =================
+   No ads. No real billing: this build has no store-billing SDK or
+   payment-plugin code at all. IAP_ENABLED stays false.
+   IAP_TEST lets the player finish a pretend purchase with no charge, only
+   after the grown-up multiplication gate. Every pack is fixed; nothing is random. */
 const IAP_ENABLED = false;
 const IAP_TEST = true;
-const REVENUECAT_API_KEY = { ios: '', android: '' }; // public SDK keys, fill in at launch
 const IAP = (function(){
  const products=[
   {sku:'com.jwmanor.varmintridge.gems80',key:'gems80',type:'consumable',name:'Gem Handful',price:'$0.99',desc:'Exactly 80 gems, saved on this device.'},
   {sku:'com.jwmanor.varmintridge.gems500',key:'gems500',type:'consumable',name:'Gem Pouch',price:'$4.99',desc:'Exactly 500 gems, saved on this device.'},
-  {sku:'com.jwmanor.varmintridge.gems1200',key:'gems1200',type:'consumable',name:'Gem Crate',price:'$9.99',desc:'Exactly 1,200 gems, saved on this device.'},
+  {sku:'com.jwmanor.varmintridge.gems1200',key:'gems1200',type:'consumable',name:'Gem Bundle',price:'$9.99',desc:'Exactly 1,200 gems, saved on this device.'},
   {sku:'com.jwmanor.varmintridge.season1',key:'season1',type:'non-consumable',name:'Season 1 Pass',price:'$3.99',desc:'Opens the paid reward track. Every reward is listed before you buy. No end date.'},
   {sku:'com.jwmanor.varmintridge.coins',key:'coins',type:'consumable',name:'Coin Pack',price:'$0.99',desc:'500 coins added to the start of your next game'},
   {sku:'com.jwmanor.varmintridge.ridgepass',key:'pass',type:'non-consumable',name:'Ridge Pass',price:'$2.99',desc:'Opens all 12 waves in Choose Wave'},
   {sku:'com.jwmanor.varmintridge.starter',key:'starter',type:'non-consumable',name:'Starter Pack',price:'$1.99',desc:'300 coins plus Zeus at Level 1 for your next game'}];
  const api={products,onEntitlement:null,backend:'none',ready:false,confirmTest:null};
- const cap=window.Capacitor,native=!!(cap&&cap.isNativePlatform&&cap.isNativePlatform());
- const rc=native&&cap.Plugins&&cap.Plugins.Purchases, cdv=native&&window.CdvPurchase;
  const fire=(key,sku)=>{try{api.onEntitlement&&api.onEntitlement(key,sku)}catch(e){}};
- const keyOf=sku=>(products.find(p=>p.sku===sku)||{}).key;
- const testMode=()=>IAP_TEST&&!native;
+ const testMode=()=>IAP_TEST&&!IAP_ENABLED;
  const alreadyOwned=key=>key==='season1'?!!LS.get('seasonPass',false):key==='pass'?!!LS.get('pass',false):key==='starter'?!!LS.get('starterOwned',false):false;
  const remember=(sku)=>{const p=products.find(x=>x.sku===sku);if(!p||p.type==='consumable')return;const raw=LS.get('testOwned',[]);const owned=Array.isArray(raw)?raw:[];if(owned.indexOf(sku)<0){owned.push(sku);LS.set('testOwned',owned)}};
- api.available=()=>testMode()||(IAP_ENABLED&&native&&api.ready);
- api.init=async()=>{if(testMode()){api.backend='test';api.ready=true;return true}if(!IAP_ENABLED||!native)return false;try{
-  if(rc){const plat=cap.getPlatform();await rc.configure({apiKey:REVENUECAT_API_KEY[plat]||''});api.backend='revenuecat';
-   const r=await rc.getProducts({productIdentifiers:products.map(p=>p.sku)});(r.products||[]).forEach(sp=>{const p=products.find(x=>x.sku===sp.identifier);if(p)p.price=sp.priceString});}
-  else if(cdv){const {store,ProductType,Platform}=cdv;api.backend='cordova';
-   store.register(products.map(p=>({id:p.sku,type:p.type==='consumable'?ProductType.CONSUMABLE:ProductType.NON_CONSUMABLE,platform:cap.getPlatform()==='ios'?Platform.APPLE_APPSTORE:Platform.GOOGLE_PLAY})));
-   store.when().approved(t=>t.verify()).verified(r=>r.finish()).finished(t=>(t.products||[]).forEach(pp=>fire(keyOf(pp.id),pp.id)));
-   await store.initialize();products.forEach(p=>{const sp=store.get(p.sku);if(sp&&sp.pricing)p.price=sp.pricing.price})}
-  else return false;api.ready=true;return true}catch(e){return false}};
- api.purchase=async(sku)=>{if(testMode()){const p=products.find(x=>x.sku===sku);if(!p)return{ok:false,reason:'not found'};
+ api.available=()=>testMode();
+ api.init=async()=>{if(!testMode())return false;api.backend='test';api.ready=true;return true};
+ api.purchase=async(sku)=>{if(!api.available())return{ok:false,reason:'disabled'};const p=products.find(x=>x.sku===sku);if(!p)return{ok:false,reason:'not found'};
   if(p.type!=='consumable'&&alreadyOwned(p.key))return{ok:false,reason:'owned'};
   if(api.confirmTest){const ok=await api.confirmTest(p);if(!ok)return{ok:false,reason:'cancelled'}}
   if(p.type!=='consumable'&&alreadyOwned(p.key))return{ok:false,reason:'owned'};
-  remember(sku);fire(p.key,sku);return{ok:true,test:true}}
-  if(!api.available())return{ok:false,reason:'disabled'};try{
-  if(api.backend==='revenuecat'){const r=await rc.getProducts({productIdentifiers:[sku]});const prod=(r.products||[])[0];if(!prod)return{ok:false,reason:'not found'};
-   await rc.purchaseStoreProduct({product:prod});fire(keyOf(sku),sku);return{ok:true}}
-  const offer=window.CdvPurchase.store.get(sku)?.getOffer();if(!offer)return{ok:false,reason:'not found'};const err=await offer.order();return err?{ok:false,reason:err.message}:{ok:true}}
-  catch(e){return{ok:false,reason:e&&e.userCancelled?'cancelled':(e&&e.message)||'error'}}};
- api.restore=async()=>{if(testMode()){const ids=LS.get('testOwned',[]);ids.forEach(sku=>{const p=products.find(x=>x.sku===sku);if(p&&p.type==='non-consumable')fire(p.key,sku)});return{ok:true,count:ids.length,test:true}}
-  if(!api.available())return{ok:false,reason:'disabled'};try{let ids=[];
-  if(api.backend==='revenuecat'){const r=await rc.restorePurchases();const ci=r.customerInfo||r;ids=(ci.allPurchasedProductIdentifiers||[])}
-  else{await window.CdvPurchase.store.restorePurchases();ids=products.filter(p=>window.CdvPurchase.store.owned(p.sku)).map(p=>p.sku)}
-  ids.forEach(sku=>{const p=products.find(x=>x.sku===sku);if(p&&p.type==='non-consumable')fire(p.key,sku)});return{ok:true,count:ids.length}}catch(e){return{ok:false,reason:(e&&e.message)||'error'}}};
+  remember(sku);fire(p.key,sku);return{ok:true,test:true}};
+ api.restore=async()=>{if(!api.available())return{ok:false,reason:'disabled'};const raw=LS.get('testOwned',[]);const ids=Array.isArray(raw)?raw:[];ids.forEach(sku=>{const p=products.find(x=>x.sku===sku);if(p&&p.type==='non-consumable')fire(p.key,sku)});return{ok:true,count:ids.length,test:true}};
  return api})();
 const W=400,H=600,PINE='#305032',GOLD='#C19A50',INK='#1A1A1A';
 const cv=document.getElementById('game');let ctx=cv.getContext('2d');
@@ -855,7 +836,7 @@ IAP.confirmTest=(p)=>buyBusy?Promise.resolve(false):confirmSheet(p.name+' · '+p
 function grant(key){
  if(key==='gems80'){addGems(80);logMoney('Gem Handful',99);return 'Gem Handful: 80 gems saved on this device.'}
  if(key==='gems500'){addGems(500);logMoney('Gem Pouch',499);return 'Gem Pouch: 500 gems saved on this device.'}
- if(key==='gems1200'){addGems(1200);logMoney('Gem Crate',999);return 'Gem Crate: 1,200 gems saved on this device.'}
+ if(key==='gems1200'){addGems(1200);logMoney('Gem Bundle',999);return 'Gem Bundle: 1,200 gems saved on this device.'}
  if(key==='season1'){if(LS.get('seasonPass',false))return null;LS.set('seasonPass',true);logMoney('Season 1 Pass',399);return 'Season Pass unlocked. The paid track is open. There is no end date.'}
  if(key==='coins'){LS.set('bank',(LS.get('bank',0)|0)+500);logMoney('Coin Pack',99);return 'Coin Pack: 500 coins will be added to your next game.'}
  if(key==='pass'){if(LS.get('pass',false))return null;LS.set('pass',true);LS.set('reach',WAVES.length);logMoney('Ridge Pass',299);return 'Ridge Pass unlocked. All 12 waves are open.'}
