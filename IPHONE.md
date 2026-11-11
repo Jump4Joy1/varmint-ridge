@@ -10,10 +10,10 @@ Host this folder on HTTPS. Opening the files from a computer over USB, or from a
 4. Turn on airplane mode and open the icon again. The title screen should still load. Scores stay on the phone.
 5. Tap the moon/sun chip to move between Auto, Light, and Dark. Settings, on the title screen and while paused, turns on Color-blind safe. Health bars use blue and orange, plus a circle, square, or triangle.
 6. Play wave 1 with a thumb. The yard says where to tap: place a scarecrow, then tap Start Wave, then keep one bed alive. Those tips are gone on wave 2. On a small phone the buttons under the garden are taller, and a tap still places when you lift. A mouse still places on the click. Tap a defense at the left or right edge. Upgrade and Sell stay on the screen. The campaign is 12 waves. Foxes show up later and hop the fence once.
-7. Tap Supporter Store. A multiplication question appears on its own screen. Wrong answers do not open the store. After a right answer, Coin Pack can be confirmed in test mode. That adds 500 coins to the next game and does not charge a card. There are no ads.
+7. Tap Supporter Store. A multiplication question appears on its own screen before any purchase, including gems. Wrong answers do not open the store. Leaving that screen, or waiting until it expires, does not buy anything. Cancel leaves your gems where they were. After a right answer you can read every pack before you buy: gem packs, the Starter Pack (once), speed-ups, defense lessons, yard and varmint skins, and Season 1 with a free track and a paid track. Nothing is random and nothing has a countdown. Confirming a pack in test mode does not charge a card. Settings lists what was spent. A coin pack bought while a game is saved is added when you continue. There are no ads.
 
 Today's Ridge (on the title screen) is the same challenge the widgets describe.
 
 ## Widgets (needs the Xcode project)
 
-Widgets cannot be added from the Safari home-screen icon. They ship inside the Expo app in `ios-app/`. See `ios-app/README.md`. You need a Mac, Xcode, and an Apple Developer account before a real iPhone will run that build.
+Widgets cannot be added from the Safari home-screen icon. They ship inside the Expo app in `ios-app/`. See `ios-app/README.md` and `WIDGETS.md`. You need a Mac, Xcode 16 or newer, and an Apple Developer account before a real iPhone will run that build. That Xcode build is UNRUN. The repo checks only compare the Swift tables with the web game.

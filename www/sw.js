@@ -1,5 +1,5 @@
-/* Varmint Ridge offline cache. The game is one page plus icons. No ads, no remote calls. */
-const CACHE = "varmint-ridge-iphone-6";
+/* Varmint Ridge offline cache. Network first. A new name drops older caches on activate. No ads, no remote calls. */
+const CACHE = "varmint-ridge-iphone-9";
 const ASSETS = [
   "./",
   "./index.html",

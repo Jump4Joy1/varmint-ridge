@@ -1,0 +1,81 @@
+# Shop audit for pull requests. Does not deploy.
+# GitHub Pages still publishes main only, from pages.yml.
+# The www artifact is a downloadable preview of this branch, not the live site.
+name: Shop audit
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: iap-audit-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install Playwright
+        run: |
+          npm install --prefix "$RUNNER_TEMP/pw" playwright@1.64.0
+
+      - name: Install Chromium
+        run: |
+          "$RUNNER_TEMP/pw/node_modules/.bin/playwright" install --with-deps chromium
+
+      - name: Pages still publishes main only
+        run: |
+          python3 -c 'import pathlib; t=pathlib.Path(".github/workflows/pages.yml").read_text(); assert "branches: [main]" in t and "iap-test" not in t'
+
+      - name: No ads, no billing SDKs, no loot boxes; iPhone copy matches
+        run: |
+          set -eu
+          # forbid PATTERN FILES...: exit 1 on a match OR on a grep error.
+          forbid() {
+            label=$1; pattern=$2; shift 2
+            rc=0
+            grep -RInaE -i "$pattern" "$@" || rc=$?
+            if [ "$rc" -ne 1 ]; then
+              echo "::error::$label (grep exit $rc)"
+              exit 1
+            fi
+          }
+          cmp www/index.html ios-app/assets/www/index.html
+          cmp www/sw.js ios-app/assets/www/sw.js
+          # Varmint Ridge's own files. www/hub/ is the Games Hub copy that main
+          # carries for other games; it is tracked separately, not scanned here.
+          scan="www/index.html www/sw.js www/manifest.webmanifest www/privacy.html ios-app/assets/www ios-app/App.js ios-app/package.json ios-app/app.json ios-app/targets"
+          forbid "real payment code found" 'revenuecat|cdvpurchase|cordova-plugin-purchase|purchaseStoreProduct|react-native-iap|expo-in-app-purchases|react-native-purchases|storekit|stripe|paypal|PaymentRequest' $scan
+          forbid "ad code found" 'adsbygoogle|googlesyndication|doubleclick|admob|adsense|fundingchoices|applovin|unityads' $scan
+          forbid "loot-box wording found" 'loot ?box|gacha|mystery (box|pack|chest)|random (reward|pack|prize)' www/index.html
+          grep -q 'const IAP_ENABLED = false;' www/index.html
+          grep -q 'const IAP_TEST = true;' www/index.html
+          grep -q 'function freshGate()' www/index.html
+          grep -q 'prefers-color-scheme' www/index.html
+
+      - name: Widget source contract
+        run: node tests/widget-contract.mjs
+
+      - name: Audit save, shop, and gate
+        run: node tests/iap-audit.mjs
+        env:
+          NODE_PATH: ${{ runner.temp }}/pw/node_modules
+
+      - name: Upload www preview artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: www-preview-not-pages
+          path: www
+          if-no-files-found: error
+          retention-days: 7
