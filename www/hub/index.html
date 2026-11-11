@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#305032">
 <meta name="color-scheme" content="dark light">
-<meta name="description" content="JW Manor Homestead Games. Four family games and a canning log. All ages. No ads.">
+<meta name="description" content="JW Manor games menu. All ages. No ads. Nothing on this menu is for sale.">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Manor Games">
 <title>JW Manor Homestead Games</title>
@@ -76,12 +76,12 @@ main {
   text-transform: uppercase;
   font-size: 12px;
   font-weight: 700;
-  color: var(--gold);
+  color: #6B5420;
   margin: 0 0 6px;
 }
 h1 { font-size: 34px; line-height: 1.05; margin: 0 0 8px; color: var(--pine); font-weight: 600; }
 html[data-theme="dark"] h1 { color: var(--gold); }
-h2 { font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: var(--gold); margin: 22px 0 8px; }
+h2 { font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: #6B5420; margin: 22px 0 8px; }
 .tag { margin: 0 0 14px; font-size: 17px; }
 .tools { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 8px; }
 button, .card {
@@ -99,7 +99,7 @@ button {
 }
 button[aria-pressed="true"] { background: var(--gold); color: var(--ink); }
 .cards, .widgets { display: grid; gap: 12px; }
-a.card, a.widget {
+a.card, a.widget, article.card, article.widget {
   display: block;
   text-decoration: none;
   color: inherit;
@@ -110,14 +110,50 @@ a.card, a.widget {
   padding: 14px 16px 16px;
   min-height: 44px;
 }
-a.card h3, a.widget strong { margin: 0 0 4px; font-size: 22px; color: var(--pine); font-weight: 600; }
-html[data-theme="dark"] a.card h3, html[data-theme="dark"] a.widget strong { color: #F3E6C4; }
-a.card p, a.widget span, .url { margin: 0; font-size: 16px; line-height: 1.35; }
+a.card h3, a.widget strong, article.card h3, article.widget strong { margin: 0 0 4px; font-size: 22px; color: var(--pine); font-weight: 600; }
+a.widget strong, a.widget span, article.widget strong, article.widget span { display: block; }
+html[data-theme="dark"] a.card h3, html[data-theme="dark"] a.widget strong, html[data-theme="dark"] article.card h3, html[data-theme="dark"] article.widget strong { color: #F3E6C4; }
+a.card p, a.widget span, article.card p, article.widget span, .url { margin: 0; font-size: 16px; line-height: 1.35; }
 .url { display: block; margin-top: 8px; font-size: 13px; color: var(--pine); word-break: break-all; }
 html[data-theme="dark"] .url { color: #F3E6C4; }
-.k { display: block; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--gold); margin-bottom: 4px; }
+article.held {
+  background: var(--card);
+  border: 3px dashed var(--gold);
+  border-radius: 16px;
+  padding: 14px 16px 16px;
+}
+article.held h3 { margin: 0 0 4px; font-size: 22px; color: var(--pine); font-weight: 600; }
+html[data-theme="dark"] article.held h3 { color: #F3E6C4; }
+article.held p { margin: 0; font-size: 16px; line-height: 1.35; }
+button:focus-visible, a.card:focus-visible, a.widget:focus-visible, a.inlink:focus-visible, input:focus-visible {
+  outline: 3px solid var(--pine);
+  outline-offset: 2px;
+}
+html[data-theme="dark"] button:focus-visible,
+html[data-theme="dark"] a.card:focus-visible,
+html[data-theme="dark"] a.widget:focus-visible,
+html[data-theme="dark"] a.inlink:focus-visible {
+  outline-color: var(--gold);
+}
+a.inlink {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  margin-top: 8px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: var(--pine);
+  color: #F3E6C4;
+  text-decoration: none;
+  font-size: 16px;
+}
+.k { display: block; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: #6B5420; margin-bottom: 4px; }
 .note, .foot { margin: 12px 0 0; font-size: 14px; line-height: 1.4; color: var(--pine); }
+html[data-theme="dark"] .brand,
+html[data-theme="dark"] h2,
+html[data-theme="dark"] .k { color: var(--gold); }
 html[data-theme="dark"] .note, html[data-theme="dark"] .foot { color: #F3E6C4; }
+html[data-theme="dark"] .msg { color: #F6D3CB; }
 .wide { width: 100%; margin-top: 16px; }
 .ov {
   position: fixed;
@@ -158,12 +194,12 @@ html[data-theme="dark"] .panel h2 { color: var(--gold); }
 <main>
   <p class="brand">JW Manor</p>
   <h1 id="hubTitle">JW Manor Homestead Games</h1>
-  <p class="tag" id="hubTag">Five homestead games, plus the canning log. All ages. No ads.</p>
-  <div class="tools" role="group" aria-label="Language">
+  <p class="tag" id="hubTag">Varmint Ridge has a review preview and a published site. Other names are listed and not linked. All ages. No ads.</p>
+  <div class="tools" id="langTools" role="group" aria-label="Language">
     <button type="button" id="langEn" aria-pressed="true">English</button>
     <button type="button" id="langEs" aria-pressed="false">Español</button>
   </div>
-  <div class="tools" role="group" aria-label="Theme">
+  <div class="tools" id="themeTools" role="group" aria-label="Theme">
     <button type="button" id="themeAuto">Auto</button>
     <button type="button" id="themeLight" data-en="Light" data-es="Claro">Light</button>
     <button type="button" id="themeDark" data-en="Dark" data-es="Oscuro">Dark</button>
@@ -172,53 +208,71 @@ html[data-theme="dark"] .panel h2 { color: var(--gold); }
   <h2 id="todayLabel">Today</h2>
   <div class="widgets">
     <a class="widget" id="wRidge" href="https://jump4joy1.github.io/varmint-ridge/?daily=1">
-      <span class="k">Varmint Ridge</span>
+      <span class="k" data-en="Published daily" data-es="Publicado, del día">Published daily</span>
       <strong id="wRidgeTitle">Today's Ridge</strong>
       <span id="wRidgeBody"></span>
     </a>
-    <a class="widget" id="wHoe" href="HoedownBlocks/index.html">
-      <span class="k">Hoedown Blocks</span>
+    <article class="widget" id="wHoe">
+      <span class="k" data-en="Unavailable" data-es="No disponible">Unavailable</span>
       <strong id="wHoeTitle">Daily Well</strong>
       <span id="wHoeBody"></span>
-    </a>
+    </article>
   </div>
-  <p class="note" id="widgetNote">Yard Line, Siege, and Harvest have no daily. Phone widgets still need the Apple app. They are not installed from this page. This board uses the same date as the games.</p>
+  <p class="note" id="widgetNote">The Ridge date opens the published garden game. The well date is only text. Hoedown Blocks is not linked. Phone widgets still need an Apple app. This page does not install them.</p>
 
   <h2 id="gamesLabel">Games</h2>
+  <p class="note" id="gamesNote" data-en="Varmint Ridge has a review preview, which is not the release, and the published site. Yard Line, Homestead Siege, Hoedown Blocks, Homestead Harvest, Homestead Clash, and the canning log are not linked. No review address was given for them." data-es="Varmint Ridge tiene una vista de revisión, que no es el lanzamiento, y el sitio publicado. Yard Line, Homestead Siege, Hoedown Blocks, Homestead Harvest, Homestead Clash y el cuaderno de envasado no se enlazan. No hay dirección de revisión para ellos.">Varmint Ridge has a review preview, which is not the release, and the published site. Yard Line, Homestead Siege, Hoedown Blocks, Homestead Harvest, Homestead Clash, and the canning log are not linked. No review address was given for them.</p>
   <div class="cards">
-    <a class="card" id="cardYard" href="YardLine/index.html">
+    <article class="card" id="cardYard">
+      <span class="k" data-en="Unavailable" data-es="No disponible">Unavailable</span>
       <h3>Yard Line</h3>
-      <p data-en="A card fight for the yard. Free to play. The practice store is inside the game." data-es="Una pelea de cartas por el patio. Gratis. La tienda de práctica está en el juego.">A card fight for the yard. Free to play. The practice store is inside the game.</p>
-      <span class="url" data-live="YardLine/index.html"></span>
-    </a>
-    <a class="card" id="cardVarmint" href="https://jump4joy1.github.io/varmint-ridge/">
+      <p data-en="Coming soon is not a date. Not linked until this game has a reviewed preview. This menu does not open the copy beside it. This is not Homestead Clash." data-es="Pronto no es una fecha. No se enlaza hasta que este juego tenga una vista revisada. Este menú no abre la copia que está junto a él. Esto no es Homestead Clash.">Coming soon is not a date. Not linked until this game has a reviewed preview. This menu does not open the copy beside it. This is not Homestead Clash.</p>
+    </article>
+    <article class="card" id="cardVarmint">
       <h3>Varmint Ridge</h3>
-      <p data-en="Defend the garden. Catch the raccoon before it gets away." data-es="Defiende el huerto. Atrapa al mapache antes de que huya.">Defend the garden. Catch the raccoon before it gets away.</p>
-      <span class="url">https://jump4joy1.github.io/varmint-ridge/</span>
-    </a>
-    <a class="card" id="cardSiege" href="HomesteadSiege/index.html">
+      <p data-en="The review address is not the release. The other address is the published garden game. This menu does not open the old VarmintRidge folder." data-es="La dirección de revisión no es el lanzamiento. La otra dirección es el juego del huerto publicado. Este menú no abre la carpeta vieja VarmintRidge.">The review address is not the release. The other address is the published garden game. This menu does not open the old VarmintRidge folder.</p>
+      <a class="inlink" id="cardVarmintReview" href="https://varmint-ridge-iap-review.pages.dev/" data-en="Review preview (not released)" data-es="Vista de revisión (no publicado)">Review preview (not released)</a>
+      <a class="inlink" id="cardVarmintLive" href="https://jump4joy1.github.io/varmint-ridge/" data-en="Published site" data-es="Sitio publicado">Published site</a>
+    </article>
+    <article class="card" id="cardSiege">
+      <span class="k" data-en="Unavailable" data-es="No disponible">Unavailable</span>
       <h3>Homestead Siege</h3>
-      <p data-en="Shine the porch light. Hold the lanes." data-es="Alumbra el porche. Cuida los senderos.">Shine the porch light. Hold the lanes.</p>
-      <span class="url" data-live="HomesteadSiege/index.html"></span>
-    </a>
-    <a class="card" id="cardHoedown" href="HoedownBlocks/index.html">
+      <p data-en="Coming soon is not a date. Not linked until this game has a reviewed preview. This menu does not open unfinished work." data-es="Pronto no es una fecha. No se enlaza hasta que este juego tenga una vista revisada. Este menú no abre trabajo sin terminar.">Coming soon is not a date. Not linked until this game has a reviewed preview. This menu does not open unfinished work.</p>
+    </article>
+    <article class="card" id="cardHoedown">
+      <span class="k" data-en="Unavailable" data-es="No disponible">Unavailable</span>
       <h3>Hoedown Blocks</h3>
-      <p data-en="Stack the homestead. Clear the well." data-es="Apila la finca. Vacía el pozo.">Stack the homestead. Clear the well.</p>
-      <span class="url" data-live="HoedownBlocks/index.html"></span>
-    </a>
-    <a class="card" id="cardHarvest" href="HomesteadHarvest/index.html">
+      <p data-en="Coming soon is not a date. Not linked until this game has a reviewed preview. The well date above is text only." data-es="Pronto no es una fecha. No se enlaza hasta que este juego tenga una vista revisada. La fecha del pozo de arriba es solo texto.">Coming soon is not a date. Not linked until this game has a reviewed preview. The well date above is text only.</p>
+    </article>
+    <article class="card" id="cardHarvest">
+      <span class="k" data-en="Unavailable" data-es="No disponible">Unavailable</span>
       <h3>Homestead Harvest</h3>
-      <p data-en="Time the beds. Pick the row." data-es="Cuida los surcos. Recoge la hilera.">Time the beds. Pick the row.</p>
-      <span class="url" data-live="HomesteadHarvest/index.html"></span>
-    </a>
-    <a class="card" id="cardPreserve" href="PreserveSafe/index.html">
+      <p data-en="Coming soon is not a date. Not linked until this game has a reviewed preview. This is not Homestead Clash." data-es="Pronto no es una fecha. No se enlaza hasta que este juego tenga una vista revisada. Esto no es Homestead Clash.">Coming soon is not a date. Not linked until this game has a reviewed preview. This is not Homestead Clash.</p>
+    </article>
+    <article class="card" id="cardPreserve">
+      <span class="k" data-en="Unavailable" data-es="No disponible">Unavailable</span>
       <h3>Preserve Safe</h3>
-      <p data-en="Not a game. A field log of published canning numbers." data-es="No es un juego. Un cuaderno de cifras publicadas para envasar.">Not a game. A field log of published canning numbers.</p>
-      <span class="url" data-live="PreserveSafe/index.html"></span>
-    </a>
+      <p data-en="Not a game. Not linked. No review address was given for this log." data-es="No es un juego. No se enlaza. No hay dirección de revisión para este cuaderno.">Not a game. Not linked. No review address was given for this log.</p>
+    </article>
+  </div>
+
+  <h2 id="heldLabel" data-en="Not on this menu" data-es="Fuera de este menú">Not on this menu</h2>
+  <p class="note" id="heldNote" data-en="Named here so they stay separate. This page does not link them and does not include their code." data-es="Van nombrados para no mezclarlos. Esta página no los enlaza y no incluye su código.">Named here so they stay separate. This page does not link them and does not include their code.</p>
+  <div class="cards" id="heldCards">
+    <article class="held" id="heldClash">
+      <span class="k" data-en="Unavailable" data-es="No disponible">Unavailable</span>
+      <h3>Homestead Clash</h3>
+      <p data-en="Coming soon is not a date. Not linked until this game has a reviewed preview. Not Yard Line. Not Homestead Harvest. This menu does not include its code." data-es="Pronto no es una fecha. No se enlaza hasta que este juego tenga una vista revisada. No es Yard Line. No es Homestead Harvest. Este menú no incluye su código.">Coming soon is not a date. Not linked until this game has a reviewed preview. Not Yard Line. Not Homestead Harvest. This menu does not include its code.</p>
+    </article>
+    <article class="held" id="heldTools">
+      <span class="k" data-en="Preserved, not opened here" data-es="Guardado, no se abre aquí">Preserved, not opened here</span>
+      <h3>Off-Grid Toolkit</h3>
+      <p data-en="Septic Watch, Solar Sizer, Cellar Keeper, and Vault Keeper are separate apps. No public page was found. This menu does not include their code." data-es="Septic Watch, Solar Sizer, Cellar Keeper y Vault Keeper son apps aparte. No hay página pública. Este menú no incluye su código.">Septic Watch, Solar Sizer, Cellar Keeper, and Vault Keeper are separate apps. No public page was found. This menu does not include their code.</p>
+    </article>
   </div>
 
   <button class="wide" type="button" id="btnBuys" data-en="Purchases" data-es="Compras">Purchases</button>
+  <p class="note" id="offlineNote"></p>
   <p class="foot" id="hubFoot">All ages. No ads. Nothing on this menu is for sale.</p>
 </main>
 
@@ -227,7 +281,7 @@ html[data-theme="dark"] .panel h2 { color: var(--gold); }
     <h2 id="gateTitle">Grown-ups</h2>
     <p class="note" id="gateLead">A grown-up has to answer before purchase notes open. All ages. No ads. No card is charged.</p>
     <p class="q" id="gateQ"></p>
-    <input id="gateA" inputmode="numeric" maxlength="4" autocomplete="off" aria-label="Answer">
+    <input id="gateA" inputmode="numeric" maxlength="4" autocomplete="off" aria-labelledby="gateQ">
     <button type="button" id="gateGo">OK</button>
     <p class="msg" id="gateMsg"></p>
     <button type="button" id="gateBack" data-en="Back" data-es="Volver">Back</button>
@@ -237,7 +291,7 @@ html[data-theme="dark"] .panel h2 { color: var(--gold); }
 <div class="ov" id="buys" role="dialog" aria-modal="true" aria-labelledby="buysTitle">
   <div class="panel">
     <h2 id="buysTitle">Purchases</h2>
-    <p id="buysText">Nothing is for sale on this menu. Yard Line has a practice store inside the game, behind a grown-up question. That store does not charge a card. Varmint Ridge, Hoedown Blocks, and Homestead Siege keep any store behind a grown-up question, and those stores are turned off. Harvest and Preserve Safe have no store. No ads.</p>
+    <p id="buysText">Nothing on this menu is for sale. This page does not open a store and does not charge a card. No ads.</p>
     <button type="button" id="buysBack" data-en="Back" data-es="Volver">Back</button>
   </div>
 </div>
@@ -246,37 +300,43 @@ html[data-theme="dark"] .panel h2 { color: var(--gold); }
 (function () {
   var COPY = {
     en: {
-      tag: 'Five homestead games, plus the canning log. All ages. No ads.',
+      tag: 'Varmint Ridge has a review preview and a published site. Other names are listed and not linked. All ages. No ads.',
       foot: 'All ages. No ads. Nothing on this menu is for sale.',
       today: 'Today',
       games: 'Games',
       ridgeTitle: "Today's Ridge",
       hoeTitle: 'Daily Well',
       hoeBody: 'Clear 4 lines. Par 16.',
-      widgetNote: 'Yard Line, Siege, and Harvest have no daily. Phone widgets still need the Apple app. They are not installed from this page. This board uses the same date as the games.',
+      widgetNote: 'The Ridge date opens the published garden game. The well date is only text. Hoedown Blocks is not linked. Phone widgets still need an Apple app. This page does not install them.',
       gateLead: 'A grown-up has to answer before purchase notes open. All ages. No ads. No card is charged.',
       gateTitle: 'Grown-ups',
       gateBad: 'Not quite. Ask a grown-up for help.',
       buysTitle: 'Purchases',
-      buys: 'Nothing is for sale on this menu. Yard Line has a practice store inside the game, behind a grown-up question. That store does not charge a card. Varmint Ridge, Hoedown Blocks, and Homestead Siege keep any store behind a grown-up question, and those stores are turned off. Harvest and Preserve Safe have no store. No ads.',
+      buys: 'Nothing on this menu is for sale. This page does not open a store and does not charge a card. No ads.',
+      langGroup: 'Language',
+      themeGroup: 'Theme',
+      offline: 'Saved on this device: this menu only. A game card and the published garden site need a connection. They are not saved here.',
       ridgeBody: function (p) {
         return p.critter.name + '. ' + p.challenge.title + ' · wave ' + p.wave + ' (' + p.waveName + ').';
       }
     },
     es: {
-      tag: 'Cinco juegos de la finca, y el cuaderno de envasado. Todas las edades. Sin anuncios.',
+      tag: 'Varmint Ridge tiene una vista de revisión y un sitio publicado. Los otros nombres están listados y no se enlazan. Todas las edades. Sin anuncios.',
       foot: 'Todas las edades. Sin anuncios. Este menú no vende nada.',
       today: 'Hoy',
       games: 'Juegos',
       ridgeTitle: 'Cresta de hoy',
       hoeTitle: 'Pozo del día',
       hoeBody: 'Limpia 4 líneas. Par 16.',
-      widgetNote: 'Yard Line, Asedio y Cosecha no tienen reto diario. Los widgets del teléfono siguen necesitando la app de Apple. Esta página no los instala. Este tablero usa la misma fecha que los juegos.',
+      widgetNote: 'La fecha de la cresta abre el juego del huerto publicado. La fecha del pozo es solo texto. Hoedown Blocks no está enlazado. Los widgets del teléfono siguen necesitando una app de Apple. Esta página no los instala.',
       gateLead: 'Un adulto tiene que responder antes de ver las notas de compra. Todas las edades. Sin anuncios. No se cobra tarjeta.',
       gateTitle: 'Adultos',
       gateBad: 'Casi. Pide ayuda a un adulto.',
       buysTitle: 'Compras',
-      buys: 'Este menú no vende nada. Yard Line tiene una tienda de práctica dentro del juego, detrás de una pregunta de adulto. Esa tienda no cobra tarjeta. Varmint Ridge, Hoedown Blocks y Homestead Siege guardan cualquier tienda detrás de una pregunta de adulto, y esas tiendas están apagadas. Harvest y Preserve Safe no tienen tienda. Sin anuncios.',
+      buys: 'Este menú no vende nada. Esta página no abre una tienda y no cobra tarjeta. Sin anuncios.',
+      langGroup: 'Idioma',
+      themeGroup: 'Tema',
+      offline: 'Guardado en este aparato: solo este menú. Una tarjeta de juego y el sitio publicado del huerto necesitan conexión. Aquí no se guardan.',
       ridgeBody: function (p) {
         return p.critter.name + '. ' + p.challenge.title + ' · ola ' + p.wave + ' (' + p.waveName + ').';
       }
@@ -350,6 +410,9 @@ html[data-theme="dark"] .panel h2 { color: var(--gold); }
     document.getElementById('gateTitle').textContent = copy.gateTitle;
     document.getElementById('buysTitle').textContent = copy.buysTitle;
     document.getElementById('buysText').textContent = copy.buys;
+    document.getElementById('offlineNote').textContent = copy.offline;
+    document.getElementById('langTools').setAttribute('aria-label', copy.langGroup);
+    document.getElementById('themeTools').setAttribute('aria-label', copy.themeGroup);
     document.querySelectorAll('[data-en]').forEach(function (el) {
       el.textContent = el.getAttribute(code === 'es' ? 'data-es' : 'data-en');
     });
@@ -379,10 +442,24 @@ html[data-theme="dark"] .panel h2 { color: var(--gold); }
     document.getElementById('gate').classList.remove('show');
     document.getElementById('buys').classList.remove('show');
     if (id) document.getElementById(id).classList.add('show');
+    var open = !!id;
+    var menu = document.querySelector('main');
+    menu.inert = open;
+    menu.setAttribute('aria-hidden', open ? 'true' : 'false');
+  }
+  function closeDialog() {
+    show(null);
+    document.getElementById('btnBuys').focus();
   }
   function openBuys() {
-    if (Date.now() < gateUntil) show('buys');
-    else { show('gate'); freshGate(); }
+    if (Date.now() < gateUntil) {
+      show('buys');
+      document.getElementById('buysBack').focus();
+    } else {
+      show('gate');
+      freshGate();
+      document.getElementById('gateA').focus();
+    }
   }
 
   document.getElementById('langEn').addEventListener('click', function () { setLang('en'); });
@@ -391,8 +468,8 @@ html[data-theme="dark"] .panel h2 { color: var(--gold); }
   document.getElementById('themeLight').addEventListener('click', function () { window.ManorTheme.set('light'); });
   document.getElementById('themeDark').addEventListener('click', function () { window.ManorTheme.set('dark'); });
   document.getElementById('btnBuys').addEventListener('click', openBuys);
-  document.getElementById('gateBack').addEventListener('click', function () { show(null); });
-  document.getElementById('buysBack').addEventListener('click', function () { show(null); });
+  document.getElementById('gateBack').addEventListener('click', closeDialog);
+  document.getElementById('buysBack').addEventListener('click', closeDialog);
   document.getElementById('gateGo').addEventListener('click', function () {
     if (parseInt(document.getElementById('gateA').value, 10) !== gateAns) {
       freshGate();
@@ -404,6 +481,27 @@ html[data-theme="dark"] .panel h2 { color: var(--gold); }
   });
   document.getElementById('gateA').addEventListener('keydown', function (e) {
     if (e.key === 'Enter') document.getElementById('gateGo').click();
+  });
+  document.addEventListener('keydown', function (e) {
+    var open = document.querySelector('.ov.show');
+    if (!open) return;
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      closeDialog();
+      return;
+    }
+    if (e.key !== 'Tab') return;
+    var items = open.querySelectorAll('button, input, a[href]');
+    if (!items.length) return;
+    var first = items[0];
+    var last = items[items.length - 1];
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault();
+      first.focus();
+    }
   });
 
   paint();
