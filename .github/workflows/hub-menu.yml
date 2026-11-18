@@ -1,0 +1,33 @@
+# Menu check for pull requests. Does not deploy.
+# GitHub Pages still publishes main only, from pages.yml.
+name: Menu check
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hub-menu-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  menu:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Pages still publishes main only
+        run: |
+          python3 -c 'import pathlib; t=pathlib.Path(".github/workflows/pages.yml").read_text(); assert "branches: [main]" in t and "launcher-identity" not in t and "pull_request" not in t'
+
+      - name: Check the public menu
+        run: node tests/hub-menu.mjs
