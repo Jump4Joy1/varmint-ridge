@@ -34,7 +34,7 @@ jobs:
           set -eu
           grep -q 'const IAP_ENABLED = false;' www/index.html
           grep -q 'const IAP_TEST = true;' www/index.html
-          grep -q 'varmint-ridge-iphone-10' www/sw.js
+          grep -q 'varmint-ridge-iphone-11' www/sw.js
           grep -q 'support@backfortyapps.com' www/index.html www/privacy.html www/terms.html www/support.html
           ! grep -RInaE -i 'admob|adsense|doubleclick|fundingchoices|gtag\(|analytics\.js|revenuecat|cordova-plugin-purchase' www/index.html www/sw.js www/privacy.html www/terms.html www/support.html src
 
