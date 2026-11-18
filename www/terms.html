@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#305032">
+<meta name="color-scheme" content="dark light">
+<title>Terms · Varmint Ridge</title>
+<style>
+  :root{--pine:#305032;--gold:#C19A50;--ink:#1A1A1A;--cream:#F3E6C4}
+  html,body{margin:0;background:#1A1A1A;color:#F3E6C4;font:18px/1.45 Georgia,serif}
+  html[data-theme=light],html[data-theme=light] body{background:#F3E6C4;color:#1A1A1A}
+  main{max-width:38rem;margin:0 auto;padding:calc(24px + env(safe-area-inset-top)) 20px calc(32px + env(safe-area-inset-bottom))}
+  h1{color:#C19A50;font-size:32px;margin:0 0 8px}
+  html[data-theme=light] h1{color:#305032}
+  h2{font-size:20px;margin:22px 0 8px;color:#ffe2a0}
+  html[data-theme=light] h2{color:#305032}
+  a{color:#C19A50}
+  html[data-theme=light] a{color:#305032}
+  p{margin:0 0 14px}
+  .tools{display:flex;gap:8px;margin:0 0 16px}
+  button{min-height:44px;padding:8px 14px;border-radius:10px;border:2px solid #C19A50;background:#305032;color:#F3E6C4;font:700 14px Georgia;cursor:pointer}
+  html[data-theme=light] button{background:#fff;color:#1A1A1A}
+</style>
+<script>
+(function(){var K='vr.theme',mq=matchMedia('(prefers-color-scheme: dark)');
+function p(){try{return localStorage.getItem(K)||'auto'}catch(e){return 'auto'}}
+function a(){var v=p(),t=v==='auto'?(mq.matches?'dark':'light'):v;document.documentElement.setAttribute('data-theme',t);var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute('content',t==='dark'?'#1A1A1A':'#F3E6C4')}
+a();mq.addEventListener('change',a);
+document.addEventListener('DOMContentLoaded',function(){
+  function set(v){try{localStorage.setItem(K,v)}catch(e){}a()}
+  document.getElementById('themeLight').onclick=function(){set('light')};
+  document.getElementById('themeDark').onclick=function(){set('dark')};
+  document.getElementById('themeAuto').onclick=function(){set('auto')};
+});})();
+</script>
+</head>
+<body>
+<main>
+  <p class="tools">
+    <button type="button" id="themeAuto">Auto</button>
+    <button type="button" id="themeLight">Light</button>
+    <button type="button" id="themeDark">Dark</button>
+  </p>
+  <h1>Terms of Use</h1>
+  <p>Varmint Ridge is a family game from JW Manor, published by Back Forty Apps. By playing, you agree to these terms. It is for all ages. There are no ads.</p>
+
+  <h2>License</h2>
+  <p>We grant you a personal, non-exclusive license to play Varmint Ridge on devices you own. You may not reverse engineer the store, wrap the game in ads, or claim the JW Manor name as your own. The campaign, art, music, and copy remain ours.</p>
+
+  <h2>The garden game</h2>
+  <p>Play is local on your device. Progress can be saved and resumed from the title screen. We do not promise that a saved game will last forever if you clear the app storage. Waves, defenses, critters, and homestead upgrades work as described in How to Play.</p>
+
+  <h2>Supporter store</h2>
+  <p>Gem packs, the Starter Pack, speed-ups, lessons, skins, and Season 1 are listed with fixed contents and prices. A grown-up math question must be answered before the store opens. Confirming a pack does not charge a card, does not create a subscription, and does not use loot boxes or random paid rewards. Nothing is for sale on the public games menu.</p>
+
+  <h2>Health of the device</h2>
+  <p>Play in portrait. The game targets 60 frames per second on a mid-range phone. If your device asks for less motion, screen shake and extra particles turn off. Haptics can be turned off in Settings.</p>
+
+  <h2>Contact</h2>
+  <p>Support: <a href="mailto:support@backfortyapps.com">support@backfortyapps.com</a> or <a href="https://backfortyapps.com/varmint-ridge/support/">https://backfortyapps.com/varmint-ridge/support/</a>. Privacy: <a href="https://backfortyapps.com/varmint-ridge/privacy/">https://backfortyapps.com/varmint-ridge/privacy/</a>.</p>
+  <p>Effective 18 November 2026.</p>
+  <p><a href="index.html">Back to the ridge</a> · <a href="privacy.html">Privacy</a> · <a href="support.html">Support</a></p>
+</main>
+</body>
+</html>

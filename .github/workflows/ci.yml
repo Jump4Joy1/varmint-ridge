@@ -1,0 +1,83 @@
+# Device-ready checks for pull requests. Does not deploy.
+# GitHub Pages still publishes main only, from pages.yml.
+name: CI
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint-typecheck-unit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Pages still publishes main only
+        run: |
+          python3 -c 'import pathlib; t=pathlib.Path(".github/workflows/pages.yml").read_text(); assert "branches: [main]" in t and "iap-test" not in t and "launcher-identity" not in t and "pull_request" not in t'
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - name: No ads, no billing SDKs, mock IAP flags
+        run: |
+          set -eu
+          grep -q 'const IAP_ENABLED = false;' www/index.html
+          grep -q 'const IAP_TEST = true;' www/index.html
+          grep -q 'varmint-ridge-iphone-11' www/sw.js
+          grep -q 'support@backfortyapps.com' www/index.html www/privacy.html www/terms.html www/support.html
+          ! grep -RInaE -i 'admob|adsense|doubleclick|fundingchoices|gtag\(|analytics\.js|revenuecat|cordova-plugin-purchase' www/index.html www/sw.js www/privacy.html www/terms.html www/support.html src
+
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e
+        env:
+          CI: true
+
+  shop-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Stage www into the iOS wrapper
+        run: npm run build
+      - name: iPhone copy matches
+        run: |
+          cmp www/index.html ios-app/assets/www/index.html
+          cmp www/sw.js ios-app/assets/www/sw.js
+          cmp www/privacy.html ios-app/assets/www/privacy.html
+          cmp www/terms.html ios-app/assets/www/terms.html
+          cmp www/support.html ios-app/assets/www/support.html
+      - name: Audit save, shop, and gate
+        run: node tests/iap-audit.mjs
+      - name: Native shells present
+        run: |
+          test -f android/app/build.gradle
+          test -f ios/App/App/Info.plist
+          test -f ios/App/App/PrivacyInfo.xcprivacy
+          grep -q 'com.jwmanor.varmintridge' android/app/build.gradle
+          grep -q '1.0.0' ios/App/App/Info.plist
+          grep -q '<string>1</string>' ios/App/App/Info.plist

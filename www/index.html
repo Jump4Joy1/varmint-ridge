@@ -184,8 +184,16 @@ html[data-theme=light] #gateA:focus{outline-color:#305032}
     <label>Effects <input id="sfxT" type="range" min="0" max="100" value="80" aria-label="Effects volume"></label>
    </div>
    <p class="small" style="margin-top:4px">Best: <span id="tBest">0</span> &middot; East Texas, JW Manor Homestead</p>
-   <p class="small">All ages &middot; No ads &middot; <a class="quiet" href="privacy.html">Privacy</a></p>
+   <p class="small">All ages &middot; No ads &middot; <a class="quiet" href="privacy.html">Privacy</a> &middot; <a class="quiet" href="terms.html">Terms</a> &middot; <a class="quiet" href="support.html">Support</a></p>
+   <p class="small"><a class="quiet" href="mailto:support@backfortyapps.com">support@backfortyapps.com</a></p>
   </div>
+  <div class="ov" id="sTutorial"><div class="panel how"><h2>Welcome to the Ridge</h2>
+   <p>Varmints come down after your garden. Keep at least one crop bed alive through all <b>12 waves</b>.</p>
+   <p><b>1.</b> Pick Scarecrow, Lantern, or Snap Trap under the yard.</p>
+   <p><b>2.</b> Tap the dirt to place it. On a phone, slide, then lift.</p>
+   <p><b>3.</b> Tap Start Wave. Tap a defense later to upgrade it or sell it back.</p>
+   <p class="small">Wave 1 still points at each step. Settings has sound, music, haptics, and light or dark. There are no ads.</p>
+   <button class="btn" id="bTutorialGo" type="button">Let's go</button></div></div>
   <div class="ov" id="sHow"><div class="panel how"><h2>How to Play</h2>
    <p>Varmints come down off the ridge after your garden. Keep at least one crop bed alive through all <b>12 waves</b>.</p>
    <p><b>Build:</b> pick a defense below. Click the yard to place it. On a phone, slide your finger, then lift. Tap a placed defense to upgrade it or sell it back.</p>
@@ -221,12 +229,25 @@ html[data-theme=light] #gateA:focus{outline-color:#305032}
   <div class="ov" id="sSet"><div class="panel"><h2>Settings</h2>
    <p class="small">All ages. No ads. A purchase still waits for a grown-up to answer first.</p>
    <div class="row"><span><b>Color-blind safe</b><br><span class="small">Bars use blue and orange, plus a circle, square, or triangle, so red and green are not the only clue.</span></span><button class="btn sm" id="bCB" type="button" aria-pressed="false">Off</button></div>
+   <div class="row"><span><b>Haptics</b><br><span class="small">A short buzz on place, hits, and a lost bed. Off if the phone asks for less motion.</span></span><button class="btn sm" id="bHap" type="button" aria-pressed="true">On</button></div>
+   <div class="row"><span><b>Theme</b><br><span class="small">Menus, the store, and this page follow Light, Dark, or Auto.</span></span>
+    <span style="display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end">
+     <button class="btn sm" id="bThemeAuto" type="button">Auto</button>
+     <button class="btn sm" id="bThemeLight" type="button">Light</button>
+     <button class="btn sm" id="bThemeDark" type="button">Dark</button>
+    </span>
+   </div>
+   <div class="vols">
+    <label>Music <input id="musicS" type="range" min="0" max="100" value="40" aria-label="Music volume"></label>
+    <label>Effects <input id="sfxS" type="range" min="0" max="100" value="80" aria-label="Effects volume"></label>
+   </div>
    <h3>Purchases on this device</h3>
-   <p class="small">Test mode. This list does not charge a card. There is no timer and nothing is random.</p>
+   <p class="small">This list does not charge a card. There is no timer and nothing is random.</p>
    <div id="spendSum" class="small"></div>
+   <p class="small"><a class="quiet" href="privacy.html">Privacy</a> · <a class="quiet" href="terms.html">Terms</a> · <a class="quiet" href="support.html">Support</a><br><a class="quiet" href="mailto:support@backfortyapps.com">support@backfortyapps.com</a></p>
    <button class="btn alt" data-close>Back</button></div></div>
   <div class="ov" id="sGate"><div class="panel"><h2>Grown-ups</h2>
-   <p class="small">A grown-up has to answer before any purchase, including gems. All ages. No ads. A test purchase does not charge a card.</p>
+   <p class="small">A grown-up has to answer before any purchase, including gems. All ages. No ads. Confirming a pack does not charge a card.</p>
    <p style="font-size:20px" id="gateQ"></p>
    <input id="gateA" inputmode="numeric" maxlength="4" autocomplete="off" enterkeyhint="done" aria-labelledby="gateQ">
    <button class="btn sm" id="gateGo">OK</button>
@@ -235,9 +256,9 @@ html[data-theme=light] #gateA:focus{outline-color:#305032}
   <div class="ov" id="sStore"><div class="panel"><h2>Supporter Store</h2>
    <div id="storeItems"></div>
    <div id="testBuy" style="display:none">
-    <p class="small">Test purchase. No card is charged.</p>
+    <p class="small">No card is charged.</p>
     <p><b id="testBuyName"></b></p>
-    <button class="btn sm" id="testBuyOk" type="button">Confirm test purchase</button>
+    <button class="btn sm" id="testBuyOk" type="button">Confirm</button>
     <button class="btn alt sm" id="testBuyNo" type="button">Cancel</button>
    </div>
    <p class="small" id="storeNote"></p>
@@ -322,7 +343,7 @@ const CROP_X=[48,124,200,276,352],CROP_Y=530,FENCE_Y=420;
 const UPS={fence:[40,65,95],zeus:[60,90,130]},CARE=35;
 
 /* ---------- state ---------- */
-let S=null,muted=LS.get('mute',false),sfxVol=LS.get('sfx',80),musicVol=LS.get('music',40),speed=1,sel='scarecrow',selTower=null,hover=null;
+let S=null,muted=LS.get('mute',false),sfxVol=LS.get('sfx',80),musicVol=LS.get('music',40),hapOn=LS.get('hap',true),speed=1,sel='scarecrow',selTower=null,hover=null;
 const fx=[],floats=[],bolts=[],rings=[];
 function newState(startWave,carry){
  const bank=LS.get('bank',0),zb=LS.get('zeusBonus',0);LS.set('bank',0);LS.set('zeusBonus',0);
@@ -333,7 +354,8 @@ function newState(startWave,carry){
 }
 /* ---------- audio ---------- */
 let AC=null,master=null,musicGain=null,sfxGain=null;
-function applyVol(){if(sfxGain)sfxGain.gain.value=clamp(sfxVol,0,100)/100;if(musicGain)musicGain.gain.value=clamp(musicVol,0,100)/100;['musicT','musicP'].forEach(id=>{const el=$(id);if(el&&document.activeElement!==el)el.value=String(musicVol)});['sfxT','sfxP'].forEach(id=>{const el=$(id);if(el&&document.activeElement!==el)el.value=String(sfxVol)})}
+function applyVol(){if(sfxGain)sfxGain.gain.value=clamp(sfxVol,0,100)/100;if(musicGain)musicGain.gain.value=clamp(musicVol,0,100)/100;['musicT','musicP','musicS'].forEach(id=>{const el=$(id);if(el&&document.activeElement!==el)el.value=String(musicVol)});['sfxT','sfxP','sfxS'].forEach(id=>{const el=$(id);if(el&&document.activeElement!==el)el.value=String(sfxVol)})}
+function hap(pat){if(!hapOn||calm)return;try{if(navigator.vibrate)navigator.vibrate(pat)}catch(e){}}
 function audio(){if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)();master=AC.createGain();master.gain.value=muted?0:.8;master.connect(AC.destination);sfxGain=AC.createGain();sfxGain.connect(master);musicGain=AC.createGain();musicGain.connect(master);applyVol();windBed()}catch(e){}}if(AC&&AC.state==='suspended')AC.resume();return AC}
 function windBed(){if(!AC||windBed.on)return;windBed.on=1;const n=AC.sampleRate*2,b=AC.createBuffer(1,n,AC.sampleRate),a=b.getChannelData(0);let s=0;for(let i=0;i<n;i++){s=(s*3+Math.random()*2-1)*.25;a[i]=s}const src=AC.createBufferSource();src.buffer=b;src.loop=true;const fl=AC.createBiquadFilter();fl.type='lowpass';fl.frequency.value=380;const g=AC.createGain();g.gain.value=.04;src.connect(fl);fl.connect(g);g.connect(musicGain);src.start()}
 function tone(f,d,type,vol,slide,dest){if(!AC||muted||sfxVol<=0)return;const t=AC.currentTime,o=AC.createOscillator(),g=AC.createGain();o.type=type||'square';o.frequency.setValueAtTime(f,t);if(slide)o.frequency.exponentialRampToValueAtTime(Math.max(30,slide),t+d);g.gain.setValueAtTime(vol||.08,t);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(dest||sfxGain||master);o.start(t);o.stop(t+d+.02)}
@@ -494,9 +516,9 @@ function spawn(type,hpm,x,y){const F=FOES[type],alive=S.crops.filter(c=>c.hp>0);
  if(type==='boss'){f.x=200;f.summon=2;S.banner={txt:'The Bandit King!',t:2.6};S.shake=10}
  if(type==='fox')SFX.yip();else if(type==='crow'&&Math.random()<.22)SFX.caw();
  S.foes.push(f);return f}
-function damage(f,d,src){if(f.dead||f.hp<=0)return;f.hp-=d;f.hitT=.08;if(f.hp<=0){if(f.type==='possum'&&!f.played){f.played=true;f.dead=1.8;f.hp=f.max*.4;floatTxt(f.x,f.y-18,'playing possum...','#ddd');return}kill(f)}
+function damage(f,d,src){if(f.dead||f.hp<=0)return;f.hp-=d;f.hitT=.08;hap(8);if(f.hp<=0){if(f.type==='possum'&&!f.played){f.played=true;f.dead=1.8;f.hp=f.max*.4;floatTxt(f.x,f.y-18,'playing possum...','#ddd');return}kill(f)}
  else if(f.type==='boss'&&f.summon>0&&f.hp<f.max*(f.summon===2?.66:.33)){f.summon--;for(let i=0;i<4;i++)spawn('raccoon',1+(S.wave-1)*.11,f.x+rnd(-40,40),f.y-10);S.banner={txt:'The King calls his gang!',t:1.6};SFX.boss()}}
-function kill(f){f.gone=1;S.kills++;const F=FOES[f.type];S.coins+=F.gold;S.score+=F.pts;burst(f.x,f.y,f.type==='boss'?60:16,f.type==='crow'?['#1f2228','#3a4050','#fff']:['#ffe08a','#C19A50','#fff','#a8a298'],f.type==='boss'?220:110);
+function kill(f){f.gone=1;S.kills++;const F=FOES[f.type];S.coins+=F.gold;S.score+=F.pts;hap(f.type==='boss'?[18,40,18,40,30]:12);burst(f.x,f.y,f.type==='boss'?60:16,f.type==='crow'?['#1f2228','#3a4050','#fff']:['#ffe08a','#C19A50','#fff','#a8a298'],f.type==='boss'?220:110);
  coinFly(f.x,f.y,Math.ceil(F.gold/2));floatTxt(f.x,f.y-14,'+'+F.gold);SFX.pop();if(f.loot){f.tgt.hp=Math.min(f.tgt.max,f.tgt.hp+20);floatTxt(f.x,f.y-30,'Crop saved!','#9be27a')}
  if(f.type==='boss'){S.shake=16;floatTxt(200,260,'BANDIT KING DOWN!','#ffd66e',1)}}
 function step(dt){if(!S)return;S.t+=dt;
@@ -529,7 +551,7 @@ function step(dt){if(!S)return;S.t+=dt;
   else{f.eat+=dt;const rate={raccoon:0,crow:9,armadillo:11,possum:8,fox:12,boss:26}[f.type];if(rate){f.tgt.hp-=rate*dt;f.tgt.shake=.15}
    if(f.type==='raccoon'&&f.eat>.6){f.tgt.hp-=22;f.loot=1;f.state='flee';f.tgt.shake=.4;SFX.steal();burst(f.x,f.y,8,['#5fa046','#f0a040'],60)}
    if(f.type==='crow'&&f.eat>2.2){f.fear=3}
-   if(f.tgt.hp<=0){f.tgt.hp=0;burst(f.tgt.x,f.tgt.y-10,18,['#6b5a3a','#5fa046'],80);S.shake=6;floatTxt(f.tgt.x,f.tgt.y-30,'Bed lost!',loseInk())}}
+   if(f.tgt.hp<=0){f.tgt.hp=0;burst(f.tgt.x,f.tgt.y-10,18,['#6b5a3a','#5fa046'],80);S.shake=6;hap([20,40,40]);floatTxt(f.tgt.x,f.tgt.y-30,'Bed lost!',loseInk())}}
   if(f.fly&&f.y<40&&f.fear<=0&&f.eat>2.2)f.gone=1}
  // towers
  for(const tw of S.towers){const T=TOWERS[tw.type],lv=tw.lv,range=T.range*(1+.14*(lv-1)),dmg=T.dmg*Math.pow(1.6,lv-1);tw.cdLeft-=dt;if(tw.cdLeft>0)continue;
@@ -557,7 +579,7 @@ function end(won){S.phase=won?'won':'lost';LS.del('save');const alive=S.crops.fi
  $('endTitle').textContent=won?'The Ridge Holds!':'Garden Overrun';$('endStars').innerHTML='★'.repeat(stars)+'<i>'+'★'.repeat(3-stars)+'</i>';
  $('endText').textContent=won?('Every wave beaten with '+alive.length+' of 5 beds still growing. Zeus is proud of you.'):('The varmints got through on wave '+S.wave+'. Build closer to the crops and upgrade your best defenses.');
  $('endScore').textContent=S.score;$('endSave').style.display='';$('initials').value=LS.get('ini','');if(S.score>LS.get('best',0))LS.set('best',S.score);publishWidget();
- if(won){SFX.clear();for(let i=0;i<6;i++)setTimeout(()=>burst(rnd(60,340),rnd(150,350),30,['#ffd66e','#fff','#C19A50','#9be27a'],180),i*250)}else SFX.lose();
+ if(won){SFX.clear();hap([12,30,12,30,24]);for(let i=0;i<6;i++)setTimeout(()=>burst(rnd(60,340),rnd(150,350),30,['#ffd66e','#fff','#C19A50','#9be27a'],180),i*250)}else{SFX.lose();hap([40,80,60]);}
  setTimeout(()=>show('sEnd'),won?1400:900);ui()}
 function save(){if(S&&S.phase==='build')LS.set('save',{wave:S.wave,coins:S.coins,score:S.score,fence:S.fence,zeus:S.zeus,kills:S.kills,lost:S.lost,crops:S.crops.map(c=>c.hp),towers:S.towers.map(t=>({type:t.type,x:t.x,y:t.y,lv:t.lv,spent:t.spent})),only:S.only||'',dailyRule:S.dailyRule||'',dailyStop:!!S.dailyStop,dailyTitle:S.dailyTitle||'',armed:!!S.armedSpeed})}
 function load(){const d=LS.get('save',null);if(!d)return false;const bank=LS.get('bank',0)|0,zb=LS.get('zeusBonus',0)|0;newState(d.wave);S.coins=(d.coins|0)+bank;S.score=d.score|0;S.fence=d.fence|0;S.zeus=Math.max(d.zeus|0,zb?1:0);S.kills=d.kills||0;S.lost=d.lost||0;(d.crops||[]).forEach((h,i)=>{if(S.crops[i])S.crops[i].hp=h});S.towers=(d.towers||[]).map(t=>({...t,cdLeft:0,kick:0}));S.only=d.only||'';S.dailyRule=d.dailyRule||'';S.dailyStop=!!d.dailyStop;S.dailyTitle=d.dailyTitle||'';S.armedSpeed=!!d.armed;if(S.only)sel=S.only;return true}
@@ -572,7 +594,7 @@ function actAt(p,kind){if(S.only&&sel!==S.only)sel=S.only;const reach=fingerReac
  if(selTower){selTower=null;placeMenu();return}
  const T=TOWERS[sel],why=canPlace(p.x,p.y);if(why){floatTxt(p.x,p.y,why,badInk());SFX.deny();return}
  if(S.coins<T.cost){floatTxt(p.x,p.y,'Need '+T.cost+' coins',badInk());SFX.deny();return}
- const lv=LS.get('lessons',{})[sel]?2:1;S.coins-=T.cost;S.towers.push({type:sel,x:p.x,y:p.y,lv:lv,spent:T.cost,cdLeft:.2,kick:1});burst(p.x,p.y+10,14,['#8a6a3a','#C19A50','#5fa046'],80);SFX.place();ui()}
+ const lv=LS.get('lessons',{})[sel]?2:1;S.coins-=T.cost;S.towers.push({type:sel,x:p.x,y:p.y,lv:lv,spent:T.cost,cdLeft:.2,kick:1});burst(p.x,p.y+10,14,['#8a6a3a','#C19A50','#5fa046'],80);SFX.place();hap(10);ui()}
 let finger=null;
 function pointer(e){const r=cv.getBoundingClientRect();return{x:(e.clientX-r.left)/r.width*W,y:(e.clientY-r.top)/r.height*H}}
 cv.addEventListener('pointerdown',e=>{e.preventDefault();audio();if(!S||!(S.phase==='build'||S.phase==='wave'))return;const p=pointer(e);
@@ -664,16 +686,24 @@ function show(id){hideAll();$(id).classList.add('show');themeChip(true)}
 let back='sTitle';document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>{if(back==='sTitle')toTitle();else{hideAll();if(S&&S.phase==='paused')show('sPause')}});
 function toTitle(){S=null;hover=null;finger=null;$('bar').style.display='none';bgCache=null;selTower=null;placeMenu();$('bCont').style.display=LS.get('save',null)?'':'none';$('tBest').textContent=LS.get('best',0);paintDaily();show('sTitle');ui();layout();publishWidget()}
 function begin(w){audio();themeChip(false);selTower=null;hover=null;finger=null;placeMenu();$('bar').style.display='flex';newState(w);S.only='';S.dailyRule='';S.dailyStop=false;S.dailyTitle='';bgCache=null;speed=1;hideAll();fx.length=floats.length=bolts.length=rings.length=0;S.banner={txt:'Wave '+S.wave+': set up your defenses',t:2.5};ui();layout()}
-$('bPlay').onclick=()=>begin(1);$('bDaily').onclick=()=>beginDaily();$('bCont').onclick=()=>{audio();if(load()){themeChip(false);$('bar').style.display='flex';hideAll();bgCache=null;S.banner={txt:'Welcome back to the Ridge',t:2};ui();layout()}};
+function startCampaign(){if(LS.get('tutorialDone',false))begin(1);else show('sTutorial')}
+$('bPlay').onclick=startCampaign;$('bTutorialGo').onclick=()=>{LS.set('tutorialDone',true);begin(1)};$('bDaily').onclick=()=>beginDaily();$('bCont').onclick=()=>{audio();if(load()){themeChip(false);$('bar').style.display='flex';hideAll();bgCache=null;S.banner={txt:'Welcome back to the Ridge',t:2};ui();layout()}};
 $('bHow').onclick=()=>{back='sTitle';show('sHow')};$('bScores').onclick=()=>{back='sTitle';const l=LS.get('top',[]);$('scoreList').innerHTML=l.length?l.map(s=>'<li><b>'+s.i.replace(/[^A-Z]/g,'')+'</b> - '+s.s+(s.w?' ★':'')+'</li>').join(''):'<li>No scores yet. Go defend that garden!</li>';show('sScores')};
-function paintCB(){const b=$('bCB');if(!b)return;b.textContent=cb?'On':'Off';b.setAttribute('aria-pressed',cb?'true':'false');paintSpend()}
+function themePref(){try{return localStorage.getItem('vr.theme')||'auto'}catch(e){return 'auto'}}
+function applyThemePref(v){try{localStorage.setItem('vr.theme',v)}catch(e){}const mq=matchMedia('(prefers-color-scheme: dark)');const t=v==='auto'?(mq.matches?'dark':'light'):v;document.documentElement.setAttribute('data-theme',t);const m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute('content',t==='dark'?'#1A1A1A':'#F3E6C4');const chip=$('themeBtn');if(chip){chip.textContent=v==='auto'?(t==='dark'?'\u{1F319} Auto':'\u2600\uFE0F Auto'):(v==='dark'?'\u{1F319} Dark':'\u2600\uFE0F Light');chip.setAttribute('aria-label','Theme: '+v)}paintTheme();publishWidget()}
+function paintTheme(){const v=themePref();[['bThemeAuto','auto'],['bThemeLight','light'],['bThemeDark','dark']].forEach(([id,val])=>{const b=$(id);if(!b)return;b.setAttribute('aria-pressed',v===val?'true':'false')})}
+function paintHap(){const b=$('bHap');if(!b)return;b.textContent=hapOn?'On':'Off';b.setAttribute('aria-pressed',hapOn?'true':'false')}
+function paintCB(){const b=$('bCB');if(!b)return;b.textContent=cb?'On':'Off';b.setAttribute('aria-pressed',cb?'true':'false');paintHap();paintTheme();applyVol();paintSpend()}
 $('bSet').onclick=()=>{back='sTitle';paintCB();show('sSet')};
 $('bSetP').onclick=()=>{back='sPause';paintCB();show('sSet')};
 $('bCB').onclick=()=>{cb=!cb;LS.set('cb',cb);paintCB()};
+$('bHap').onclick=()=>{hapOn=!hapOn;LS.set('hap',hapOn);paintHap();if(hapOn)hap(12)};
+$('bThemeAuto').onclick=()=>applyThemePref('auto');$('bThemeLight').onclick=()=>applyThemePref('light');$('bThemeDark').onclick=()=>applyThemePref('dark');
 $('bLevels').onclick=()=>{back='sTitle';const reach=LS.get('pass',false)?WAVES.length:LS.get('reach',1);const g=$('lvGrid');g.innerHTML='';for(let i=1;i<=WAVES.length;i++){const b=document.createElement('button');b.textContent=i;b.disabled=i>reach;b.onclick=()=>begin(i);g.appendChild(b)}show('sLevels')};
 $('bMuteT').onclick=$('bMuteP').onclick=()=>{audio();setMute(!muted)};
-['musicT','musicP'].forEach(id=>$(id).addEventListener('input',e=>{audio();setMusic(e.target.value)}));
-['sfxT','sfxP'].forEach(id=>$(id).addEventListener('input',e=>{audio();setSfx(e.target.value)}));
+function bindVol(ids,fn){ids.forEach(id=>{const el=$(id);if(!el)return;const go=e=>fn(e.target.value);el.addEventListener('input',go);el.addEventListener('change',go)})}
+bindVol(['musicT','musicP','musicS'],v=>{audio();setMusic(v)});
+bindVol(['sfxT','sfxP','sfxS'],v=>{audio();setSfx(v)});
 $('bResume').onclick=resume;$('bRestart').onclick=()=>begin(1);$('bQuit').onclick=()=>{if(S){S.phase=S.prev;if(S.phase==='build')save()}toTitle()};
 $('bAgain').onclick=()=>begin(1);$('bTitle').onclick=toTitle;
 $('bSaveScore').onclick=()=>{const ini=($('initials').value||'AAA').toUpperCase().replace(/[^A-Z]/g,'').slice(0,3)||'AAA';LS.set('ini',ini);const l=LS.get('top',[]);l.push({i:ini,s:S.score,w:S.phase==='won'});l.sort((a,b)=>b.s-a.s);LS.set('top',l.slice(0,5));$('endSave').style.display='none';SFX.coin()};
@@ -792,7 +822,7 @@ function openStoreBody(){const box=$('storeItems');box.className='store';box.sty
  const gems=LS.get('gems',0)|0,rawLessons=LS.get('lessons',{}),lessons=rawLessons&&typeof rawLessons==='object'&&!Array.isArray(rawLessons)?rawLessons:{},pass=!!LS.get('seasonPass',false),rawClaims=LS.get('seasonClaims',[]),claims=Array.isArray(rawClaims)?rawClaims:[],prog=seasonProgress();
  const moneyBtn=(p,owned)=>owned?'<button class="btn sm" type="button" disabled>Owned</button>':'<button class="btn sm" type="button" data-sku="'+p.sku+'">Buy '+p.price+'</button>';
  const gemBtn=(id,cost,owned)=>owned?'<button class="btn sm" type="button" disabled>Owned</button>':'<button class="btn sm" type="button" data-gem="'+id+'">Buy · '+cost+' gems</button>';
- let html='<p class="small">Test mode. Nothing on this screen charges a card. No ads. No surprise boxes. Prices stay the same, and every pack lists exactly what is inside. There is no timer.</p>';
+ let html='<p class="small">Nothing on this screen charges a card. No ads. No surprise boxes. Prices stay the same, and every pack lists exactly what is inside. There is no timer.</p>';
  html+='<p>Gems on this device: <b>'+gems+'</b></p>';
  html+='<h3>Gem packs</h3>';
  IAP.products.filter(p=>p.key.indexOf('gems')===0).forEach(p=>{html+='<div class="row"><span><b>'+p.name+'</b> '+p.price+'<br><span class="small">'+p.desc+'</span></span>'+moneyBtn(p,false)+'</div>'});

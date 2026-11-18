@@ -4,23 +4,64 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#305032">
+<meta name="color-scheme" content="dark light">
 <title>Privacy · Varmint Ridge</title>
 <style>
-  body{margin:0;background:#1A1A1A;color:#F3E6C4;font:18px/1.45 Georgia,serif}
+  :root{--pine:#305032;--gold:#C19A50;--ink:#1A1A1A;--cream:#F3E6C4}
+  html,body{margin:0;background:#1A1A1A;color:#F3E6C4;font:18px/1.45 Georgia,serif}
+  html[data-theme=light],html[data-theme=light] body{background:#F3E6C4;color:#1A1A1A}
   main{max-width:38rem;margin:0 auto;padding:calc(24px + env(safe-area-inset-top)) 20px calc(32px + env(safe-area-inset-bottom))}
   h1{color:#C19A50;font-size:32px;margin:0 0 8px}
+  html[data-theme=light] h1{color:#305032}
+  h2{font-size:20px;margin:22px 0 8px;color:#ffe2a0}
+  html[data-theme=light] h2{color:#305032}
   a{color:#C19A50}
-  p{margin:0 0 14px}
+  html[data-theme=light] a{color:#305032}
+  p,li{margin:0 0 14px}
+  .tools{display:flex;gap:8px;margin:0 0 16px}
+  button{min-height:44px;padding:8px 14px;border-radius:10px;border:2px solid #C19A50;background:#305032;color:#F3E6C4;font:700 14px Georgia;cursor:pointer}
+  html[data-theme=light] button{background:#fff;color:#1A1A1A}
 </style>
+<script>
+(function(){var K='vr.theme',mq=matchMedia('(prefers-color-scheme: dark)');
+function p(){try{return localStorage.getItem(K)||'auto'}catch(e){return 'auto'}}
+function a(){var v=p(),t=v==='auto'?(mq.matches?'dark':'light'):v;document.documentElement.setAttribute('data-theme',t);var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute('content',t==='dark'?'#1A1A1A':'#F3E6C4')}
+a();mq.addEventListener('change',a);
+document.addEventListener('DOMContentLoaded',function(){
+  function set(v){try{localStorage.setItem(K,v)}catch(e){}a()}
+  document.getElementById('themeLight').onclick=function(){set('light')};
+  document.getElementById('themeDark').onclick=function(){set('dark')};
+  document.getElementById('themeAuto').onclick=function(){set('auto')};
+});})();
+</script>
 </head>
 <body>
 <main>
+  <p class="tools">
+    <button type="button" id="themeAuto">Auto</button>
+    <button type="button" id="themeLight">Light</button>
+    <button type="button" id="themeDark">Dark</button>
+  </p>
   <h1>Privacy</h1>
-  <p>Varmint Ridge is a family game from JW Manor. It is for all ages. It has no ads and no tracking.</p>
-  <p>Scores, the theme you pick, sound, and a saved game stay on this device only (in local storage). Nothing is sent to a server. There is no account.</p>
-  <p>The Supporter Store is off in the browser. A future App Store build can sell a coin pouch, the Ridge Pass, and a starter bundle through Apple. Every purchase and Restore Purchases sits behind a grown-up math question. Those sales are handled by Apple, not by this page.</p>
-  <p>Home-screen widgets read the best score from the app on this phone. They do not use your name, location, or contacts.</p>
-  <p><a href="index.html">Back to the ridge</a></p>
+  <p>Varmint Ridge is a family garden-defense game from JW Manor, published by Back Forty Apps. It is for all ages. It has no ads, no tracking, and no analytics SDKs.</p>
+  <p>This in-app page is the same policy as <a href="https://backfortyapps.com/varmint-ridge/privacy/">https://backfortyapps.com/varmint-ridge/privacy/</a>.</p>
+
+  <h2>What stays on the device</h2>
+  <p>Scores, initials, the theme you pick, music and effects volume, haptics, color-blind safe, a saved game, gem balance, shop records, and cosmetic choices stay in local storage on this device. Nothing is sent to a Back Forty Apps server. There is no account and no sign-in.</p>
+
+  <h2>What we do not collect</h2>
+  <p>We do not collect name, email, location, contacts, photos, advertising IDs, or precise device identifiers. We do not use cookies for advertising. We do not sell or share personal information. Home-screen widgets, when you install the iOS app, read only the best score, initials, and waves opened from the App Group on this phone.</p>
+
+  <h2>Purchases</h2>
+  <p>The gem shop and Season 1 Pass sit behind a grown-up math question. Confirming a pack does not charge a card and does not talk to Apple, Google, or any payment processor. This build does not bill anyone. If JW Manor later turns on real in-app purchases, those sales would be handled by Apple or Google, not by this page, and still behind the parental gate.</p>
+
+  <h2>Children</h2>
+  <p>The game is designed for a family audience, including children. We do not knowingly collect personal information from children. A grown-up must answer the math question before the store opens.</p>
+
+  <h2>Contact</h2>
+  <p>Questions: <a href="mailto:support@backfortyapps.com">support@backfortyapps.com</a>. Support: <a href="https://backfortyapps.com/varmint-ridge/support/">https://backfortyapps.com/varmint-ridge/support/</a>.</p>
+  <p>Effective 18 November 2026.</p>
+  <p><a href="index.html">Back to the ridge</a> · <a href="terms.html">Terms</a> · <a href="support.html">Support</a></p>
 </main>
 </body>
 </html>

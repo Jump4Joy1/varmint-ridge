@@ -1,0 +1,38 @@
+{
+  "name": "varmint-ridge",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Varmint Ridge, a family garden defense from JW Manor. All ages. No ads.",
+  "type": "module",
+  "scripts": {
+    "lint": "eslint src tests scripts capacitor.config.ts playwright.config.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test tests/game-logic.test.mjs tests/widget-contract.mjs tests/hub-menu.mjs",
+    "test:e2e": "playwright test",
+    "test:iap": "node tests/iap-audit.mjs",
+    "build": "node scripts/stage.mjs",
+    "screenshots": "node scripts/screenshots.mjs",
+    "icons": "node scripts/gen-assets.mjs",
+    "cap:sync": "npx cap sync"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "@capacitor/android": "^7.4.4",
+    "@capacitor/core": "^7.4.4",
+    "@capacitor/haptics": "^7.0.2",
+    "@capacitor/ios": "^7.4.4",
+    "@capacitor/splash-screen": "^7.0.3",
+    "@capacitor/status-bar": "^7.0.3"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^7.4.4",
+    "@eslint/js": "^9.39.1",
+    "@playwright/test": "^1.56.1",
+    "@types/node": "^22.19.1",
+    "eslint": "^9.39.1",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.46.4"
+  }
+}

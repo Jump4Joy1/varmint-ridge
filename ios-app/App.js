@@ -14,6 +14,8 @@ const FILES = {
   "manifest.webmanifest": require("./assets/www/manifest.webmanifest"),
   "sw.js": require("./assets/www/sw.js"),
   "privacy.html": require("./assets/www/privacy.html"),
+  "terms.html": require("./assets/www/terms.html"),
+  "support.html": require("./assets/www/support.html"),
   "icons/favicon.svg": require("./assets/www/icons/favicon.svg"),
   "icons/apple-touch-icon.png": require("./assets/www/icons/apple-touch-icon.png"),
   "icons/icon-192.png": require("./assets/www/icons/icon-192.png"),
