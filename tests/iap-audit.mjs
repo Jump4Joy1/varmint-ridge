@@ -92,7 +92,7 @@ const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const manifest = JSON.parse(fs.readFileSync(path.join(root, 'manifest.webmanifest'), 'utf8'));
 const widgets = fs.readFileSync(path.join(repo, 'ios-app/targets/widget/RidgeWidgets.swift'), 'utf8');
 need('source-flags', html.includes('const IAP_ENABLED = false') && html.includes('const IAP_TEST = true') && !/admob|adsense|doubleclick|fundingchoices/i.test(html));
-need('cache-name', sw === swIos && /const CACHE = "varmint-ridge-iphone-9"/.test(sw));
+need('cache-name', sw === swIos && /const CACHE = "varmint-ridge-iphone-10"/.test(sw));
 need('cache-bust', sw.includes('self.skipWaiting()') && sw.includes('self.clients.claim()') && sw.includes('caches.delete(key)'));
 need('manifest-relative', manifest.start_url === './index.html' && manifest.scope === './');
 need('widget-copy', widgets.includes('of 12'));

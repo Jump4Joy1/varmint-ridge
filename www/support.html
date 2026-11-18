@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#305032">
+<meta name="color-scheme" content="dark light">
+<title>Support · Varmint Ridge</title>
+<style>
+  :root{--pine:#305032;--gold:#C19A50;--ink:#1A1A1A;--cream:#F3E6C4}
+  html,body{margin:0;background:#1A1A1A;color:#F3E6C4;font:18px/1.45 Georgia,serif}
+  html[data-theme=light],html[data-theme=light] body{background:#F3E6C4;color:#1A1A1A}
+  main{max-width:38rem;margin:0 auto;padding:calc(24px + env(safe-area-inset-top)) 20px calc(32px + env(safe-area-inset-bottom))}
+  h1{color:#C19A50;font-size:32px;margin:0 0 8px}
+  html[data-theme=light] h1{color:#305032}
+  h2{font-size:20px;margin:22px 0 8px;color:#ffe2a0}
+  html[data-theme=light] h2{color:#305032}
+  a{color:#C19A50}
+  html[data-theme=light] a{color:#305032}
+  p{margin:0 0 14px}
+  .tools{display:flex;gap:8px;margin:0 0 16px}
+  button{min-height:44px;padding:8px 14px;border-radius:10px;border:2px solid #C19A50;background:#305032;color:#F3E6C4;font:700 14px Georgia;cursor:pointer}
+  html[data-theme=light] button{background:#fff;color:#1A1A1A}
+</style>
+<script>
+(function(){var K='vr.theme',mq=matchMedia('(prefers-color-scheme: dark)');
+function p(){try{return localStorage.getItem(K)||'auto'}catch(e){return 'auto'}}
+function a(){var v=p(),t=v==='auto'?(mq.matches?'dark':'light'):v;document.documentElement.setAttribute('data-theme',t);var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute('content',t==='dark'?'#1A1A1A':'#F3E6C4')}
+a();mq.addEventListener('change',a);
+document.addEventListener('DOMContentLoaded',function(){
+  function set(v){try{localStorage.setItem(K,v)}catch(e){}a()}
+  document.getElementById('themeLight').onclick=function(){set('light')};
+  document.getElementById('themeDark').onclick=function(){set('dark')};
+  document.getElementById('themeAuto').onclick=function(){set('auto')};
+});})();
+</script>
+</head>
+<body>
+<main>
+  <p class="tools">
+    <button type="button" id="themeAuto">Auto</button>
+    <button type="button" id="themeLight">Light</button>
+    <button type="button" id="themeDark">Dark</button>
+  </p>
+  <h1>Support</h1>
+  <p>Varmint Ridge is a family garden defense from JW Manor. Write to us at <a href="mailto:support@backfortyapps.com">support@backfortyapps.com</a>. The same help page lives at <a href="https://backfortyapps.com/varmint-ridge/support/">https://backfortyapps.com/varmint-ridge/support/</a>.</p>
+
+  <h2>How to play</h2>
+  <p>Keep at least one crop bed alive through 12 waves. Place a Scarecrow, Lantern, or Snap Trap in the yard, then tap Start Wave. On a phone, slide your finger and lift to place. Tap a defense to upgrade it or sell it back. Between waves you can buy Fence, Zeus the farm dog, and Crop Care. Wave 1 points at each first step.</p>
+
+  <h2>Sound, music, haptics, and theme</h2>
+  <p>Title and Pause have Music and Effects sliders. Settings turns Color-blind safe, haptics, and Light / Dark / Auto. The moon/sun chip on the title screen cycles the same theme. Choices save on this device.</p>
+
+  <h2>Save and resume</h2>
+  <p>Pause, then Save &amp; Quit, stores the current build. Continue on the title screen picks it back up, including coins banked from a mock coin pack.</p>
+
+  <h2>Grown-up store</h2>
+  <p>Supporter Store asks a multiplication question first. Wrong answers stay on that screen. Cancel does not spend. Packs are fixed: gems, Starter Pack, speed-ups, lessons, skins, and Season 1 with both tracks listed before you buy. This build does not charge a card. There are no ads and no surprise boxes.</p>
+
+  <h2>Something stuck?</h2>
+  <p>If an older copy of the page is still showing, close the tab and open it again. The service worker uses a new cache name for this build. Widgets still need the signed iOS app on a Mac; they do not install from the website.</p>
+  <p><a href="index.html">Back to the ridge</a> · <a href="privacy.html">Privacy</a> · <a href="terms.html">Terms</a></p>
+</main>
+</body>
+</html>
