@@ -100,7 +100,7 @@ test.describe('Varmint Ridge playthrough', () => {
     await expect(page.locator('#sStore')).not.toHaveClass(/show/);
     await answerGate(page);
     await expect(page.locator('#sStore')).toHaveClass(/show/);
-    await expect(page.locator('#sStore')).toContainText('Test mode');
+    await expect(page.locator('#sStore')).toContainText('Nothing on this screen charges a card');
     await expect(page.locator('#sStore')).toContainText('Season 1');
   });
 

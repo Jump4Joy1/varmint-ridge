@@ -304,4 +304,4 @@ export function spendGems(store, cost) {
 export const CONTACT_EMAIL = 'support@backfortyapps.com';
 export const SUPPORT_URL = 'https://backfortyapps.com/varmint-ridge/support/';
 export const PRIVACY_URL = 'https://backfortyapps.com/varmint-ridge/privacy/';
-export const CACHE_NAME = 'varmint-ridge-iphone-10';
+export const CACHE_NAME = 'varmint-ridge-iphone-11';

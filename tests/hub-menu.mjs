@@ -31,8 +31,14 @@ need('no-ads', !/admob|adsense|doubleclick|fundingchoices/i.test(html + sw));
 need('no-sale', html.includes('Nothing on this menu is for sale') && html.includes('does not charge a card'));
 need('parental-gate', html.includes('id="gate"') && html.includes('id="gateQ"') && html.includes('id="gateA"') && html.includes('id="gateGo"'));
 need('light-dark', html.includes('id="themeLight"') && html.includes('id="themeDark"') && html.includes('id="themeAuto"'));
-need('menu-cache', sw.includes('const CACHE = "manor-games-hub-7"') && sw.includes('const ASSETS = ["./index.html", "./manifest.webmanifest"]'));
+need('menu-cache', sw.includes('const CACHE = "manor-games-hub-8"') && sw.includes('const ASSETS = ["./index.html", "./manifest.webmanifest"]'));
 need('pages-main-only', pages.includes('branches: [main]') && !pages.includes('launcher-identity') && !/pull_request:/.test(pages));
+need(
+  'player-facing-copy',
+  html.includes('More games on the way') &&
+    html.includes('Más juegos en camino') &&
+    !/reviewed preview|Coming soon is not a date|This is not Homestead Clash|review address|Not linked until|vista revisada|Pronto no es una fecha|Esto no es Homestead Clash|Review preview \(not released\)/i.test(html),
+);
 
 function fnv(str) {
   let h = 0x811c9dc5;

@@ -1,5 +1,5 @@
 /* Varmint Ridge offline cache. Network first. A new name drops older caches on activate. No ads, no remote calls. */
-const CACHE = "varmint-ridge-iphone-10";
+const CACHE = "varmint-ridge-iphone-11";
 const ASSETS = [
   "./",
   "./index.html",

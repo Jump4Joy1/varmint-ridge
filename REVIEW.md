@@ -15,7 +15,7 @@ These checks run in Node on Linux. They do not use a Mac, Xcode, or a physical p
 | Lint | `npm run lint` | ESLint on `src/`, tests, scripts, Capacitor and Playwright configs |
 | Typecheck | `npm run typecheck` | `tsc --noEmit` on the TypeScript configs and e2e specs |
 | Unit tests | `npm test` | Damage (possum, Bandit King summons, lantern vs fliers, trap vs armadillo), economy (place / upgrade / sell / homestead), twelve waves and HP scale, save/load with banked coins, daily seed fixture `jwmanor-vr-2026-10-30`, mock gem grants, contact URLs, cache name, no ads |
-| Hub contract | `node tests/hub-menu.mjs` | Public menu from #4: only reviewed Varmint Ridge links, other cards unlinked, parental gate, light/dark, cache `manor-games-hub-7` |
+| Hub contract | `node tests/hub-menu.mjs` | Public menu from #4: only Varmint Ridge play links, other cards unlinked, player-facing “More games on the way” copy (no review-process notes), parental gate, light/dark, cache `manor-games-hub-8` |
 | Widget contract | `node tests/widget-contract.mjs` | Swift tables still match the web game. Fixture hash 3339250613, Possum, Lantern Watch, wave 1 |
 | Shop / gate / phone | `npm run test:iap` | Mock purchases, grown-up gate, reload, Starter Pack once, daily seed, 12 waves, color-blind, reduced motion, 390px gate. `IAP_ENABLED` is false |
 | Playwright 390×844 | `npm run test:e2e` | Light and dark: start, first-run tutorial, a wave win, a loss, campaign win screen, shop behind the parental gate, settings (haptics, theme, volume) |
@@ -28,7 +28,7 @@ Also true in the source:
 - Settings: music, effects, haptics, color-blind safe, Light / Dark / Auto. Every overlay follows the theme.
 - Hit flashes, death bursts, lantern bolts, scarecrow pulses, snap bites, crop-lost shake (skipped when the phone asks for less motion). Banjo plus wind bed, separate volume sliders.
 - Gem shop and Season 1 Pass are mock-only behind the grown-up math gate. Fixed packs. No loot boxes. No real billing SDK.
-- Service worker cache name: `varmint-ridge-iphone-10` (bumped so returning players fetch this build).
+- Service worker cache name: `varmint-ridge-iphone-11` (bumped so returning players fetch this build). Hub menu cache: `manor-games-hub-8`. Unfinished game cards say “More games on the way” / “Más juegos en camino”; they do not show review-process notes.
 - Public contact is **support@backfortyapps.com**. Support URL https://backfortyapps.com/varmint-ridge/support/ . Privacy URL https://backfortyapps.com/varmint-ridge/privacy/ . In-app `privacy.html`, `terms.html`, `support.html` have no placeholder copy.
 - No analytics or tracking SDKs.
 - Capacitor iOS and Android projects are in the repo (`com.jwmanor.varmintridge`, version 1.0.0, build 1). `ios/App/App/PrivacyInfo.xcprivacy` declares no tracking and no collected data.

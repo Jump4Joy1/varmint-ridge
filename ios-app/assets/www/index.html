@@ -242,12 +242,12 @@ html[data-theme=light] #gateA:focus{outline-color:#305032}
     <label>Effects <input id="sfxS" type="range" min="0" max="100" value="80" aria-label="Effects volume"></label>
    </div>
    <h3>Purchases on this device</h3>
-   <p class="small">Test mode. This list does not charge a card. There is no timer and nothing is random.</p>
+   <p class="small">This list does not charge a card. There is no timer and nothing is random.</p>
    <div id="spendSum" class="small"></div>
    <p class="small"><a class="quiet" href="privacy.html">Privacy</a> · <a class="quiet" href="terms.html">Terms</a> · <a class="quiet" href="support.html">Support</a><br><a class="quiet" href="mailto:support@backfortyapps.com">support@backfortyapps.com</a></p>
    <button class="btn alt" data-close>Back</button></div></div>
   <div class="ov" id="sGate"><div class="panel"><h2>Grown-ups</h2>
-   <p class="small">A grown-up has to answer before any purchase, including gems. All ages. No ads. A test purchase does not charge a card.</p>
+   <p class="small">A grown-up has to answer before any purchase, including gems. All ages. No ads. Confirming a pack does not charge a card.</p>
    <p style="font-size:20px" id="gateQ"></p>
    <input id="gateA" inputmode="numeric" maxlength="4" autocomplete="off" enterkeyhint="done" aria-labelledby="gateQ">
    <button class="btn sm" id="gateGo">OK</button>
@@ -256,9 +256,9 @@ html[data-theme=light] #gateA:focus{outline-color:#305032}
   <div class="ov" id="sStore"><div class="panel"><h2>Supporter Store</h2>
    <div id="storeItems"></div>
    <div id="testBuy" style="display:none">
-    <p class="small">Test purchase. No card is charged.</p>
+    <p class="small">No card is charged.</p>
     <p><b id="testBuyName"></b></p>
-    <button class="btn sm" id="testBuyOk" type="button">Confirm test purchase</button>
+    <button class="btn sm" id="testBuyOk" type="button">Confirm</button>
     <button class="btn alt sm" id="testBuyNo" type="button">Cancel</button>
    </div>
    <p class="small" id="storeNote"></p>
@@ -822,7 +822,7 @@ function openStoreBody(){const box=$('storeItems');box.className='store';box.sty
  const gems=LS.get('gems',0)|0,rawLessons=LS.get('lessons',{}),lessons=rawLessons&&typeof rawLessons==='object'&&!Array.isArray(rawLessons)?rawLessons:{},pass=!!LS.get('seasonPass',false),rawClaims=LS.get('seasonClaims',[]),claims=Array.isArray(rawClaims)?rawClaims:[],prog=seasonProgress();
  const moneyBtn=(p,owned)=>owned?'<button class="btn sm" type="button" disabled>Owned</button>':'<button class="btn sm" type="button" data-sku="'+p.sku+'">Buy '+p.price+'</button>';
  const gemBtn=(id,cost,owned)=>owned?'<button class="btn sm" type="button" disabled>Owned</button>':'<button class="btn sm" type="button" data-gem="'+id+'">Buy · '+cost+' gems</button>';
- let html='<p class="small">Test mode. Nothing on this screen charges a card. No ads. No surprise boxes. Prices stay the same, and every pack lists exactly what is inside. There is no timer.</p>';
+ let html='<p class="small">Nothing on this screen charges a card. No ads. No surprise boxes. Prices stay the same, and every pack lists exactly what is inside. There is no timer.</p>';
  html+='<p>Gems on this device: <b>'+gems+'</b></p>';
  html+='<h3>Gem packs</h3>';
  IAP.products.filter(p=>p.key.indexOf('gems')===0).forEach(p=>{html+='<div class="row"><span><b>'+p.name+'</b> '+p.price+'<br><span class="small">'+p.desc+'</span></span>'+moneyBtn(p,false)+'</div>'});
